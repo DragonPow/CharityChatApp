@@ -1,7 +1,5 @@
+import 'package:chat_app/presentation/components/avatarcicle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../../configs/colorconfig.dart';
 import '../../configs/fontconfig.dart';
 
 class AvatarUser extends StatefulWidget {
@@ -26,28 +24,7 @@ class _AvatarUserState extends State<AvatarUser> {
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: Column(
         children: [
-          Container(
-              width: widget.radius,
-              height: widget.radius,
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(colors: cwColorGradientActive),
-                  shape: BoxShape.circle),
-              child: Padding(
-                padding: const EdgeInsets.all(2),
-                child: Container(
-                  width: widget.radius - 4,
-                  height: widget.radius - 4,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                        image: NetworkImage(widget.imageUrl != ""
-                            ? widget.imageUrl
-                            : "images/avatar.png"),
-                        fit: BoxFit.cover),
-                    border: Border.all(color: cwColorBackground, width: 2),
-                  ),
-                ),
-              )),
+          AvatarCicle(imgUrl: "https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8bW92aWUlMjBwb3N0ZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60", radius: 50),
           Text(
             widget.name,
             style: kText10RegularBlack,
