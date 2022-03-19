@@ -1,4 +1,5 @@
 import 'package:chat_app/configs/colorconfig.dart';
+import 'package:chat_app/presentation/pages/chat_page/add_people/add_people.dart';
 import 'package:chat_app/presentation/rootapp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,7 +23,8 @@ class MyApp extends StatelessWidget {
          // primarySwatch: Colors.green,
           primaryColor: cwColorMain
         ),
-        home: const RootApp(),
+        home:const AddPeople()
+        //const RootApp(),
       ),
     );
   }
