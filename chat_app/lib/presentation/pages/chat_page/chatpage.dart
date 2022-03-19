@@ -3,7 +3,7 @@ import 'package:chat_app/configs/fontconfig.dart';
 import 'package:chat_app/presentation/components/avataruser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../components/avatarcicle.dart';
+import '../../components/avatarcicle.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
@@ -136,13 +136,13 @@ class ShortChat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(children: [
       Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
         child: Row(
           children: <Widget>[
             const AvatarCicle(
                 imgUrl:
                     "https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8bW92aWUlMjBwb3N0ZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
-                radius: 40),
+                radius: 45),
             SizedBox(
               width: 5.w,
             ),

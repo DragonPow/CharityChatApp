@@ -24,7 +24,7 @@ class _AvatarUserState extends State<AvatarUser> {
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: Column(
         children: [
-          AvatarCicle(imgUrl: "https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8bW92aWUlMjBwb3N0ZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60", radius: 50),
+          const AvatarCicle(imgUrl: "https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8bW92aWUlMjBwb3N0ZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60", radius: 50),
           Text(
             widget.name,
             style: kText10RegularBlack,
