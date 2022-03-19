@@ -16,7 +16,7 @@ class AvatarCicle extends StatelessWidget {
                   gradient: LinearGradient(colors: cwColorGradientActive),
                   shape: BoxShape.circle),
               child: Padding(
-                padding: EdgeInsets.all(2.w),
+                padding: EdgeInsets.all(1.w),
                 child: Container(
                   width: radius - 4.w,
                   height: radius - 4.w,
