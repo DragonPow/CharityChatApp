@@ -25,10 +25,12 @@ var kText16RegularWhite = fontConfig.copyWith(fontSize: 16.sp, color: cwColorWhi
 
 var kText17SemiboldBlack = fontConfig.copyWith(fontSize: 17.sp, fontWeight: FontWeight.w500);
 var kText17SemiboldMain = fontConfig.copyWith(fontSize: 17.sp, fontWeight: FontWeight.w500, color: cwColorMain);
+var ktext17RegularBlack = fontConfig.copyWith(fontSize: 17);
+var ktext17RegularGreyText = fontConfig.copyWith(fontSize: 17, color: cwColorGreyNoteText);
 
 var kText18RegularMain = fontConfig.copyWith(fontSize: 18, color: cwColorMain);
 
-var kText20MediumBlack = fontConfig.copyWith(fontSize: 20.sp, fontWeight: FontWeight.w500);
+var kText20MediumBlack = fontConfig.copyWith(fontSize: 20.sp, fontWeight: FontWeight.w600);
 
 var kText22BoldMain = fontConfig.copyWith(
     fontSize: 22.sp,

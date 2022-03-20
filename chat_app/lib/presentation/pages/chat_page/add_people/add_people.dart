@@ -58,11 +58,13 @@ class _AddPeople extends State<AddPeople> {
                             child: Row(
                               children: List.generate(
                                 10,
-                                (index) => Member(),
+                                (index) => const Member(),
                               ),
                             ),
                           ),
-                          SizedBox(height: 10.h,)
+                          SizedBox(
+                            height: 10.h,
+                          )
                         ],
                       )
                     ],
@@ -72,33 +74,32 @@ class _AddPeople extends State<AddPeople> {
             },
             body: SingleChildScrollView(
               child: Padding(
-                padding:EdgeInsets.symmetric(horizontal: 20.w),
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 10.h,),
+                    SizedBox(
+                      height: 10.h,
+                    ),
                     ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: 10,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder:(BuildContext context, int index) {
-                        return 
-                         const NonMember();
-                      }),
+                        shrinkWrap: true,
+                        itemCount: 10,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          return const NonMember();
+                        }),
                   ],
                 ),
               ),
             )));
   }
 
-
-
   AppBar getAppBar() {
     return AppBar(
-      title: Text(
+      title: const Text(
         "Thêm thành viên ",
-        style: kText20MediumBlack,
       ),
+      titleTextStyle: kText20MediumBlack,
       centerTitle: true,
       backgroundColor: cwColorBackground,
       elevation: 0,
@@ -106,7 +107,7 @@ class _AddPeople extends State<AddPeople> {
       actions: [
         TextButton(
           child: Text("Tiếp", style: kText18RegularMain),
-          onPressed: () {  },
+          onPressed: () {},
         )
       ],
     );

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../configs/colorconfig.dart';
-import '../../../../../configs/fontconfig.dart';
-import '../../../../components/avatarcicle.dart';
 import '../../../../components/avataruser.dart';
 
 class Member extends StatefulWidget {
@@ -19,30 +17,30 @@ class _Member extends State<Member> {
     return Stack(
       fit: StackFit.passthrough,
       children: <Widget>[
-        const SizedBox(
+        SizedBox(
             child: AvatarUser(
           imageUrl:
               "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
           name: 'Jone Cena',
-          radius: 40,
+          radius: 40.w,
         )),
         Positioned(
             top: 0,
-            right: 0,
+            right: 5.w,
             child: InkWell(
               child: Container(
-                width: 20,
-                height: 20,
+                width: 15.w,
+                height: 15.w,
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: cwColorGreyNoteText,
                 ),
-                child: const Center(
+                child: Center(
                   child: Icon(
                     Icons.close,
                     color: cwColorWhite,
-                    size: 15,
+                    size: 10.w,
                   ),
                 ),
               ),
