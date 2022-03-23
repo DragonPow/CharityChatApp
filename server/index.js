@@ -1,6 +1,7 @@
 import http from "http";
 import express from "express";
-import indexRouter from './routes/index.js';
+import sequelize from "./config/mysql.js";
+import indexRouter from "./routes/index.js";
 
 const app = express();
 
@@ -9,7 +10,6 @@ app.set("port", port);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
 
 //Navigator to another
 app.use("/", indexRouter);
@@ -21,6 +21,14 @@ app.use("*", (req, res) => {
         message: "API endpoint does not exist",
     });
 });
+
+try {
+    console.log('before authen');
+    await sequelize.authenticate();
+    console.log('test success');
+} catch (error) {
+    console.error('unable to connect database', error);    
+}
 
 //Create HTTP server
 const server = http.createServer(app);
