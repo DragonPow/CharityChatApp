@@ -16,8 +16,8 @@ let database = config.db.database;
 let __dirname = dirname(fileURLToPath(import.meta.url));
 
 //read cert
-import fs from 'fs';
-const rdsCert = fs.readFileSync(__dirname + "/DigiCertGlobalRootCA.crt.pem");
+// import fs from 'fs';
+const rdsCert = require("fs").readFileSync(__dirname + "/DigiCertGlobalRootCA.crt.pem");
 
 const sequelize = new Sequelize({
     db: database,
@@ -37,7 +37,5 @@ const sequelize = new Sequelize({
         },
     },
 });
-
-sequelize;
 
 export default sequelize;

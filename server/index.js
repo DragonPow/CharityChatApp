@@ -2,10 +2,11 @@ import http from "http";
 import express from "express";
 import sequelize from "./config/mysql.js";
 import indexRouter from "./routes/index.js";
+import socketio from "socket.io";
 
 const app = express();
 
-const port = process.env.PORT | "3000";
+const port = process.env.PORT || "3000";
 app.set("port", port);
 
 app.use(express.json());
@@ -22,13 +23,6 @@ app.use("*", (req, res) => {
     });
 });
 
-try {
-    console.log('before authen');
-    await sequelize.authenticate();
-    console.log('test success');
-} catch (error) {
-    console.error('unable to connect database', error);    
-}
 
 //Create HTTP server
 const server = http.createServer(app);
