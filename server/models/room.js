@@ -1,7 +1,7 @@
-import { DataTypes } from "sequelize/types";
-import sequelize from "../config/mysql";
-import Message from "./message";
-import User from "./user";
+import { DataTypes } from "sequelize";
+import sequelize from "../config/mysql.js";
+import Message from "./message.js";
+import User from "./user.js";
 
 const Room = sequelize.define("Room", {
     id: {
@@ -18,7 +18,7 @@ const Room = sequelize.define("Room", {
     },
 });
 
-Room.hasMany(Message, { as: "messageContainer" });
-Room.hasOne(Message, {as: "lastMessage"});
+Room.hasMany(Message, { as: "messageContainer", foreignKey: "roomId" });
+Room.hasOne(Message, { as: "lastMessage", foreignKey: "lastMessageId" });
 
 export default Room;

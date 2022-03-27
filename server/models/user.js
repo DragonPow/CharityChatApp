@@ -1,4 +1,4 @@
-import { DataTypes } from "sequelize/types";
+import { DataTypes } from "sequelize";
 import sequelize from "../config/mysql.js";
 
 const User = sequelize.define("User", {
@@ -68,8 +68,8 @@ const User = sequelize.define("User", {
     },
 });
 
-User.hasMany(User, {
-    as: "friends",
-});
+const Friend = sequelize.define("Friend");
+User.belongsToMany(User, { as: 'id1', through: 'Friend', foreignKey: "id1" });
+User.belongsToMany(User, { as: 'id2', through: 'Friend', foreignKey: "id2" });
 
 export default User;

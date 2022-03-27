@@ -1,6 +1,8 @@
-import { DataTypes } from "sequelize/types";
-import sequelize from "../config/mysql";
-import User from "./user";
+import { DataTypes } from "sequelize";
+import sequelize from "../config/mysql.js";
+import User from "./user.js";
+
+const TypeMessage = DataTypes.ENUM("text", "image", "file", "video", "system");
 
 const Message = sequelize.define("Message", {
     id: {
@@ -18,14 +20,28 @@ const Message = sequelize.define("Message", {
         defaultValue: "",
     },
     typeContent: {
-        type: DataTypes.ENUM("text", "image", "file", "video", "system"),
+        type: TypeMessage,
         allowNull: false,
         defaultValue: "text",
     },
 });
 
-Message.hasOne(User,{
-    as: 'sender',
-})
+Message.hasOne(User, {
+    as: "sender",
+    foreignKey: "senderId",
+});
+
+//Method
+/**
+ * When message is send to database
+ * @param {String} content content of message
+ * @param {TypeMessage} typeContent type of message
+ * @param {String} roomId 
+ * @param {String} sender 
+ */
+Message.create = async (content, typeContent, roomId, senderId) => {
+    const message = this.create({ content, typeContent, senderId });
+};
 
 export default Message;
+export { TypeMessage };

@@ -3,7 +3,8 @@
 import config from "./index.js";
 import Sequelize from "sequelize";
 import {dirname} from 'path';
-import {fileURLToPath} from 'url'
+import {fileURLToPath} from 'url';
+import fs from 'fs'
 
 
 const CONNECTION_URL = config.db.host;
@@ -16,9 +17,9 @@ let database = config.db.database;
 let __dirname = dirname(fileURLToPath(import.meta.url));
 
 //read cert
-// import fs from 'fs';
-const rdsCert = require("fs").readFileSync(__dirname + "/DigiCertGlobalRootCA.crt.pem");
+const rdsCert = fs.readFileSync(__dirname + "/DigiCertGlobalRootCA.crt.pem");
 
+//define sequelize
 const sequelize = new Sequelize({
     db: database,
     username: username,
