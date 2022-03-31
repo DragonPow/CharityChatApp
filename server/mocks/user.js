@@ -1,6 +1,7 @@
-users = [
+const users = [
     {
         id: "1",
+        name: "vungocthach",
         email: "vungocthach1112@gmail.com",
         password: "12345",
         timeCreate: Date(Date.UTC(2016, 1, 1)),
@@ -13,6 +14,7 @@ users = [
     },
     {
         id: "2",
+        name: "huynhthiminhnhuc",
         email: "huynhthiminhnhuc@gmail.com",
         password: "12345",
         timeCreate: Date(Date.UTC(2017, 1, 18)),
@@ -21,10 +23,11 @@ users = [
         birthday: Date(Date.UTC(2016, 17, 3)),
         gender: 2,
         address: null,
-        description: "nothing is hardly",
+        description: "do something, change something",
     },
     {
         id: "3",
+        name: "nguyen pham duy bang",
         email: "nguyenphamduybang@gmail.com",
         password: "12345",
         timeCreate: Date(Date.UTC(2001, 10, 1)),
@@ -37,6 +40,7 @@ users = [
     },
     {
         id: "4",
+        name: "vo thi thuy tien",
         email: "vothithuytien@gmail.com",
         password: "12345",
         timeCreate: Date(Date.UTC(2012, 1, 1)),
@@ -45,6 +49,6 @@ users = [
         birthday: null,
         gender: 2,
         address: null,
-        description: "ui is my best skill",
+        description: "ui design is my best skill",
     },
 ];

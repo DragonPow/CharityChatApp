@@ -1,10 +1,8 @@
 class WebSocket{
     users = [];
     connection(client) {
-        client.on("disconnect", () => {
-            
-        });
-
-        //
+        
     }
 }
+
+export default new WebSocket();
