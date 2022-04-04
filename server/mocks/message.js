@@ -18,7 +18,7 @@
     {
         id: "3",
         createTime: Date(2012, 11, 22, 5, 24, 0),
-        content: "image: Twooooo",
+        content: "image: ummboo",
         roomId: "1",
         typeContent: "image",
         senderId: "1",

@@ -1,12 +1,19 @@
-import Room from "../models/room.js";
-import Message from "../models/message.js";
+import RoomModel from "../models/room.js";
+import UserRoomModel from "../models/user_room.js";
+import Model from "../models/model.js";
 
 export default {
-    onGetRooms: async (req, res, next) => {
+    onGetRoomsByPaging: async (req, res, next) => {
+        const { startIndex, number } = req.body;
+        const { userId } = req.query;
         try {
-            const { startIndex, number } = req.body;
-            const { userId } = req.params;
-            const rooms = await Room.getRooms(startIndex, number, userId);
+            const roomsId = await UserRoomModel.getRoomsByPaging(
+                startIndex,
+                number,
+                userId
+            );
+            const rooms = await RoomModel.getRoomsById(roomsId);
+            // const rooms = await RoomModel.getRoomsByPaging(startIndex, number, userId);
 
             return res.status(200).json({
                 success: true,
@@ -17,12 +24,14 @@ export default {
         }
     },
     onGetRoomsByName: async (req, res, next) => {
+        const { textMatch, userId } = req.query;
+        const { startIndex, number } = req.body;
         try {
-            const { textMatch, startIndex, number } = req.params;
-            const rooms = await Room.getRoomsByName(
+            const rooms = await RoomModel.getRoomsByName(
                 textMatch,
                 startIndex,
-                number
+                number,
+                userId
             );
 
             return res.status(200).json({
@@ -33,35 +42,59 @@ export default {
             return res.status(500).json({ success: false, error: error });
         }
     },
-    onDeleteRoom: async (req, res, next) => {
+    onCreateRoom: async (req, res, next) => {
+        const { roomInfo, listUsersId } = req.body;
         try {
-            const { roomId } = req.body;
-            //Delete room
-            await Room.delete(roomId);
-
-            //Delete all message in room
-            //TODO: delete message of room
+            const newRoom = await UserRoomModel.createRoom(
+                roomInfo,
+                listUsersId
+            );
 
             return res.status(200).json({
                 success: true,
-                description: `Room ${roomId} delete success`,
+                description: `Room ${newRoom.id} create success`,
+                room,
             });
         } catch (error) {
             return res.status(500).json({
                 success: false,
                 error: error,
+                description: `Room cannot create`,
+            });
+        }
+    },
+    onDeleteRoom: async (req, res, next) => {
+        const { roomId } = req.body;
+        try {
+            const success = await Model.callTransaction(async () => {
+                //Delete all message in room
+                await Message.deleteMessageInRoom(roomId);
+                //Delete room
+                await UserRoomModel.deleteByRoomId(roomId);
+            });
+
+            return res.status(200).json({
+                success,
+                description: `Room ${roomId} delete ${
+                    success ? "success" : "fail"
+                }`,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                error,
                 description: `Room ${roomId} cannot delete`,
             });
         }
     },
     onUpdateRoom: async (req, res, next) => {
+        const { room } = req.body;
         try {
-            const { room } = req.body;
-            await Room.update(room);
+            await RoomModel.updateRoom(room);
 
             return res.status(200).json({
                 success: true,
-                description: `Room update success:\n{room}`,
+                description: `Room update success:\n${room}`,
             });
         } catch (error) {
             return res.status(500).json({

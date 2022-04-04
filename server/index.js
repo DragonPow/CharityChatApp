@@ -18,10 +18,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //Navigator to another
-// app.use("/", indexRouter);
-// app.use("/users", userRouter);
-// app.use("/rooms", roomRouter);
-// app.use("/rooms/:roomId", chatRouter);
+app.use("/", indexRouter);
+app.use("/users", userRouter);
+app.use("/rooms", roomRouter);
+app.use("/rooms/:roomId", chatRouter);
 
 // import("./models/relationship.js");
 //Catch 404 and forward to error handler

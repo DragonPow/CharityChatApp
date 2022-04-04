@@ -14,7 +14,7 @@ export default {
 
     onLogout: async (req, res) => {
         try {
-            const { userName } = req.params;
+            const { userName } = req.query;
             await UserModel.logOut(userName);
 
             return res.status(200).json({ super: true });

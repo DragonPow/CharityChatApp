@@ -66,6 +66,20 @@ Message.getRoomMessages = async (roomId, startIndex, number) => {
     }
 };
 
+Message.getLastMessageInRoom = async (roomId) => {
+    try {
+        //? Should get message and sender data?
+        const messages = await Message.findAll({
+            where: { roomId: roomId },
+            limit: number,
+            offset: startIndex,
+        });
+        return messages;
+    } catch (error) {
+        throw error;
+    }
+};
+
 Message.getMessagesByContent = async (textMatch, roomId, startIndex, number) => {
     try {
         //? Should get message and sender data?
@@ -78,6 +92,15 @@ Message.getMessagesByContent = async (textMatch, roomId, startIndex, number) => 
     } catch (error) {
         throw error;
     }
+};
+
+Message.statics.deleteMessageInRoom = async (roomId) => {
+    const rs = await Message.destroy({
+        where: {
+            roomId: roomId
+        }
+    });
+    return rs;
 };
 
 Message.delete = async (messageId, TypeMessage) => {};

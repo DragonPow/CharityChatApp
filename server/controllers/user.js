@@ -3,7 +3,7 @@ import UserModel from "../models/user.js";
 export default {
     onGetActiveUsersByPage: async (req, res) => {
         try {
-            const { startIndex, number } = req.params;
+            const { startIndex, number } = req.query;
             const users = await UserModel.statics.getActiveUsersByPage(startIndex, number);
 
             return res.status(200).json({ success: true, users });
@@ -14,7 +14,7 @@ export default {
 
     onGetUsersByName: async (req, res) => {
         try {
-            const { textMatch, startIndex, number } = req.params;
+            const { textMatch, startIndex, number } = req.query;
             const users = await UserModel.getUsersByName(textMatch, startIndex, number);
 
             return res.status(200).json({ super: true, users });
@@ -25,7 +25,7 @@ export default {
 
     onGetUserById: async (req, res) => {
         try {
-            const { userId } = req.params;
+            const { userId } = req.query;
             const users = await UserModel.getUserById(userId);
 
             return res.status(200).json({ super: true, users });

@@ -26,6 +26,7 @@ const sequelize = new Sequelize({
     port: port,
     host: connection_url,
     dialect: "mysql",
+    logging: (...msg) => console.log(msg),
     dialectOptions: {
         ssl: {
             cert: rdsCert,
