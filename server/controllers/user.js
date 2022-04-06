@@ -4,7 +4,7 @@ export default {
     onGetActiveUsersByPage: async (req, res) => {
         try {
             const { startIndex, number } = req.query;
-            const users = await UserModel.statics.getActiveUsersByPage(startIndex, number);
+            const users = await UserModel.getActiveUsersByPage(startIndex, number);
 
             return res.status(200).json({ success: true, users });
         } catch (error) {

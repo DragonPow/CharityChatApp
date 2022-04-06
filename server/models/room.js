@@ -71,7 +71,7 @@ Room.statics.getRoomsByName = async (textMatch, startIndex, number, userId) => {
     const rooms = await Room.findAll({
         where: {
             name: {
-                [Op.like]: textMatch,
+                [Op.substring]: textMatch,
             },
             userName: userId,
         },

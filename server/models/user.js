@@ -1,6 +1,7 @@
 import { DataTypes, Op } from "sequelize";
 import sequelize from "../config/mysql.js";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+import Friend from "./friend.js";
 
 const User = sequelize.define("User", {
     id: {
@@ -30,7 +31,7 @@ const User = sequelize.define("User", {
         defaultValue: DataTypes.NOW,
     },
     imageUri: {
-        type: DataTypes.STRING({binary: true}),
+        type: DataTypes.STRING({ binary: true }),
         allowNull: true,
     },
     birthday: {
@@ -64,20 +65,28 @@ const User = sequelize.define("User", {
     },
 });
 
-
 //Method
 /**
  * Get user online of logging activity
  * @param {number} startIndex
  * @param {number} number number user need get
- * @returns List user
+ * @param {string} mainUserId userId to find friends
+ * @returns List user is friend and in online of mainUserId
  */
-User.getActiveUsersByPage = async (startIndex, number) => {
+User.statics.getActiveUsersByPage = async (startIndex, number, mainUserId) => {
     //TODO: Open websocket to check current online user of server of specific user
-    try {
-    } catch (error) {
-        throw error;
-    }
+    const users = await User.findAll({
+        where: {
+            id: mainUserId,
+        },
+        include: {
+            model: Friend,
+        },
+        limit: number,
+        offset: startIndex,
+    });
+
+    return users;
 };
 
 /**
@@ -87,31 +96,26 @@ User.getActiveUsersByPage = async (startIndex, number) => {
  * @param {number} number
  * @returns List user
  */
-User.getUsersByName = async (textMatch, startIndex, number) => {
-    try {
-        const users = await User.findAll({
-            attributes: ["id", "name", "avatarUri", "gender"],
-            where: {
-                name: {
-                    [Op.substring]: textMatch,
-                },
+User.statics.getUsersByName = async (textMatch, startIndex, number) => {
+    const users = await User.findAll({
+        attributes: ["id", "name", "avatarUri", "gender"],
+        where: {
+            name: {
+                [Op.substring]: textMatch,
             },
-            limit: number,
-            offset: startIndex,
-        });
-        return users;
-    } catch (error) {
-        throw error;
-    }
+        },
+        limit: number,
+        offset: startIndex,
+    });
+    return users;
 };
 
-User.getUserById = async (userId) => {
-    try {
-        const user = await User.findByPk(userId);
-        return user;
-    } catch (error) {
-        throw error;
-    }
+User.statics.getUserById = async (userId) => {
+    const user = await User.findByPk(userId);
+    //Don't show password
+    delete user.password;
+
+    return user;
 };
 
 export default User;

@@ -4,13 +4,14 @@ import { NUMBER_MESSAGE_PER_LOAD } from "../config/constant.js";
 
 export default {
     onGetRoomMessages: async (req, res, next) => {
+        const { roomId, startIndex, number } = req.query;
+
         try {
             // const { startIndex, number } = req.body;
-            const { roomId, startIndex, number } = req.query;
             const messages = await Message.getRoomMessages(
                 roomId,
                 startIndex ?? 0,
-                number ?? NUMBER_MESSAGE_PER_LOAD,
+                number ?? NUMBER_MESSAGE_PER_LOAD
             );
 
             return res.status(200).json({
@@ -18,13 +19,14 @@ export default {
                 messages,
             });
         } catch (error) {
-            return res.status(500).json({ success: false, error: error });
+            return res.status(500).json({ success: false, error });
         }
     },
     onGetMessagesByContent: async (req, res, next) => {
+        // const { roomId } = req.body;
+        const { textMatch, roomId, startIndex, number } = req.query;
+
         try {
-            // const { roomId } = req.body;
-            const { textMatch, roomId, startIndex, number } = req.query;
             const messages = await Message.getMessagesByContent(
                 textMatch,
                 roomId,
@@ -41,10 +43,11 @@ export default {
         }
     },
     onSendMessage: async (req, res, next) => {
+        const { content, senderId, typeContent } = req.body;
+        const { roomId } = req.query;
+
         try {
-            const { content, senderId } = req.body;
-            const { roomId } = req.query;
-            await Message.send(content, "text", roomId, senderId);
+            await Message.sendMessage(content, typeContent, roomId, senderId);
 
             return res.status(200).json({
                 success: true,
@@ -61,40 +64,39 @@ export default {
         }
     },
     onSendImage: async (req, res, next) => {
+        const { content, roomId } = req.body;
+
         try {
-            const { content, roomId } = req.body;
             await Message.send(content, "image", roomId);
             return res.status(200).json({
                 success: true,
             });
         } catch (error) {
-            return res
-                .status(500)
-                .json({
-                    success: false,
-                    error: error,
-                });
+            return res.status(500).json({
+                success: false,
+                error: error,
+            });
         }
     },
     onSendFile: async (req, res, next) => {
+        const { content, roomId } = req.body;
+
         try {
-            const { content, roomId } = req.body;
             await Message.send(content, "file", roomId);
             return res.status(200).json({
                 success: true,
             });
         } catch (error) {
-            return res
-                .status(500)
-                .json({
-                    success: false,
-                    error: error,
-                });
+            return res.status(500).json({
+                success: false,
+                error: error,
+            });
         }
     },
     onDeleteMessage: async (req, res, next) => {
+        const { messageId } = req.body;
+
         try {
-            const { messageId } = req.body;
             await Message.delete(messageId, TypeMessage.key);
 
             return res.status(200).json({
@@ -110,9 +112,10 @@ export default {
         }
     },
     onGetImages: async (req, res, next) => {
+        // const { startIndex, number } = req.body;
+        const { roomId, startIndex, number } = req.query;
+
         try {
-            // const { startIndex, number } = req.body;
-            const { roomId, startIndex, number } = req.query;
             const images = await Message.getImages(startIndex, number, roomId);
 
             return res.status(200).json({
@@ -127,9 +130,10 @@ export default {
         }
     },
     onGetFile: async (req, res, next) => {
+        // const { startIndex, number } = req.body;
+        const { roomId, startIndex, number } = req.query;
+
         try {
-            // const { startIndex, number } = req.body;
-            const { roomId, startIndex, number } = req.query;
             const files = await Message.getFiles(startIndex, number, roomId);
 
             return res.status(200).json({
