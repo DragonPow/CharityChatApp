@@ -1,9 +1,13 @@
 import http from "http";
 import express from "express";
+import { Server } from "socket.io";
+import WebSocket from "./config/websocket.js";
+
 import indexRouter from "./routes/index.js";
 import userRouter from "./routes/user.js";
+import chatRouter from "./routes/chat.js";
 import roomRouter from "./routes/room.js";
-import { Server } from "socket.io";
+
 
 const app = express();
 
@@ -17,7 +21,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/", indexRouter);
 app.use("/users", userRouter);
 app.use("/rooms", roomRouter);
+app.use("/rooms/:roomId", chatRouter);
 
+// import("./models/relationship.js");
 //Catch 404 and forward to error handler
 app.use("*", (req, res) => {
     return res.status(404).json({
@@ -31,9 +37,7 @@ const httpServer = http.createServer(app);
 //Create socket connection
 //TODO: make socket listen from server
 const io = new Server(httpServer);
-io.on("connection", (socket) => {
-    console.log(`Socket: ${socket}`);
-});
+io.on("connection", WebSocket.connection);
 
 //Listen on provided port
 httpServer.listen(port);

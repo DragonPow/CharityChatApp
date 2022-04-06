@@ -2,41 +2,45 @@
 
 import config from "./index.js";
 import Sequelize from "sequelize";
-import {dirname} from 'path';
-import {fileURLToPath} from 'url';
-import fs from 'fs'
+import { default as path, dirname } from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
 
-
-const CONNECTION_URL = config.db.host;
-let username = config.db.username;
-let password = config.db.password;
-let port = config.db.port;
-let database = config.db.database;
+const connection_url = config.db.host;
+const username = config.db.username;
+const password = config.db.password;
+const port = config.db.port;
+const database = config.db.database;
 
 //get current dir
-let __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 //read cert
-const rdsCert = fs.readFileSync(__dirname + "/DigiCertGlobalRootCA.crt.pem");
+const rdsCert = fs.readFileSync(path.join(__dirname, config.db.cert_url));
 
 //define sequelize
 const sequelize = new Sequelize({
-    db: database,
+    database: database,
     username: username,
     password: password,
     port: port,
-    host: CONNECTION_URL,
+    host: connection_url,
     dialect: "mysql",
+    logging: (...msg) => console.log(msg),
     dialectOptions: {
         ssl: {
             cert: rdsCert,
-        }
+        },
     },
     hooks: {
         afterConnect: () => {
-            console.log("afterConnect:", "connection success");
+            console.log("afterConnect:", "DB connection success");
         },
     },
+    define: {
+        charset: 'utf8',
+        timestamps: false, //Not create createAt and updateAt column in table
+    }
 });
 
 export default sequelize;

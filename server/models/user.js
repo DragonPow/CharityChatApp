@@ -1,11 +1,13 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Op } from "sequelize";
 import sequelize from "../config/mysql.js";
+import { v4 as uuidv4 } from "uuid";
+import Friend from "./friend.js";
 
 const User = sequelize.define("User", {
     id: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: DataTypes.UUID,
         primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
     },
     name: {
         type: DataTypes.STRING,
@@ -13,14 +15,14 @@ const User = sequelize.define("User", {
     },
     email: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     password: {
         type: DataTypes.STRING,
         allowNull: false,
     },
     phone: {
-        type: DataTypes.STRING,
+        type: DataTypes.CHAR(12),
         allowNull: true,
     },
     timeCreate: {
@@ -29,7 +31,7 @@ const User = sequelize.define("User", {
         defaultValue: DataTypes.NOW,
     },
     imageUri: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING({ binary: true }),
         allowNull: true,
     },
     birthday: {
@@ -50,11 +52,6 @@ const User = sequelize.define("User", {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    // MEANS: Dont need it
-    // friends: {
-    //     type: DataTypes.ARRAY,
-    //     allowNull: true,
-    // },
     //Not use usually
     numberEvent: {
         type: DataTypes.SMALLINT,
@@ -68,8 +65,57 @@ const User = sequelize.define("User", {
     },
 });
 
-const Friend = sequelize.define("Friend");
-User.belongsToMany(User, { as: 'id1', through: 'Friend', foreignKey: "id1" });
-User.belongsToMany(User, { as: 'id2', through: 'Friend', foreignKey: "id2" });
+//Method
+/**
+ * Get user online of logging activity
+ * @param {number} startIndex
+ * @param {number} number number user need get
+ * @param {string} mainUserId userId to find friends
+ * @returns List user is friend and in online of mainUserId
+ */
+User.statics.getActiveUsersByPage = async (startIndex, number, mainUserId) => {
+    //TODO: Open websocket to check current online user of server of specific user
+    const users = await User.findAll({
+        where: {
+            id: mainUserId,
+        },
+        include: {
+            model: Friend,
+        },
+        limit: number,
+        offset: startIndex,
+    });
+
+    return users;
+};
+
+/**
+ * Find user by name text
+ * @param {string} textMatch
+ * @param {number} startIndex start query at position is $startIndex
+ * @param {number} number
+ * @returns List user
+ */
+User.statics.getUsersByName = async (textMatch, startIndex, number) => {
+    const users = await User.findAll({
+        attributes: ["id", "name", "avatarUri", "gender"],
+        where: {
+            name: {
+                [Op.substring]: textMatch,
+            },
+        },
+        limit: number,
+        offset: startIndex,
+    });
+    return users;
+};
+
+User.statics.getUserById = async (userId) => {
+    const user = await User.findByPk(userId);
+    //Don't show password
+    delete user.password;
+
+    return user;
+};
 
 export default User;
