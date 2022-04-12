@@ -6,10 +6,19 @@ part 'user_model.g.dart';
 class UserModel {
   final String id;
   final String name;
-  final String avatarUri;
+  final String imageUri;
+  final DateTime birthday;
+  final int gender;
+  
+  UserModel({
+    required this.id,
+    required this.name,
+    required this.imageUri,
+    required this.birthday,
+    required this.gender,
+  });
 
-  UserModel({required this.id, required this.name, required this.avatarUri});
-
-  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
+      _$UserModelFromJson(json);
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
 }

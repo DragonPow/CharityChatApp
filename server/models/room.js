@@ -18,6 +18,10 @@ const Room = sequelize.define("Room", {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    avatarId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    }
 });
 
 //Method
@@ -111,5 +115,13 @@ Room.statics.updateRoom = async (room) => {
     const rs = Room.update(room, { where: { id: room.id } });
     return rs;
 };
+
+Room.statics.updateAvatarRoom = async (roomId, avatar) => {
+    // TODO: remove current avatar of room
+
+    // TODO: add new avatar
+
+    return {success: true, id: ""};
+}
 
 export default Room;
