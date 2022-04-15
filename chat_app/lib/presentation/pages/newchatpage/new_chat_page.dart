@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../configs/colorconfig.dart';
 import '../../../configs/fontconfig.dart';
+import '../../../dataexample/active_user.dart';
 
 class NewChatPage extends StatefulWidget {
   const NewChatPage({Key? key}) : super(key: key);
@@ -100,9 +101,9 @@ class _NewChatPage extends State<NewChatPage> {
               ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: 15,
+                  itemCount: actives.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return const SortInforComponent();
+                    return SortInforComponent(imgUrl: actives[index]["img"], name:actives[index]["name"]);
                   }),
             ],
           ),
