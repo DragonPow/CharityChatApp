@@ -1,7 +1,7 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
 import 'package:chat_app/presentation/pages/chat_page/chatpage.dart';
-import 'package:chat_app/presentation/pages/friend_page/friend_page.dart';
+import 'package:chat_app/presentation/pages/profile_page/profile_page.dart';
 import 'package:chat_app/presentation/pages/newchatpage/new_chat_page.dart';
 import 'package:chat_app/presentation/pages/newchatpage/sort_infor_component.dart';
 import 'package:flutter/material.dart';
@@ -93,7 +93,7 @@ class _RootAppState extends State<RootApp> {
     return AppBar(
       backgroundColor: cwColorBackground,
       title: Text(
-        "Bạn bè",
+        "Hồ sơ",
         style: kText20MediumBlack,
       ),
       elevation: 0,
@@ -106,7 +106,7 @@ class _RootAppState extends State<RootApp> {
         ? const ChatPage()
         : currentPage == 1
             ? const NewChatPage()
-            : const FriendPage();
+            : const ProfilePage();
   }
   FancyBottomNavigation getBottomTabBar() {
     return FancyBottomNavigation(
