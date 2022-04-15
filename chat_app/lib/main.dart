@@ -5,8 +5,11 @@ import 'package:chat_app/presentation/pages/chat_page/chat_room_two/chatroomtwo.
 import 'package:chat_app/presentation/rootapp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dependencies_injection.dart' as di;
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await di.init();
   runApp(const MyApp());
 }
 

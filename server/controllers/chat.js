@@ -47,13 +47,20 @@ export default {
         const { roomId } = req.query;
 
         try {
-            await Message.sendMessage(content, typeContent, roomId, senderId);
+            const newMessage = await Message.sendMessage(
+                content,
+                typeContent,
+                roomId,
+                senderId
+            );
+            const id = newMessage.id;
 
             return res.status(200).json({
                 success: true,
                 description: `Message send success:\n${
                     (content, typeContent, roomId)
                 }`,
+                messageId: id,
             });
         } catch (error) {
             return res.status(500).json({
@@ -94,10 +101,14 @@ export default {
         }
     },
     onDeleteMessage: async (req, res, next) => {
-        const { messageId } = req.body;
+        const { messageId, roomId } = req.body;
 
         try {
-            await Message.delete(messageId, TypeMessage.key);
+            if (messageId) {
+                await Message.deleteMessageById(messageId, TypeMessage.key);
+            } else {
+                await Message.deleteMessageInRoom(roomId);
+            }
 
             return res.status(200).json({
                 success: true,

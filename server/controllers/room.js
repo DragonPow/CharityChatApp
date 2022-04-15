@@ -53,7 +53,7 @@ export default {
             return res.status(200).json({
                 success: true,
                 description: `Room ${newRoom.id} create success`,
-                room,
+                room: newRoom,
             });
         } catch (error) {
             return res.status(500).json({
@@ -101,6 +101,27 @@ export default {
                 success: false,
                 error: error,
                 description: `Room cannot update:\n${room}`,
+            });
+        }
+    },
+    onUpdateAvatarRoom: async (req, res, next) => {
+        const { avatar } = req.body;
+        const { roomId } = req.query;
+
+        try {
+            const rs = await RoomModel.updateAvatarRoom(roomId, avatar);
+            if (rs.error) throw rs.error;
+
+            return res.status(200).json({
+                success: true,
+                description: `Avatar room update complete`,
+                avatarId: rs.id,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                error: error,
+                description: `Avatar room cannot update`,
             });
         }
     },

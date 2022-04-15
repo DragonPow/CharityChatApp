@@ -73,7 +73,7 @@ const User = sequelize.define("User", {
  * @param {string} mainUserId userId to find friends
  * @returns List user is friend and in online of mainUserId
  */
-User.statics.getActiveUsersByPage = async (startIndex, number, mainUserId) => {
+User.prototype.getActiveUsersByPage = async (startIndex, number, mainUserId) => {
     //TODO: Open websocket to check current online user of server of specific user
     const users = await User.findAll({
         where: {
@@ -96,7 +96,7 @@ User.statics.getActiveUsersByPage = async (startIndex, number, mainUserId) => {
  * @param {number} number
  * @returns List user
  */
-User.statics.getUsersByName = async (textMatch, startIndex, number) => {
+User.prototype.getUsersByName = async (textMatch, startIndex, number) => {
     const users = await User.findAll({
         attributes: ["id", "name", "avatarUri", "gender"],
         where: {
@@ -110,7 +110,7 @@ User.statics.getUsersByName = async (textMatch, startIndex, number) => {
     return users;
 };
 
-User.statics.getUserById = async (userId) => {
+User.prototype.getUserById = async (userId) => {
     const user = await User.findByPk(userId);
     //Don't show password
     delete user.password;
