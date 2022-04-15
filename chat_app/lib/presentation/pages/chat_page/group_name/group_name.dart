@@ -58,6 +58,7 @@ class _GroupName extends State<GroupName> {
           SizedBox(height: 10.h,),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 30.w),
+
             child: TextFormField(
               initialValue: "Tên nhóm",
               style: ktext17RegularGreyText,
@@ -83,6 +84,7 @@ class _GroupName extends State<GroupName> {
 
   AppBar getAppBar() {
     return AppBar(
+      iconTheme: const IconThemeData(color: cwColorBlackIcon),
       backgroundColor: cwColorBackground,
       title: const Text("Nhóm mới"),
       titleTextStyle: kText20MediumBlack,
