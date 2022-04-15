@@ -28,7 +28,7 @@ class _AddPeople extends State<AddPeople> {
                   pinned: true,
                   stretch: true,
                   floating: false,
-                  toolbarHeight: 145.h,
+                  toolbarHeight: 160.h,
                   automaticallyImplyLeading: false,
                   backgroundColor: cwColorBackground,
                   title: Column(
@@ -59,14 +59,11 @@ class _AddPeople extends State<AddPeople> {
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               children: List.generate(
-                                actives.length,
+                                5,
                                 (index) =>  Member(imgUrl: actives[actives.length - index - 1]['img'], name: actives[actives.length - index - 1]['name']),
                               ),
                             ),
                           ),
-                          SizedBox(
-                            height: 15.h,
-                          )
                         ],
                       )
                     ],

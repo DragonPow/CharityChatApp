@@ -1,6 +1,7 @@
 
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
+import 'package:chat_app/dataexample/current_account.dart';
 import 'package:chat_app/presentation/components/avatarcicle.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/fileandimage.dart';
 import 'package:flutter/material.dart';
@@ -16,21 +17,20 @@ class OptionChatRoom extends StatelessWidget {
       appBar: getAppBar(),
       body: Column(children: [
         SizedBox(
-          height: 50.h,
+          height: 30.h,
         ),
-        const AvatarCicle(
-            imgUrl:
-                "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
+         AvatarCicle(
+            imgUrl: currentAccount[0]['img'],
             radius: 120),
         SizedBox(
           height: 10.h,
         ),
         Text(
-          "Minh Phương",
+          currentAccount[0]['name'],
           style: kText24BoldBlack,
         ),
         SizedBox(
-          height: 15.h,
+          height: 20.h,
         ),
         Padding(
           padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 90.w),
@@ -97,7 +97,7 @@ class OptionChatRoom extends StatelessWidget {
             ],
           ),
         ),
-       const SizedBox(height: 10,),
+       const SizedBox(height: 15,),
        const  Option(label: "Tìm kiếm trong cuộc trò chuyện ", iconData: Icons.search, colorIcon: cwColorGreyNoteText,),
        const  Option(label: "File và hình ảnh  ", iconData: Icons.image_outlined, colorIcon: cwColorGreyNoteText, ),
        const  Option(label: "Đặt biệt danh  ", iconData: Icons.edit, colorIcon: cwColorGreyNoteText,),
@@ -145,7 +145,7 @@ class Option extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 5),
-                  child: Text (label, style: kText17SemiboldBlack ,),
+                  child: Text (label, style: ktext17RegularBlack ,),
                 ),
                 IconButton(icon: Icon(iconData, color: colorIcon,), onPressed: () {  } ,)
             ],),
