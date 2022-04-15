@@ -49,31 +49,15 @@ class _RootAppState extends State<RootApp> {
   AppBar chatAndFriendsAppbar() {
     return AppBar(
       backgroundColor: cwColorBackground,
-      centerTitle: true,
+      //centerTitle: true,
       elevation: 0,
       title: Padding(
-        padding: const EdgeInsets.only(top: 10),
+        padding:  EdgeInsets.symmetric(vertical: 15.h),
         child: Text(
           "MeerChats",
-          style: kText22BoldMain,
+          style: kText24BoldMain,
         ),
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Container(
-            width: 33,
-            height: 33,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: const DecorationImage(
-                    image: NetworkImage(
-                        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"),
-                    fit: BoxFit.cover),
-                border: Border.all(color: cwColorWhite, width: 2)),
-          ),
-        )
-      ],
     );
   }
 
@@ -113,7 +97,7 @@ class _RootAppState extends State<RootApp> {
       tabs: [
         TabData(iconData: FontAwesomeIcons.commentDots, title: "Chat"),
         TabData(iconData: FontAwesomeIcons.plus, title: "Mới"),
-        TabData(iconData: Icons.people, title: "Bạn bè")
+        TabData(iconData: Icons.people, title: "Hồ sơ")
       ],
       onTabChangedListener: (int position) {
         setState(() {

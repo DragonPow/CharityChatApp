@@ -1,5 +1,6 @@
 import 'package:chat_app/presentation/components/avatarcicle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../configs/fontconfig.dart';
 
 class AvatarUser extends StatefulWidget {
@@ -23,12 +24,22 @@ class _AvatarUserState extends State<AvatarUser> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const AvatarCicle(imgUrl: "https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8bW92aWUlMjBwb3N0ZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60", radius: 50),
-          Text(
+           AvatarCicle(imgUrl: widget.imageUrl, radius: 50),
+            SizedBox(
+            width: 60.h,
+            height: 60,
+            child: Text(
             widget.name,
             style: kText10RegularBlack,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+            textAlign: TextAlign.center,
           )
+          )
+          
         ],
       ),
     );

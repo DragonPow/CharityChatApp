@@ -1,10 +1,14 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
+import 'package:chat_app/dataexample/active_user.dart';
+import 'package:chat_app/dataexample/shortchat.dart';
 import 'package:chat_app/presentation/components/avataruser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../components/avatarcicle.dart';
 import 'package:skeleton_loader/skeleton_loader.dart';
+
+import 'chat_room_two/chatroomtwo.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
@@ -36,7 +40,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         return [
           SliverToBoxAdapter(
             child: Container(
-              height: 145,
+              height: 160.h,
               decoration: const BoxDecoration(
                   image: DecorationImage(
                       image: AssetImage("assets/images/style.png"),
@@ -74,12 +78,12 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                           scrollDirection: Axis.horizontal,
                           child: Row(
                               children: List.generate(
-                                  10,
-                                  (index) => const AvatarUser(
+                                   actives.length
+                                   ,
+                                  (index) => AvatarUser(
                                       radius: 50,
-                                      imageUrl:
-                                          "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
-                                      name: "Anan"))),
+                                      imageUrl: actives[index]['img'],
+                                      name: actives[index]['name']))),
                         ),
                       ),
                     ],
@@ -119,10 +123,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       SingleChildScrollView(
         child: ListView.builder(
             shrinkWrap: true,
-            itemCount: 10,
+            itemCount:shortChats.length,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (BuildContext context, int index) {
-              return const ShortChat();
+              return ShortChat(imgUrl:shortChats[shortChats.length - index - 1]['img'], name: shortChats[shortChats.length - index - 1]['name'], shortchat: shortChats[shortChats.length - index - 1]['shortchat'], time: shortChats[shortChats.length - index - 1]['time'], number: shortChats[shortChats.length - index - 1]['number']);
             }),
             // SkeletonloaderChat()
       ),
@@ -201,79 +205,96 @@ class SkeletonloaderChat extends StatelessWidget {
 }
 
 class ShortChat extends StatelessWidget {
+  final String name;
+  final String imgUrl;
+  final String shortchat;
+  final String time;
+  final int number;
   const ShortChat({
     Key? key,
+    required this.imgUrl,
+    required this.name,
+    required this.shortchat,
+     required this.time,
+     required this.number
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-        child: Row(
-          children: <Widget>[
-            const AvatarCicle(
-                imgUrl:
-                    "https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8bW92aWUlMjBwb3N0ZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
-                radius: 45),
-            SizedBox(
-              width: 5.w,
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(
-                    height: 3.h,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Pham tuan", style: kText13BoldBlack),
-                      Text(
-                        "12:30 am",
-                        style: kText11RegularHintText,
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Xin chào, mình làm quen nha!",
-                        style: kText11RegularHintText,
-                      ),
-                      Container(
-                        width: 20.w,
-                        height: 20.w,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle, color: cwColorMain),
-                        child: Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              "13",
-                              style: kText11RegularWhite,
-                            )),
-                      )
-                    ],
-                  )
-                ],
+    return InkWell(
+      child: Column(children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+          child: Row(
+            children: <Widget>[
+              AvatarCicle(
+                  imgUrl: imgUrl,
+                  radius: 45),
+              SizedBox(
+                width: 5.w,
               ),
-            )
-          ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 3.h,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(name, style: kText13BoldBlack),
+                        Text(
+                          time,
+                          style: kText11RegularHintText,
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                         shortchat,
+                          style: kText11RegularHintText,
+                        ),
+                        Container(
+                          width: 20.w,
+                          height: 20.w,
+                          decoration: const BoxDecoration(
+                              shape: BoxShape.circle, color: cwColorMain),
+                          child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                number.toString(),
+                                style: kText11RegularWhite,
+                              )),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
-      ),
-      const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 30),
-        child: Divider(
-          color: cwColorBackground,
-          height: 2,
-        ),
-      )
-    ]);
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30),
+          child: Divider(
+            color: cwColorBackground,
+            height: 2,
+          ),
+        )
+      ]),
+      onTap: () => {
+          Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => const ChatRoom()),
+  )
+      },
+    );
   }
 }

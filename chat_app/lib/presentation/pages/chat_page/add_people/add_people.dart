@@ -1,4 +1,5 @@
 import 'package:chat_app/configs/colorconfig.dart';
+import 'package:chat_app/dataexample/active_user.dart';
 import 'package:chat_app/presentation/pages/chat_page/group_name/group_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,7 +28,7 @@ class _AddPeople extends State<AddPeople> {
                   pinned: true,
                   stretch: true,
                   floating: false,
-                  toolbarHeight: 145.h,
+                  toolbarHeight: 160.h,
                   automaticallyImplyLeading: false,
                   backgroundColor: cwColorBackground,
                   title: Column(
@@ -58,14 +59,11 @@ class _AddPeople extends State<AddPeople> {
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               children: List.generate(
-                                10,
-                                (index) => const Member(),
+                                5,
+                                (index) =>  Member(imgUrl: actives[actives.length - index - 1]['img'], name: actives[actives.length - index - 1]['name']),
                               ),
                             ),
                           ),
-                          SizedBox(
-                            height: 15.h,
-                          )
                         ],
                       )
                     ],
@@ -84,10 +82,10 @@ class _AddPeople extends State<AddPeople> {
                     ),
                     ListView.builder(
                         shrinkWrap: true,
-                        itemCount: 10,
+                        itemCount: actives.length,
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (BuildContext context, int index) {
-                          return const NonMember();
+                          return  NonMember(imgurl: actives[index]['img'], name:actives[index]['name']);
                         }),
                   ],
                 ),

@@ -27,14 +27,18 @@ var kText15RegularMain = kText15BoldMain.copyWith(fontWeight: FontWeight.w300 );
 
 var kText15MediumBlack = fontConfig.copyWith(fontSize: 15, fontWeight: FontWeight.w500);
 
-var kText16RegularWhite = fontConfig.copyWith(fontSize: 16.sp, color: cwColorWhite);
 
-var kText17SemiboldBlack = fontConfig.copyWith(fontSize: 17.sp, fontWeight: FontWeight.w500);
+var kText16RegularWhite = fontConfig.copyWith(fontSize: 16.sp, color: cwColorWhite);
+var kText16BoldBlack = kText16RegularWhite.copyWith(fontWeight: FontWeight.bold, color: cwColorBlack);
+
+var kText17SemiboldBlack = fontConfig.copyWith(fontSize: 17.sp, fontWeight: FontWeight.w600);
 var kText17SemiboldMain = fontConfig.copyWith(fontSize: 17.sp, fontWeight: FontWeight.w500, color: cwColorMain);
 var ktext17RegularBlack = fontConfig.copyWith(fontSize: 17);
 var ktext17RegularGreyText = fontConfig.copyWith(fontSize: 17, color: cwColorGreyNoteText);
+var kText17BoldBlack = kText17SemiboldBlack.copyWith(fontWeight: FontWeight.bold);
 
 var kText18RegularMain = fontConfig.copyWith(fontSize: 18, color: cwColorMain);
+var kText18RegularWhite = kText18RegularMain.copyWith(color: cwColorWhite);
 
 var kText20MediumBlack = fontConfig.copyWith(fontSize: 20.sp, fontWeight: FontWeight.w600);
 
@@ -43,7 +47,12 @@ var kText22BoldMain = fontConfig.copyWith(
     fontFamily: "Lobster",
     color: cwColorMain,
     fontWeight: FontWeight.bold);
+
+
 var kText24MeniumBlack = fontConfig.copyWith(
   fontSize: 24.sp,
   fontWeight: FontWeight.w500
 );
+var kText24BoldMain = kText22BoldMain.copyWith(fontSize: 24.sp);
+
+var kText24BoldBlack = kText24MeniumBlack.copyWith(fontWeight: FontWeight.bold);
