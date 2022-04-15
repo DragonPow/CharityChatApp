@@ -1,4 +1,5 @@
 import 'package:chat_app/configs/colorconfig.dart';
+import 'package:chat_app/presentation/pages/chat_page/group_name/group_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -26,7 +27,7 @@ class _AddPeople extends State<AddPeople> {
                   pinned: true,
                   stretch: true,
                   floating: false,
-                  toolbarHeight: 140,
+                  toolbarHeight: 145.h,
                   automaticallyImplyLeading: false,
                   backgroundColor: cwColorBackground,
                   title: Column(
@@ -34,7 +35,7 @@ class _AddPeople extends State<AddPeople> {
                       SizedBox(
                         height: 60.h,
                         child: Padding(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 15.h),
+                          padding: EdgeInsets.fromLTRB(0, 5.h, 0, 15.h),
                           child: Container(
                             height: 40.h,
                             child: TextField(
@@ -63,7 +64,7 @@ class _AddPeople extends State<AddPeople> {
                             ),
                           ),
                           SizedBox(
-                            height: 10.h,
+                            height: 15.h,
                           )
                         ],
                       )
@@ -96,6 +97,7 @@ class _AddPeople extends State<AddPeople> {
 
   AppBar getAppBar() {
     return AppBar(
+      iconTheme: const IconThemeData(color: cwColorBlackIcon),
       title: const Text(
         "Thêm thành viên ",
       ),
@@ -103,11 +105,16 @@ class _AddPeople extends State<AddPeople> {
       centerTitle: true,
       backgroundColor: cwColorBackground,
       elevation: 0,
-      automaticallyImplyLeading: false,
+      //automaticallyImplyLeading: false,
       actions: [
         TextButton(
           child: Text("Tiếp", style: kText18RegularMain),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const GroupName()),
+            );
+          },
         )
       ],
     );
