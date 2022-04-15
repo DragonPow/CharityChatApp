@@ -1,3 +1,4 @@
+
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
 import 'package:chat_app/presentation/components/avatarcicle.dart';
@@ -140,6 +141,7 @@ class Option extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 5),
@@ -152,6 +154,7 @@ class Option extends StatelessWidget {
         ),
       ),
       onTap: () => {
+
           Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => const FileAndImage()),

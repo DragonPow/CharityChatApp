@@ -38,6 +38,7 @@ var ktext17RegularGreyText = fontConfig.copyWith(fontSize: 17, color: cwColorGre
 var kText17BoldBlack = kText17SemiboldBlack.copyWith(fontWeight: FontWeight.bold);
 
 var kText18RegularMain = fontConfig.copyWith(fontSize: 18, color: cwColorMain);
+var kText18RegularWhite = kText18RegularMain.copyWith(color: cwColorWhite);
 
 var kText20MediumBlack = fontConfig.copyWith(fontSize: 20.sp, fontWeight: FontWeight.w600);
 
