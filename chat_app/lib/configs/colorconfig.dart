@@ -20,6 +20,7 @@ const cwColorGreyHintText = Color(0xFF9B9895);
 const cwColorGreyText = Color(0xFF757070);
 
 const cwColorGreyNoteText = Color(0xFFB2B2B2);
+const cwColor25GreyNoteText = Color.fromARGB(55, 178, 178, 178);
 
 const cwColorBlack = Color(0xFF262626);
 const cwColor80Black = Color(0x80262626);
