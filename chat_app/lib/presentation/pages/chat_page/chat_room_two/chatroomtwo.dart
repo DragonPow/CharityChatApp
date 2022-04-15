@@ -221,9 +221,9 @@ AppBar getAppBar() {
       titleSpacing: 0,
       title: Row(
         children: [
-          const CircleAvatar(
-            radius: 30,
-            backgroundImage: NetworkImage(
+           CircleAvatar(
+            radius: 22.w,
+            backgroundImage: const NetworkImage(
                 "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"),
           ),
           SizedBox(
@@ -234,8 +234,7 @@ AppBar getAppBar() {
             children: [
               Text(
                 "Minh Phương",
-                style: kText15MediumBlack,
-                textAlign: TextAlign.left,
+                style: kText13BoldBlack,
               ),
               Text(
                 "online",
@@ -247,9 +246,10 @@ AppBar getAppBar() {
       ),
       actions: [
         IconButton(
-          icon: const Icon(
+          padding: const EdgeInsets.all(0),
+          icon:  Icon(
             Icons.phone,
-            size: 28,
+            size: 25.w,
             color: cwColorMain,
           ),
           onPressed: () {},
@@ -257,20 +257,22 @@ AppBar getAppBar() {
         Padding(
           padding: const EdgeInsets.only(bottom: 5),
           child: IconButton(
-                icon: const Icon(
+                padding: const EdgeInsets.all(0),
+                icon: Icon(
                   FontAwesomeIcons.video,
-                  size: 28,
+                  size: 25.w,
                   color: cwColorMain,
                 ),
                 onPressed: () {}),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+          padding:  EdgeInsets.fromLTRB(0, 0, 0, 10.h),
           child: PopupMenuButton(
-          icon:const Icon(
+            padding: const EdgeInsets.all(0),
+          icon:Icon(
             FontAwesomeIcons.ellipsisV,
             color: cwColorMain,
-            size: 23,
+            size: 20.w,
           ),
           itemBuilder: (BuildContext context) => <PopupMenuEntry>[
             PopupMenuItem(

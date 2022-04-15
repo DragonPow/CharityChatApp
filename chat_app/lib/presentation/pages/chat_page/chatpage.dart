@@ -40,7 +40,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
         return [
           SliverToBoxAdapter(
             child: Container(
-              height: 160.h,
+              height: 160,
               decoration: const BoxDecoration(
                   image: DecorationImage(
                       image: AssetImage("assets/images/style.png"),
