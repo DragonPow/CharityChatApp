@@ -17,16 +17,16 @@ class ChangeAccount extends StatelessWidget {
           SizedBox(height: 10.h,),
           ListTile(
           leading:  const AvatarCicle(imgUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60", radius: 50, ),
-          title: Text('Minh Nhực ',
-          //style: kText16BoldBlack,
-          ),
+
+          title: Text('Minh Nhực ', style: kText16BoldBlack,),
+
           subtitle: Text("Đã  đăng nhập", style: kText13RegularNote,),
           ),
            ListTile(
           leading:  const AvatarCicle(imgUrl: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=700&q=60", radius: 50, ),
-          title: Text('Nguyễn Phạm Luân Lý ', 
-          //style: kText16BoldBlack,
-          ),
+
+          title: Text('Nguyễn Phạm Luân Lý ', style: kText16BoldBlack,),
+
           subtitle: Text("Đã  đăng nhập hơn 3 ngày trước  ", style: kText13RegularNote,),
           ),
           InkWell(
@@ -39,9 +39,9 @@ class ChangeAccount extends StatelessWidget {
                 SizedBox(width: 23.w,),
                 Padding(
                   padding: const EdgeInsets.only(top: 18),
-                  child: Text('Thêm tài khoản  ', 
-                 // style: kText17BoldBlack,
-                  ),
+
+                  child: Text('Thêm tài khoản  ', style: kText17BoldBlack,),
+
                 )
             ],),
             onTap: () => {},
@@ -64,6 +64,7 @@ class ChangeAccount extends StatelessWidget {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))),
     ),
       )
+
     );
   }
 

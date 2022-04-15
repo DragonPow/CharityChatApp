@@ -1,7 +1,9 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
 import 'package:chat_app/presentation/components/avatarcicle.dart';
+
 import 'package:chat_app/presentation/pages/profile_page/ban_list.dart';
+
 import 'package:chat_app/presentation/pages/profile_page/change_account.dart';
 import 'package:chat_app/presentation/pages/profile_page/waiting_chat.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +23,9 @@ class _ProfilePage extends State<ProfilePage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          SizedBox(height: 30.h,),
+          SizedBox(
+            height: 30.h,
+          ),
           AvatarCicle(
               imgUrl:
                   "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
@@ -33,7 +37,9 @@ class _ProfilePage extends State<ProfilePage> {
             "Minh Minh",
             style: kText24MeniumBlack,
           ),
-          SizedBox(height: 20.h,),
+          SizedBox(
+            height: 20.h,
+          ),
           Option(
             icon: FontAwesomeIcons.moon,
             title: 'Chế độ ban đêm ',
@@ -43,9 +49,16 @@ class _ProfilePage extends State<ProfilePage> {
           Option(
               title: "Tin nhắn chờ ",
               icon: FontAwesomeIcons.commentDots,
-              backgoundColor: cwColorMain),
+              backgoundColor: cwColorMain,
+              onClick: () => {
+                Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const WaitingChat()),
+              )
+              },
+              ),
           Padding(
-           padding:EdgeInsets.fromLTRB(20.w, 10.h, 0, 5.h),
+            padding: EdgeInsets.fromLTRB(20.w, 10.h, 0, 5.h),
             child: Row(
               children: [
                 Text(
@@ -70,7 +83,7 @@ class _ProfilePage extends State<ProfilePage> {
             },
           ),
           Padding(
-            padding:EdgeInsets.fromLTRB(20.w, 10.h, 0, 5.h),
+            padding: EdgeInsets.fromLTRB(20.w, 10.h, 0, 5.h),
             child: Row(
               children: [
                 Text(
@@ -87,6 +100,12 @@ class _ProfilePage extends State<ProfilePage> {
             icon: Icons.change_circle,
             title: 'Chuyển tài khoản  ',
             backgoundColor: const Color(0xFF8A54FF),
+            onClick: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ChangeAccount()),
+              )
+            },
           ),
           Option(
             icon: FontAwesomeIcons.questionCircle,
@@ -109,7 +128,7 @@ class Option extends StatelessWidget {
   final IconData icon;
   final Color backgoundColor;
   bool isToggle;
-  Function? onClick;
+  Function()?  onClick;
   Option(
       {Key? key,
       required this.title,
@@ -166,7 +185,7 @@ class Option extends StatelessWidget {
           ],
         ),
       ),
-      onTap: () => {},
+      onTap: onClick,
     );
   }
 }

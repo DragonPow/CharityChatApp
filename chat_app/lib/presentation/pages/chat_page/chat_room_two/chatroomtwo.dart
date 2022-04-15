@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/custom_chatroom_theme.dart';
+import 'package:chat_app/presentation/pages/chat_page/chat_room_two/option.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -18,14 +19,14 @@ import 'package:uuid/uuid.dart';
 import '../../../../configs/colorconfig.dart';
 import '../../../../configs/fontconfig.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key}) : super(key: key);
+class ChatRoom extends StatefulWidget {
+  const ChatRoom({Key? key}) : super(key: key);
 
   @override
-  _ChatPageState createState() => _ChatPageState();
+  _ChatRoomState createState() => _ChatRoomState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatRoomState extends State<ChatRoom> {
   List<types.Message> _messages = [];
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
 
@@ -212,10 +213,12 @@ class _ChatPageState extends State<ChatPage> {
 
 AppBar getAppBar() {
   return AppBar(
+      iconTheme: const IconThemeData(color: cwColorBlackIcon),
       backgroundColor: cwColorBackground,
       elevation: 0,
       centerTitle: false,
       toolbarHeight: 100.h,
+      titleSpacing: 0,
       title: Row(
         children: [
           const CircleAvatar(
@@ -232,6 +235,7 @@ AppBar getAppBar() {
               Text(
                 "Minh Phương",
                 style: kText15MediumBlack,
+                textAlign: TextAlign.left,
               ),
               Text(
                 "online",
@@ -250,22 +254,40 @@ AppBar getAppBar() {
           ),
           onPressed: () {},
         ),
-        IconButton(
-              icon: const Icon(
-                FontAwesomeIcons.video,
-                size: 28,
-                color: cwColorMain,
-              ),
-              onPressed: () {}),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: IconButton(
+                icon: const Icon(
+                  FontAwesomeIcons.video,
+                  size: 28,
+                  color: cwColorMain,
+                ),
+                onPressed: () {}),
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-          child: IconButton(
-              icon: const Icon(
-                FontAwesomeIcons.ellipsisV,
-                size: 25,
-                color: cwColorMain,
+          child: PopupMenuButton(
+          icon:const Icon(
+            FontAwesomeIcons.ellipsisV,
+            color: cwColorMain,
+            size: 23,
+          ),
+          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+            PopupMenuItem(
+              child: InkWell(
+                onTap: () { 
+                   Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const OptionChatRoom()),
+                  );
+                },
+                child:const  ListTile(
+                  title: Text('Tùy chọn'),
+                ),
               ),
-              onPressed: () {}),
+            ),
+          ],
+        ),
         ),
         
       ]);

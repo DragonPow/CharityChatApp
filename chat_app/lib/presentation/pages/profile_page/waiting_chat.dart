@@ -1,3 +1,4 @@
+
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
 import 'package:chat_app/presentation/pages/chat_page/chatpage.dart';
@@ -9,6 +10,7 @@ class WaitingChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: getAppBar(),
       body: SingleChildScrollView(
@@ -43,6 +45,7 @@ class WaitingChat extends StatelessWidget {
       centerTitle: true,
       toolbarHeight: 70.h,
       title: Text("Tin nhắn chờ ", style: kText20MediumBlack,),
+
     );
   }
 }
