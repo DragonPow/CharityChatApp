@@ -17,11 +17,14 @@ var kText11RegularHintText = fontConfig.copyWith(fontSize: 11.sp, color: cwColor
 var kText11RegularWhite = fontConfig.copyWith(fontSize: 11.sp, color: cwColorWhite);
 
 var kText13BoldBlack = fontConfig.copyWith(fontWeight: FontWeight.bold);
+
 var  kText13RegularNote = kText13BoldBlack.copyWith(fontWeight: FontWeight.normal, color: cwColorGreyNoteText);
 
 var kText15RegularGreyNotetext =
     fontConfig.copyWith(fontSize: 15.sp, color: cwColorGreyNoteText);
 var kText15BoldMain = fontConfig.copyWith(fontSize: 15.sp, color: cwColorMain, fontWeight: FontWeight.w600);
+var kText15RegularMain = kText15BoldMain.copyWith(fontWeight: FontWeight.w300 );
+
 var kText15MediumBlack = fontConfig.copyWith(fontSize: 15, fontWeight: FontWeight.w500);
 
 var kText16RegularWhite = fontConfig.copyWith(fontSize: 16.sp, color: cwColorWhite);
