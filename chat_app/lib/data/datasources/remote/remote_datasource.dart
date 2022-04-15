@@ -150,8 +150,8 @@ class RemoteDataSourceImp implements RemoteDataSource {
   @override
   Future<List<MessageModel>> getMessagesInRoom(
       String roomId, int startIndex, int number) async {
-    final res =
-        await client.get(Uri.parse(getMessageURL(roomId) + '/$startIndex&$number'));
+    final res = await client
+        .get(Uri.parse(getMessageURL(roomId) + '/$startIndex&$number'));
     final resJs = json.decode(res.body);
 
     if (res.statusCode == 200) {
@@ -168,8 +168,9 @@ class RemoteDataSourceImp implements RemoteDataSource {
   }
 
   @override
-  Future<List<RoomModel>> getRoomsByName(int startIndex, int number) {
-    // TODO: implement getRoomsByName
+  Future<List<RoomModel>> getRoomsByUserId(
+      String userId, int startIndex, int number) async {
+    // final res = await client.get(Uri.parse(roomURL + '/$userId&$startIndex&$number'));
     throw UnimplementedError();
   }
 

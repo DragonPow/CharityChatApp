@@ -3,6 +3,8 @@ import express from "express";
 import { Server } from "socket.io";
 import WebSocket from "./config/websocket.js";
 
+import './models/index.js';
+
 import indexRouter from "./routes/index.js";
 import userRouter from "./routes/user.js";
 import chatRouter from "./routes/chat.js";

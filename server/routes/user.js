@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.get("/:startIndex&:number", user.onGetActiveUsersByPage);
 router.get("/find/:textMatch", user.onGetUsersByName);
-router.get("/:userId", user.onGetUserById);
+router.get("/userId=:userId", user.onGetUserById);
 
 export default router;

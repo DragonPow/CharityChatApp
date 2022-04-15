@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:chat_app/presentation/bloc/chat/chat_bloc.dart';
+import 'package:chat_app/presentation/bloc/room/room_bloc.dart';
+import 'package:chat_app/presentation/bloc/user_active/user_active_cubit.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:chat_app/data/datasources/remote/remote_datasource.dart';
@@ -53,4 +56,9 @@ Future<void> init() async {
   sl.registerLazySingleton<RemoteDataSource>(
       () => RemoteDataSourceImp(client: sl()));
   // sl.registerLazySingleton<LocalDataSource>(() => LocalDataSourceImp(client: sl()));
+
+  // bloc
+  sl.registerFactory(() => ChatBloc(chatRepository: sl()));
+  sl.registerFactory(() => RoomBloc(roomRepository: sl()));
+  sl.registerFactory(() => UserActiveCubit(userRepository: sl()));
 }

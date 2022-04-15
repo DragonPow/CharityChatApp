@@ -1,7 +1,8 @@
-import { DataTypes, Op } from "sequelize";
+import { literal, col, DataTypes, Op } from "sequelize";
 import sequelize from "../config/mysql.js";
 import Message from "./message.js";
 import UserRoom from "./user_room.js";
+import User from "./user.js";
 
 const Room = sequelize.define("Room", {
     id: {
@@ -21,24 +22,40 @@ const Room = sequelize.define("Room", {
     avatarId: {
         type: DataTypes.STRING,
         allowNull: true,
-    }
+    },
 });
 
 //Method
-Room.prototype.getRoomsByPaging = async (startIndex, number, userId) => {
+Room.getRoomsByPaging = async (startIndex, number, userId) => {
     try {
-        const rooms = await Room.findAll({
-            where: {},
-            include: {
-                model: Message,
-                as: "lastMessage",
-            },
-            limit: number,
+        const userRooms = await Room.findAll({
+            include: [
+                {
+                    model: Message,
+                    as: "lastMessage",
+                    // attributes: [["createTime", "lastMessageTime"]],
+                },
+                {
+                    model: User,
+                    as: "container",
+                    where: {
+                        id: userId,
+                    },
+                    attributes: [],
+                },
+            ],
+            attributes: { exclude: ['lastMessageId'] },
             offset: startIndex,
+            limit: number,
+            order: [
+                [{ model: Message, as: "lastMessage" }, "createTime", "DESC"],
+            ],
         });
-        return rooms;
-    } catch (error) {
-        throw error;
+        console.log("success");
+        return userRooms.map((i) => i.dataValues);
+    } catch (e) {
+        console.log(e);
+        throw e;
     }
 };
 
@@ -47,17 +64,27 @@ Room.prototype.getRoomsByPaging = async (startIndex, number, userId) => {
  * @param {Array} roomsId
  * @returns rooms with last message include
  */
-Room.prototype.getRoomsById = async (roomsId) => {
+Room.getRoomsById = async (roomsId) => {
     const rooms = await Room.findAll({
         where: {
             id: {
                 [Op.in]: roomsId,
             },
         },
-        include: {
-            model: Message,
-            as: "lastMessage",
-        },
+        include: [
+            {
+                model: Message,
+                as: "lastMessage",
+            },
+            {
+                model: User,
+                attributes: ["id"],
+                as: "joiners",
+                through: {
+                    attributes: [],
+                },
+            },
+        ],
     });
     return rooms;
 };
@@ -70,7 +97,7 @@ Room.prototype.getRoomsById = async (roomsId) => {
  * @param {String} userId
  * @returns room with last message
  */
-Room.prototype.getRoomsByName = async (textMatch, startIndex, number, userId) => {
+Room.getRoomsByName = async (textMatch, startIndex, number, userId) => {
     //Order by nearest last message
     const rooms = await Room.findAll({
         where: {
@@ -96,12 +123,12 @@ Room.prototype.getRoomsByName = async (textMatch, startIndex, number, userId) =>
     return rooms;
 };
 
-Room.prototype.createRoom = async (room) => {
+Room.createRoom = async (room) => {
     const rs = await Room.create(room);
     return rs;
 };
 
-Room.prototype.deleteById = async (roomId) => {
+Room.deleteById = async (roomId) => {
     const rs = await Room.destroy({
         where: {
             id: roomId,
@@ -111,17 +138,17 @@ Room.prototype.deleteById = async (roomId) => {
     return rs;
 };
 
-Room.prototype.updateRoom = async (room) => {
+Room.updateRoom = async (room) => {
     const rs = Room.update(room, { where: { id: room.id } });
     return rs;
 };
 
-Room.prototype.updateAvatarRoom = async (roomId, avatar) => {
+Room.updateAvatarRoom = async (roomId, avatar) => {
     // TODO: remove current avatar of room
 
     // TODO: add new avatar
 
-    return {success: true, id: ""};
-}
+    return { success: true, id: "" };
+};
 
 export default Room;

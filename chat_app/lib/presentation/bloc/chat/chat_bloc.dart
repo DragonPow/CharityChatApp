@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:html';
 
 import 'package:bloc/bloc.dart';
 import 'package:chat_app/domain/entities/message_entity.dart';

@@ -10,7 +10,7 @@ abstract class ISearchRoom {
 }
 
 abstract class IGetRoom {
-  Future<List<RoomModel>> getRoomsByName(int startIndex, int number);
+  Future<List<RoomModel>> getRoomsByUserId(String userId, int startIndex, int number);
 }
 
 abstract class IModifiedRoom {

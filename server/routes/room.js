@@ -3,7 +3,7 @@ import room from '../controllers/room.js';
 
 const router = express.Router();
 
-router.get("/:lastRoomId&:number", room.onGetRoomsByPaging);
+router.get("/:userId&:startIndex&:number", room.onGetRoomsByPaging);
 router.get("/find/:textMatch", room.onGetRoomsByName);
 
 router.post("/c/", room.onCreateRoom);

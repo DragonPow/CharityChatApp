@@ -2,6 +2,7 @@ import { DataTypes, Op } from "sequelize";
 import sequelize from "../config/mysql.js";
 import { v4 as uuidv4 } from "uuid";
 import Friend from "./friend.js";
+import Room from './room.js';
 
 const User = sequelize.define("User", {
     id: {
@@ -73,7 +74,7 @@ const User = sequelize.define("User", {
  * @param {string} mainUserId userId to find friends
  * @returns List user is friend and in online of mainUserId
  */
-User.prototype.getActiveUsersByPage = async (startIndex, number, mainUserId) => {
+User.getActiveUsersByPage = async (startIndex, number, mainUserId) => {
     //TODO: Open websocket to check current online user of server of specific user
     const users = await User.findAll({
         where: {
@@ -96,7 +97,7 @@ User.prototype.getActiveUsersByPage = async (startIndex, number, mainUserId) => 
  * @param {number} number
  * @returns List user
  */
-User.prototype.getUsersByName = async (textMatch, startIndex, number) => {
+User.getUsersByName = async (textMatch, startIndex, number) => {
     const users = await User.findAll({
         attributes: ["id", "name", "avatarUri", "gender"],
         where: {
@@ -110,10 +111,10 @@ User.prototype.getUsersByName = async (textMatch, startIndex, number) => {
     return users;
 };
 
-User.prototype.getUserById = async (userId) => {
+User.getUserById = async (userId) => {
     const user = await User.findByPk(userId);
     //Don't show password
-    delete user.password;
+    delete user.dataValues.password;
 
     return user;
 };
