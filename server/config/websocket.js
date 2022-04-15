@@ -1,5 +1,5 @@
-import room from "../controllers/room";
-import user from "../controllers/user";
+import room from "../controllers/room.js";
+import user from "../controllers/user.js";
 
 class WebSocket {
     activeUsers = [];

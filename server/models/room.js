@@ -20,12 +20,12 @@ const Room = sequelize.define("Room", {
     },
     avatarId: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     }
 });
 
 //Method
-Room.statics.getRoomsByPaging = async (startIndex, number, userId) => {
+Room.prototype.getRoomsByPaging = async (startIndex, number, userId) => {
     try {
         const rooms = await Room.findAll({
             where: {},
@@ -47,7 +47,7 @@ Room.statics.getRoomsByPaging = async (startIndex, number, userId) => {
  * @param {Array} roomsId
  * @returns rooms with last message include
  */
-Room.statics.getRoomsById = async (roomsId) => {
+Room.prototype.getRoomsById = async (roomsId) => {
     const rooms = await Room.findAll({
         where: {
             id: {
@@ -70,7 +70,7 @@ Room.statics.getRoomsById = async (roomsId) => {
  * @param {String} userId
  * @returns room with last message
  */
-Room.statics.getRoomsByName = async (textMatch, startIndex, number, userId) => {
+Room.prototype.getRoomsByName = async (textMatch, startIndex, number, userId) => {
     //Order by nearest last message
     const rooms = await Room.findAll({
         where: {
@@ -96,12 +96,12 @@ Room.statics.getRoomsByName = async (textMatch, startIndex, number, userId) => {
     return rooms;
 };
 
-Room.statics.createRoom = async (room) => {
+Room.prototype.createRoom = async (room) => {
     const rs = await Room.create(room);
     return rs;
 };
 
-Room.statics.deleteById = async (roomId) => {
+Room.prototype.deleteById = async (roomId) => {
     const rs = await Room.destroy({
         where: {
             id: roomId,
@@ -111,12 +111,12 @@ Room.statics.deleteById = async (roomId) => {
     return rs;
 };
 
-Room.statics.updateRoom = async (room) => {
+Room.prototype.updateRoom = async (room) => {
     const rs = Room.update(room, { where: { id: room.id } });
     return rs;
 };
 
-Room.statics.updateAvatarRoom = async (roomId, avatar) => {
+Room.prototype.updateAvatarRoom = async (roomId, avatar) => {
     // TODO: remove current avatar of room
 
     // TODO: add new avatar

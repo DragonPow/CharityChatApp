@@ -5,15 +5,15 @@ import '../entities/message_entity.dart';
 
 abstract class IChatRepository {
   Future<List<MessageEntity>> getMessages(
-      int roomId, int startIndex, int number);
-  Future<List> getImages(int roomId, int startIndex, int number);
-  Future<List> getFiles(int roomId, int startIndex, int number);
+      String roomId, int startIndex, int number);
+  Future<List> getImages(String roomId, int startIndex, int number);
+  Future<List> getFiles(String roomId, int startIndex, int number);
 
   Future<void> sendMessage(MessageEntity message);
   Future<void> sendImages(List<MessageEntity> message);
   Future<void> sendFile(MessageEntity message);
 
-  Future<Tuple2<List<RoomEntity>, int>> findMessagesByContent(
+  Future<Tuple2<List<MessageEntity>, int>> findMessagesByContent(
       String roomId, String textMatch);
 
   Future<bool> create(MessageEntity message);

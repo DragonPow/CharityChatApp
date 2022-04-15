@@ -28,7 +28,7 @@ abstract class ISendMessage {
 
 abstract class IGetMessage {
   Future<List<MessageModel>> getMessagesInRoom(
-      int roomId, int startIndex, int number);
-  Future<List> getImagesInRoom(int roomId, int startIndex, int number);
-  Future<List> getFilesInRoom(int roomId, int startIndex, int number);
+      String roomId, int startIndex, int number);
+  Future<List> getImagesInRoom(String roomId, int startIndex, int number);
+  Future<List> getFilesInRoom(String roomId, int startIndex, int number);
 }

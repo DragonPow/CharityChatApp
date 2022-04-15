@@ -24,6 +24,7 @@ dependencies:
   connectivity_plus: ^2.2.1
   socket_io_client: ^1.0.2
   tuple: ^2.0.0
+  bloc: ^8.0.3
 
 dev_dependencies:
   build_runner: ^2.1.8

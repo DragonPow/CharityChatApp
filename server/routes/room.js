@@ -11,4 +11,7 @@ router.post("/u/:roomId", room.onUpdateRoom);
 router.post("/u/avatar/:roomId", room.onUpdateAvatarRoom);
 router.delete("/d/:roomId", room.onDeleteRoom);
 
+// TODO: add route addUserToRoom
+// TODO: add route removeUserFromRoom
+
 export default router;

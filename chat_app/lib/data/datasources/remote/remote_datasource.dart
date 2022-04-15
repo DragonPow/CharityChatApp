@@ -2,6 +2,7 @@ import 'package:chat_app/helper/constant.dart';
 import 'package:chat_app/helper/error/internet_exception.dart';
 import 'package:tuple/tuple.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../../models/user_model.dart';
 import '../../models/room_model.dart';
@@ -21,24 +22,24 @@ class RemoteDataSourceImp implements RemoteDataSource {
   final http.Client client;
 
   String get roomURL => DB_URL + '/room';
+  String get findRoomURL => roomURL + '/find';
   String get createRoomURL => roomURL + '/c';
   String get deleteRoomURL => roomURL + '/d';
   String get updateRoomURL => roomURL + '/u';
 
-  String get messageURL => DB_URL + '/message';
-  String get createMessageURL => messageURL + '/c';
-  String get deleteMessageURL => messageURL + '/d';
-  String get updateMessageURL => messageURL + '/u';
+  // String get messageURL => DB_URL + '/message';
+  String getMessageURL(String roomId) => DB_URL + '/$roomId';
+  String getCreateMessageURL(String roomId) => getMessageURL(roomId) + '/send';
+
+  String get userURL => DB_URL + '/user';
 
   RemoteDataSourceImp({required this.client});
 
   @override
   Future<bool> addUserToRoom(String roomId, String userId) async {
     // FIXME: add this method to server
-    final res = await client.post(Uri.parse(roomURL), body: {
-      
-    });
-    return res.headers["success"] as bool;
+    final res = await client.post(Uri.parse(roomURL), body: {});
+    return json.decode(res.body)["success"] as bool;
   }
 
   @override
@@ -48,7 +49,7 @@ class RemoteDataSourceImp implements RemoteDataSource {
       "roomId": roomId,
       "avatar": avatarData,
     });
-    final avatarId = res.headers["avatarId"];
+    final avatarId = json.decode(res.body)["avatarId"];
     return avatarId;
   }
 
@@ -57,38 +58,51 @@ class RemoteDataSourceImp implements RemoteDataSource {
     final res = await client.post(Uri.parse(updateRoomURL), body: {
       "name": newName,
     });
-    return res.headers["success"] as bool;
+    return json.decode(res.body)["success"] as bool;
   }
 
   @override
-  Future<String?> createMessage(MessageModel message) {
-    // TODO: implement createMessage
-    throw UnimplementedError();
+  Future<String?> createMessage(MessageModel message) async {
+    final res = await client.post(
+        Uri.parse(getCreateMessageURL(message.roomId)),
+        body: message.toJson());
+    final id = json.decode(res.body)['messageId'];
+    return id;
   }
 
   @override
   Future<String?> createRoom(RoomModel room) async {
-    final res = await client.post(Uri.parse(createRoomURL), body: room.toJson());
-    final newRoom =  RoomModel.fromJson(res.headers["room"] as Map<String, dynamic>);
+    final res =
+        await client.post(Uri.parse(createRoomURL), body: room.toJson());
+    final newRoom = RoomModel.fromJson(
+        json.decode(res.body)["room"] as Map<String, dynamic>);
     return newRoom.id;
   }
 
   @override
-  Future<bool> deleteAllMessageInRoom(String roomId) {
-    // TODO: implement deleteAllMessageInRoom
+  Future<bool> deleteAllMessageInRoom(String roomId) async {
     throw UnimplementedError();
+    // TODO: Delete all message of room
+    // final res = await client.delete(Uri.parse(getMessageURL(roomId));
+    // final rs = json.decode(res.body)['success'] as bool;
+    // return rs;
   }
 
   @override
-  Future<bool> deleteMessage(String messageId) {
-    // TODO: implement deleteMessage
+  Future<bool> deleteMessage(String messageId) async {
     throw UnimplementedError();
+
+    // TODO: Delete message
+    // final res = await client.delete(Uri.parse(messageURL + '/$messageId'));
+    // final rs = json.decode(res.body)['success'] as bool;
+    // return rs;
   }
 
   @override
-  Future<bool> deleteRoom(String roomId) {
-    // TODO: implement deleteRoom
-    throw UnimplementedError();
+  Future<bool> deleteRoom(String roomId) async {
+    final res = await client.post(Uri.parse(deleteRoomURL + "/$roomId"));
+    final rs = json.decode(res.body)['success'] as bool;
+    return rs;
   }
 
   @override
@@ -99,9 +113,12 @@ class RemoteDataSourceImp implements RemoteDataSource {
   }
 
   @override
-  Future<List<RoomModel>> findRoomsByName(String textMatch) {
-    // TODO: implement findRoomsByName
-    throw UnimplementedError();
+  Future<List<RoomModel>> findRoomsByName(String textMatch) async {
+    final res = await client.get(Uri.parse(findRoomURL + '/$textMatch'));
+    final roomsJs =
+        json.decode(res.body)['rooms'] as List<Map<String, dynamic>>;
+
+    return roomsJs.map(RoomModel.fromJson).toList();
   }
 
   @override
@@ -111,28 +128,43 @@ class RemoteDataSourceImp implements RemoteDataSource {
   }
 
   @override
-  Future<List<UserModel>> getActiveUsers(int startIndex, int number) {
-    // TODO: implement getActiveUsers
-    throw UnimplementedError();
+  Future<List<UserModel>> getActiveUsers(int startIndex, int number) async {
+    final res = await client.get(Uri.parse(userURL + '/$startIndex&$number'));
+    final usersJs =
+        json.decode(res.body)['users'] as List<Map<String, dynamic>>;
+    return usersJs.map(UserModel.fromJson).toList();
   }
 
   @override
-  Future<List> getFilesInRoom(int roomId, int startIndex, int number) {
+  Future<List> getFilesInRoom(String roomId, int startIndex, int number) {
     // TODO: implement getFilesInRoom
     throw UnimplementedError();
   }
 
   @override
-  Future<List> getImagesInRoom(int roomId, int startIndex, int number) {
+  Future<List> getImagesInRoom(String roomId, int startIndex, int number) {
     // TODO: implement getImagesInRoom
     throw UnimplementedError();
   }
 
   @override
   Future<List<MessageModel>> getMessagesInRoom(
-      int roomId, int startIndex, int number) {
-    // TODO: implement getMessagesInRoom
-    throw UnimplementedError();
+      String roomId, int startIndex, int number) async {
+    final res =
+        await client.get(Uri.parse(getMessageURL(roomId) + '/$startIndex&$number'));
+    final resJs = json.decode(res.body);
+
+    if (res.statusCode == 200) {
+      if (resJs['success']) {
+        final messagesJs = resJs['users'] as List<Map<String, dynamic>>;
+        return messagesJs.map(MessageModel.fromJson).toList();
+      }
+      return [];
+    }
+
+    throw DatabaseException(
+        message: 'Cannot load message from roomId: $roomId',
+        statusCode: res.statusCode);
   }
 
   @override

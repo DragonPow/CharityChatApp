@@ -8,7 +8,7 @@ router.get("/find/:textMatch&:startIndex&:number", chat.onGetMessagesByContent);
 router.get("/img/:startIndex&:number", chat.onGetImages);
 router.get("/file/:startIndex&:number", chat.onGetFile);
 
-router.post("/send/", chat.onSendMessage);
+router.post("/send", chat.onSendMessage);
 
 router.delete("/:messageId", chat.onDeleteMessage);
 

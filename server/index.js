@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/", indexRouter);
 app.use("/users", userRouter);
 app.use("/rooms", roomRouter);
-app.use("/rooms/:roomId", chatRouter);
+app.use("/:roomId", chatRouter);
 
 // import("./models/relationship.js");
 //Catch 404 and forward to error handler

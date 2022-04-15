@@ -53,7 +53,7 @@ export default {
             return res.status(200).json({
                 success: true,
                 description: `Room ${newRoom.id} create success`,
-                room,
+                room: newRoom,
             });
         } catch (error) {
             return res.status(500).json({
