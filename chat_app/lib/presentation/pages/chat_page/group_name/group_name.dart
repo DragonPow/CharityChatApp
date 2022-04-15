@@ -1,8 +1,11 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
+import 'package:chat_app/dataexample/active_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import '../add_people/component/member.dart';
 
@@ -15,14 +18,26 @@ class GroupName extends StatefulWidget {
 
 class _GroupName extends State<GroupName> {
   List<Member> members = [
-    const Member(),
-    const Member(),
-    const Member(),
-    const Member(),
-    const Member(),
-    const Member(),
-    const Member()
+    const Member(
+        imgUrl:
+            "https://images.unsplash.com/photo-1496440737103-cd596325d314?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8Z2lybHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
+        name: "Nguyễn Thị Vân Anh")
   ];
+  
+
+  void _handleImageSelection() async {
+    final result = await ImagePicker().pickImage(
+      imageQuality: 70,
+      maxWidth: 1440,
+      source: ImageSource.gallery,
+    );
+
+    if (result != null) {
+      final bytes = await result.readAsBytes();
+      final image = await decodeImageFromList(bytes);
+      // change avatar group
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +45,9 @@ class _GroupName extends State<GroupName> {
       appBar: getAppBar(),
       body: SingleChildScrollView(
         child: Column(children: [
-          SizedBox(height: 20.h,),
+          SizedBox(
+            height: 20.h,
+          ),
           Stack(
             children: [
               const CircleAvatar(
@@ -48,32 +65,50 @@ class _GroupName extends State<GroupName> {
                         shape: BoxShape.circle, color: cwColorWhite),
                     child: IconButton(
                       padding: const EdgeInsets.all(0),
-                      icon: const FaIcon(FontAwesomeIcons.camera, color: cwColorMain, size: 16,),
-                      onPressed: () => {},
+                      icon: const FaIcon(
+                        FontAwesomeIcons.camera,
+                        color: cwColorMain,
+                        size: 16,
+                      ),
+                      onPressed: () => {_handleImageSelection()},
                     ),
                   )),
             ],
           ),
-          SizedBox(height: 10.h,),
+          SizedBox(
+            height: 10.h,
+          ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 30.w),
             child: TextFormField(
               style: ktext17RegularBlack,
               textAlign: TextAlign.center,
-              decoration:  InputDecoration(
-                border: const  UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey),),
-                enabledBorder: const  UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey),),
-                focusedBorder: const  UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey),),
-                hintText: "Tên nhóm",
-                hintStyle: ktext17RegularGreyText
-              ),
+              decoration: InputDecoration(
+                  border: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  hintText: "Tên nhóm",
+                  hintStyle: ktext17RegularGreyText),
             ),
           ),
-          SizedBox(height: 20.h,),
+          SizedBox(
+            height: 20.h,
+          ),
           Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 4.w),
+            padding: EdgeInsets.symmetric(horizontal: 4.w),
             child: Wrap(
-              children: members,
+              children: List.generate(
+                6,
+                (index) => Member(
+                    imgUrl: actives[actives.length - index - 1]['img'],
+                    name: actives[actives.length - index - 1]['name']),
+              ),
             ),
           )
         ]),

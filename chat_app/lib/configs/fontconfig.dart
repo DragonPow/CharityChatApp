@@ -48,8 +48,11 @@ var kText22BoldMain = fontConfig.copyWith(
     color: cwColorMain,
     fontWeight: FontWeight.bold);
 
+
 var kText24MeniumBlack = fontConfig.copyWith(
   fontSize: 24.sp,
   fontWeight: FontWeight.w500
 );
+var kText24BoldMain = kText22BoldMain.copyWith(fontSize: 24.sp);
+
 var kText24BoldBlack = kText24MeniumBlack.copyWith(fontWeight: FontWeight.bold);

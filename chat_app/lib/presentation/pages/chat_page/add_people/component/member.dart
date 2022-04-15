@@ -5,7 +5,9 @@ import '../../../../../configs/colorconfig.dart';
 import '../../../../components/avataruser.dart';
 
 class Member extends StatefulWidget {
-  const Member({Key? key}) : super(key: key);
+  final String name;
+  final String imgUrl;
+  const Member({Key? key, required this.imgUrl, required this.name}) : super(key: key);
 
   @override
   State<Member> createState() => _Member();
@@ -19,9 +21,8 @@ class _Member extends State<Member> {
       children: <Widget>[
         SizedBox(
             child: AvatarUser(
-          imageUrl:
-              "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
-          name: 'Jone Cena',
+          imageUrl: widget.imgUrl,
+          name: widget.name,
           radius: 40.w,
         )),
         Positioned(

@@ -1,10 +1,12 @@
 import 'package:chat_app/configs/fontconfig.dart';
+import 'package:chat_app/dataexample/active_user.dart';
 import 'package:chat_app/presentation/components/avatarcicle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../configs/colorconfig.dart';
+import '../chat_page/chatpage.dart';
 
 class BanList extends StatelessWidget {
   const BanList({Key? key}) : super(key: key);
@@ -33,9 +35,13 @@ class BanList extends StatelessWidget {
             SizedBox(
               height: 10.h,
             ),
-            BlockAcount(),
-            BlockAcount(),
-            BlockAcount()
+            ListView.builder(
+                shrinkWrap: true,
+                itemCount: 3,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (BuildContext context, int index) {
+                  return BlockAcount(imgUrl: actives[index]['img'], name: actives[index]['name']);
+                }),
           ],
         ),
       )),
@@ -58,8 +64,12 @@ class BanList extends StatelessWidget {
 }
 
 class BlockAcount extends StatelessWidget {
+  final String name;
+  final String imgUrl;
   const BlockAcount({
     Key? key,
+    required this.imgUrl,
+    required this.name
   }) : super(key: key);
 
   @override
@@ -72,14 +82,13 @@ class BlockAcount extends StatelessWidget {
           Row(
             children: [
               AvatarCicle(
-                  imgUrl:
-                      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=700&q=60",
+                  imgUrl: imgUrl,
                   radius: 50.h),
               SizedBox(
                 width: 5.w,
               ),
               Text(
-                "Huỳnh Nhực ",
+                name,
                 //style: kText17BoldBlack,
               ),
             ],

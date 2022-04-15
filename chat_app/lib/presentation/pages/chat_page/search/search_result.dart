@@ -1,3 +1,4 @@
+import 'package:chat_app/dataexample/active_user.dart';
 import 'package:chat_app/presentation/pages/newchatpage/sort_infor_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -67,9 +68,9 @@ class _SearchResult extends State<SearchResult>{
                     ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: 15,
+                        itemCount: actives.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return const SortInforComponent();
+                          return SortInforComponent(imgUrl: actives[index]['img'], name: actives[index]['name']);
                         }),
                   ],
                 ),
