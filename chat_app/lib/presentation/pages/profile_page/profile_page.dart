@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../dataexample/current_account.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -27,14 +29,13 @@ class _ProfilePage extends State<ProfilePage> {
             height: 30.h,
           ),
           AvatarCicle(
-              imgUrl:
-                  "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
+              imgUrl:currentAccount[0]['img'],
               radius: 115.w),
           SizedBox(
             height: 10.h,
           ),
           Text(
-            "Minh Minh",
+            currentAccount[0]['name'],
             style: kText24MeniumBlack,
           ),
           SizedBox(
