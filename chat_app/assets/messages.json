@@ -1,0 +1,166 @@
+[
+    {
+      "author": {
+        "firstName": "John",
+        "id": "b4878b96-efbc-479a-8291-474ef323dec7",
+        "imageUrl": "https://avatars.githubusercontent.com/u/14123304?v=4"
+      },
+      "createdAt": 1598438796000,
+      "id": "9dcc55c2-2a28-492e-817b-aa81feec86d7",
+      "status": "seen",
+      "text": "**bold** _italic_ ~strikethrough~ `code`\nhttps://flyer.chat https://trangtrisinhnhat.com/12-y-tuong-tiec-bbq-sang-tao-cho-mua-he/",
+      "type": "text"
+    },
+    {
+      "author": {
+        "firstName": "John",
+        "id": "b4878b96-efbc-479a-8291-474ef323dec7",
+        "imageUrl": "https://avatars.githubusercontent.com/u/14123304?v=4"
+      },
+      "createdAt": 1598438795000,
+      "id": "e7a673e9-86eb-4572-936f-2882b0183cda",
+      "status": "seen",
+      "text": "Đây là một vài ý tưởng cho tiệc ngoài trời, bạn hãy xem qua và cho tôi biết ý kiến nhé!",
+      "type": "text"
+    },
+    {
+      "author": {
+        "firstName": "John",
+        "id": "b4878b96-efbc-479a-8291-474ef323dec7",
+        "imageUrl": "https://avatars.githubusercontent.com/u/14123304?v=4"
+      },
+      "createdAt": 1598438794000,
+      "id": "dc1a5e87-bd4e-46b0-9cb4-7d9abeda5ef8",
+      "status": "seen",
+      "text": "À, có thể thêm 1 ít bia nữa",
+      "type": "text"
+    },
+    {
+      "author": {
+        "firstName": "John",
+        "id": "b4878b96-efbc-479a-8291-474ef323dec7",
+        "imageUrl": "https://avatars.githubusercontent.com/u/14123304?v=4"
+      },
+      "createdAt": 1598438793000,
+      "id": "2a202811-7d48-4ae9-8323-d764a56031dc",
+      "status": "seen",
+      "text": "Tiện đây tôi muốn hỏi về đồ ăn, bạn có nghĩ chúng ta nên tổ chức BBQ. hoặc vài thứ gì đó ngoài trời, đều đó sẽ rất tuyệt vời",
+      "type": "text"
+    },
+    {
+      "author": {
+        "firstName": "Jane",
+        "id": "06c33e8b-e835-4736-80f4-63f44b66666c",
+        "imageUrl": "https://avatars.githubusercontent.com/u/33809426?v=4"
+      },
+      "createdAt": 1598438792000,
+      "id": "0371b8f4-314a-448e-85ba-9c7dc5ed7a1e",
+      "status": "seen",
+      "text": "Thật đáng mong chờ",
+      "type": "text"
+    },
+    {
+      "author": {
+        "firstName": "John",
+        "id": "b4878b96-efbc-479a-8291-474ef323dec7",
+        "imageUrl": "https://avatars.githubusercontent.com/u/14123304?v=4"
+      },
+      "createdAt": 1598438791000,
+      "id": "db334c22-1fc4-4951-86b2-1eb7f7262743",
+      "status": "seen",
+      "text": "Ý tưởng tuyệt vời, tôi sẽ nhắn cho họ. Chà có lẽ chúng ta sắp có 1 kĩ nghĩ tuyệt vời",
+      "type": "text"
+    },
+    {
+      "author": {
+        "firstName": "Jane",
+        "id": "06c33e8b-e835-4736-80f4-63f44b66666c",
+        "imageUrl": "https://avatars.githubusercontent.com/u/33809426?v=4"
+      },
+      "createdAt": 1598438790000,
+      "id": "f61a1924-e043-409f-9051-78ebfc68507a",
+      "status": "seen",
+      "text": "À, nếu được có lẽ chúng ta nên gọi thêm Tuấn, Linh như vậy sẽ vui hơn mà phải không",
+      "type": "text"
+    },
+    {
+      "author": {
+        "firstName": "Jane",
+        "id": "06c33e8b-e835-4736-80f4-63f44b66666c",
+        "imageUrl": "https://avatars.githubusercontent.com/u/33809426?v=4"
+      },
+      "createdAt": 1598438789000,
+      "id": "d46ffcb1-9340-4c60-8b8c-c9d17539b0c7",
+      "status": "seen",
+      "text": "Yeah! đương nhiên r, chúng ta cần chuẩn bị gì nhỉ? T cá mình cần phải mua sắm thêm 1 số thứ",
+      "type": "text"
+    },
+    {
+      "author": {
+        "firstName": "John",
+        "id": "b4878b96-efbc-479a-8291-474ef323dec7",
+        "imageUrl": "https://avatars.githubusercontent.com/u/14123304?v=4"
+      },
+      "createdAt": 1598438788000,
+      "id": "b23e5907-6d8b-4134-8cf3-c6dd34fc42d2",
+      "status": "seen",
+      "text": "Sắp tới có kỳ nghĩ, bạn có nghĩ như tôi không:v",
+      "type": "text"
+    },
+    {
+      "author": {
+        "firstName": "Jane",
+        "id": "06c33e8b-e835-4736-80f4-63f44b66666c",
+        "imageUrl": "https://avatars.githubusercontent.com/u/33809426?v=4"
+      },
+      "createdAt": 1598438787000,
+      "id": "83093c75-2efb-47bc-84d6-37dbc53bb5de",
+      "status": "seen",
+      "text": "Vâng, nếu có thời gian tôi ước mình sẽ đến đó, tôi nghĩ mình sẽ có một kì nghỉ tuyệt vời tại đây",
+      "type": "text"
+    },
+    {
+      "author": {
+        "firstName": "John",
+        "id": "b4878b96-efbc-479a-8291-474ef323dec7",
+        "imageUrl": "https://avatars.githubusercontent.com/u/14123304?v=4"
+      },
+      "createdAt": 1598438786000,
+      "id": "8fa70836-3309-4d09-a777-4d9603e1f123",
+      "status": "seen",
+      "text": "Một nơi thật đẹp, bạn có thấy thế không?",
+      "type": "text"
+    },
+    {
+      "author": {
+        "firstName": "John",
+        "id": "b4878b96-efbc-479a-8291-474ef323dec7",
+        "imageUrl": "https://avatars.githubusercontent.com/u/14123304?v=4"
+      },
+      "createdAt": 1598438785000,
+      "height": 600,
+      "id": "8fa70836-3309-4d09-a777-4d9603e1f124",
+      "name": "image",
+      "size": 59645,
+      "status": "seen",
+      "type": "image",
+      "uri": "https://media.istockphoto.com/photos/hong-kong-island-with-sunset-and-dusk-background-landscape-and-blue-picture-id1171336156?b=1&k=20&m=1171336156&s=170667a&w=0&h=G86fds9QZLtoWFxjfigPrLmrknYatwTk8EHBLXAv-XQ=",
+      "width": 1128
+    },
+    {
+      "author": {
+        "firstName": "John",
+        "id": "b4878b96-efbc-479a-8291-474ef323dec7",
+        "imageUrl": "https://avatars.githubusercontent.com/u/14123304?v=4"
+      },
+      "createdAt": 1598438784000,
+      "id": "8fa70836-3309-4d09-a777-4d9603e1f125",
+      "mimeType": "image/jpg",
+      "name": "image.jpg",
+      "size": 59645,
+      "status": "seen",
+      "type": "file",
+      "uri": "https://hcti.io/v1/image/c1ea794e-32c7-4516-bd0f-8b835e8a2f2e"
+    }
+  ]
+  
