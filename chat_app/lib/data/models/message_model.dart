@@ -8,17 +8,17 @@ part 'message_model.g.dart';
 
 class MessageModel {
   final String id;
-  final String creatorId;
+  final String senderId;
   final String roomId;
-  final DateTime timeCreate;
+  final DateTime createTime;
   final String content;
   final MessageType type;
 
   MessageModel({
     required this.id,
-    required this.creatorId,
+    required this.senderId,
     required this.roomId,
-    required this.timeCreate,
+    required this.createTime,
     required this.content,
     required this.type,
   });

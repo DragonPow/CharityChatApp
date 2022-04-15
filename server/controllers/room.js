@@ -1,30 +1,41 @@
 import RoomModel from "../models/room.js";
+import UserModel from "../models/user.js";
 import UserRoomModel from "../models/user_room.js";
 import Model from "../models/model.js";
 
 export default {
     onGetRoomsByPaging: async (req, res, next) => {
-        const { startIndex, number } = req.body;
-        const { userId } = req.query;
+        const { userId } = req.params;
+        const startIndex = Number(req.params.startIndex);
+        const number = Number(req.params.number);
+
         try {
-            const roomsId = await UserRoomModel.getRoomsByPaging(
+            const rooms = await RoomModel.getRoomsByPaging(
                 startIndex,
                 number,
                 userId
             );
-            const rooms = await RoomModel.getRoomsById(roomsId);
-            // const rooms = await RoomModel.getRoomsByPaging(startIndex, number, userId);
+            const list = await UserRoomModel.getUsersByRoomsId(
+                rooms.map((i) => i.id)
+            );
+            rooms.forEach((i) => {
+                i.joinersId = [
+                    ...list
+                        .filter((item) => item.roomId === i.id)
+                        .map((item) => item.userId),
+                ];
+            });
 
             return res.status(200).json({
                 success: true,
                 rooms,
             });
         } catch (error) {
-            return res.status(500).json({ success: false, error: error });
+            return res.status(500).json({ success: "false ne", error: error });
         }
     },
     onGetRoomsByName: async (req, res, next) => {
-        const { textMatch, userId } = req.query;
+        const { textMatch, userId } = req.params;
         const { startIndex, number } = req.body;
         try {
             const rooms = await RoomModel.getRoomsByName(
@@ -106,7 +117,7 @@ export default {
     },
     onUpdateAvatarRoom: async (req, res, next) => {
         const { avatar } = req.body;
-        const { roomId } = req.query;
+        const { roomId } = req.params;
 
         try {
             const rs = await RoomModel.updateAvatarRoom(roomId, avatar);

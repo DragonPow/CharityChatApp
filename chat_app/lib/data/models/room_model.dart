@@ -6,16 +6,16 @@ part 'room_model.g.dart';
 @JsonSerializable()
 class RoomModel {
   final String id;
-  final String name;
+  final String? name;
   final List<String> joinersId;
-  final MessageModel lastMessages;
-  final String avatarId;
+  final MessageModel? lastMessage;
+  final String? avatarId;
 
   RoomModel({
     required this.id,
     required this.name,
     required this.joinersId,
-    required this.lastMessages,
+    required this.lastMessage,
     required this.avatarId,
   });
 
