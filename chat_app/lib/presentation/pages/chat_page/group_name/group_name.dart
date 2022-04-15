@@ -43,14 +43,13 @@ class _GroupName extends State<GroupName> {
                   child: Container(
                     width: 25.w,
                     height: 25.w,
+                    alignment: Alignment.center,
                     decoration: const BoxDecoration(
                         shape: BoxShape.circle, color: cwColorWhite),
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: IconButton(
-                        icon: const FaIcon(FontAwesomeIcons.camera, color: cwColorMain, size: 16,),
-                        onPressed: () => {},
-                      ),
+                    child: IconButton(
+                      padding: const EdgeInsets.all(0),
+                      icon: const FaIcon(FontAwesomeIcons.camera, color: cwColorMain, size: 16,),
+                      onPressed: () => {},
                     ),
                   )),
             ],
@@ -58,15 +57,15 @@ class _GroupName extends State<GroupName> {
           SizedBox(height: 10.h,),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 30.w),
-
             child: TextFormField(
-              initialValue: "Tên nhóm",
-              style: ktext17RegularGreyText,
+              style: ktext17RegularBlack,
               textAlign: TextAlign.center,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey),),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey),),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey),),
+              decoration:  InputDecoration(
+                border: const  UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey),),
+                enabledBorder: const  UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey),),
+                focusedBorder: const  UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey),),
+                hintText: "Tên nhóm",
+                hintStyle: ktext17RegularGreyText
               ),
             ),
           ),
