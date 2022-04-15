@@ -98,7 +98,7 @@ class OptionChatRoom extends StatelessWidget {
           ),
         ),
        const SizedBox(height: 15,),
-       const  Option(label: "Tìm kiếm trong cuộc trò chuyện ", iconData: Icons.search, colorIcon: cwColorGreyNoteText,),
+       const  Option(label: "Tìm kiếm trong đoạn chat ", iconData: Icons.search, colorIcon: cwColorGreyNoteText,),
        const  Option(label: "File và hình ảnh  ", iconData: Icons.image_outlined, colorIcon: cwColorGreyNoteText, ),
        const  Option(label: "Đặt biệt danh  ", iconData: Icons.edit, colorIcon: cwColorGreyNoteText,),
        const  Option(label: "Chặn người dùng  ", iconData: FontAwesomeIcons.ban, colorIcon: cwColorRed,),
