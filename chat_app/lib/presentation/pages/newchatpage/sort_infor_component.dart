@@ -28,7 +28,7 @@ class _SortInforComponent extends State<SortInforComponent> {
             ),
             Text(
               widget.name,
-              style: ktext17RegularBlack,
+              style: kText15BoldBlack ,
             )
           ],
         ),

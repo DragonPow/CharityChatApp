@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:chat_app/presentation/components/avatarcicle.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/custom_chatroom_theme.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/option.dart';
 import 'package:file_picker/file_picker.dart';
@@ -10,7 +11,6 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:mime/mime.dart';
 import 'package:open_file/open_file.dart';
 import 'package:skeleton_loader/skeleton_loader.dart';
@@ -28,7 +28,7 @@ class ChatRoom extends StatefulWidget {
 
 class _ChatRoomState extends State<ChatRoom> {
   List<types.Message> _messages = [];
-  final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
+  final _user = const types.User(id: '00'); // id of current user 
 
   @override
   void initState() {
@@ -182,6 +182,7 @@ class _ChatRoomState extends State<ChatRoom> {
       body: SafeArea(
         bottom: false,
         child: Chat(
+            showUserAvatars: true,
             messages: _messages,
             onAttachmentPressed: _handleAtachmentPressed,
             onMessageTap: _handleMessageTap,
@@ -189,7 +190,6 @@ class _ChatRoomState extends State<ChatRoom> {
             onSendPressed: _handleSendPressed,
             user: _user,
             theme: CustomChatroomTheme,
-            // customBottomWidget: Text("Test"),
             emptyState: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -231,10 +231,11 @@ AppBar getAppBar() {
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 "Minh Phương",
-                style: kText13BoldBlack,
+                style: kText15MediumBlack,
               ),
               Text(
                 "online",
