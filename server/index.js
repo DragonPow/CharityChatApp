@@ -19,7 +19,7 @@ app.set("port", port);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-//Navigator to another
+//Router
 app.use("/", indexRouter);
 app.use("/users", userRouter);
 app.use("/rooms", roomRouter);

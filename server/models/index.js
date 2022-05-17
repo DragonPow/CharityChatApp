@@ -34,8 +34,8 @@ UserRoom.belongsTo(Message, { as: "lastReadMessage" });
 // Message.hasOne(UserRoom, {as: "lastReadMessage"});
 
 //Room have users, and the users have rooms
-User.belongsToMany(Room, { as:'joiner', through: UserRoom, foreignKey: "userId" });
-Room.belongsToMany(User, { as:'container', through: UserRoom, foreignKey: "roomId" });
+User.belongsToMany(Room, { as:'container', through: UserRoom, foreignKey: "userId" });
+Room.belongsToMany(User, { as:'joiners', through: UserRoom, foreignKey: "roomId" });
 
 //User have friends
 User.belongsToMany(User, { as: "id1", through: Friend, foreignKey: "id1" });
