@@ -15,7 +15,9 @@ const config = {
     jwt: {
         expireTime: 24, //24 hours
         secretCode: 'SECRETE',
-    }
+        tokenAdmin: 'ADMIN_TOKEN',
+    },
+    adminId: 'ADMIN_ID',
 };
 
 export default config;

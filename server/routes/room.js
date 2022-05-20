@@ -1,7 +1,8 @@
 import express from "express";
 import room from "../controllers/room.js";
 import { checkSchema } from "express-validator";
-import validateInputRoute from "./invalid_input.js";
+import checkInput from '../utils/middleware/check_input.js';
+import checkToken from '../utils/middleware/check_token.js';
 
 const router = express.Router();
 
@@ -40,8 +41,8 @@ router.get(
     orderby: {
       in: ["query"],
       isIn: {
-        options: [["name", "lastMessage", "timeCreate"]],
-        errorMessage: "Must be 'name', 'lastMessage' or 'timeCreate'",
+        options: [["name", "lastMessage", "createTime"]],
+        errorMessage: "Must be 'name', 'lastMessage' or 'createTime'",
       },
       errorMessage: "Not null",
       exists: {
@@ -75,7 +76,7 @@ router.get(
         trim: true,
     },
   }),
-  validateInputRoute,
+  checkInput,
   room.onGetRoomsByPaging
 );
 // router.get("/roomName", room.onGetRoomsByName);
@@ -92,7 +93,6 @@ router.post("/create", checkSchema({
   },
   name: {
     in: ['body'],
-
   },
   joinersId: {
     in: ['body'],
@@ -103,10 +103,12 @@ router.post("/create", checkSchema({
       errorMessage: 'At least one member in room'
     },
   }
-}), validateInputRoute, room.onCreateRoom);
-router.put("/u/:roomId", room.onUpdateRoom);
+}), checkInput, checkToken, room.onCreateRoom);
+router.put("/u/:roomId", checkSchema({
+  
+}), checkInput, checkToken, room.onUpdateRoom);
 // router.put("/u/avatar/:roomId", room.onUpdateAvatarRoom);
-router.delete("/d/:roomId", room.onDeleteRoom);
+router.delete("/d/:roomId", checkInput, checkToken, room.onDeleteRoom);
 
 // TODO: add route addUserToRoom
 // TODO: add route removeUserFromRoom

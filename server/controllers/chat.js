@@ -1,40 +1,52 @@
 import { TypeMessage } from "../models/message.js";
-import Message from "../models/room.js";
+import Message from "../models/message.js";
 import { NUMBER_MESSAGE_PER_LOAD } from "../config/constant.js";
-import { failResponse, successResponse } from "./index.js";
+import {
+  failResponse,
+  successResponse,
+  unAuthorizedResponse,
+} from "./index.js";
+import UserModel from "../models/user.js";
+import config from "../config/index.js";
 
 export default {
   onGetRoomMessages: async (req, res, next) => {
-    const { roomId, startIndex, number } = req.query;
+    const {
+      roomId,
+      startIndex,
+      number,
+      orderby,
+      orderdirection,
+      searchby,
+      searchvalue,
+    } = req.query;
+
+    const userId = req.userId;
+    console.log('ID', userId);
+    // If is admin, next
+    if (userId === config.adminId) {
+      const joinerInRoom = await UserModel.getJoinersInRoom([roomId]);
+      // If is not joiner, can not access
+      if (!joinerInRoom.some((joiner) => joiner.id === userId)) {
+        return unAuthorizedResponse(res);
+      }
+    }
 
     try {
       // const { startIndex, number } = req.body;
-      const messages = await Message.getRoomMessages(
+      const messages = await Message.getMessagesByRoomId(
         roomId,
-        startIndex ?? 0,
-        number ?? NUMBER_MESSAGE_PER_LOAD
+        startIndex,
+        number,
+        orderby,
+        orderdirection,
+        searchby,
+        searchvalue
       );
 
-      return successResponse(res, messages);
+      return successResponse(res, { messages: messages });
     } catch (error) {
-      return failResponse(res, error);
-    }
-  },
-  onGetMessagesByContent: async (req, res, next) => {
-    // const { roomId } = req.body;
-    const { textMatch, roomId, startIndex, number } = req.query;
-
-    try {
-      const messages = await Message.getMessagesByContent(
-        textMatch,
-        roomId,
-        startIndex ?? 0,
-        number ?? NUMBER_MESSAGE_PER_LOAD
-      );
-
-      return successResponse(res, messages);
-    } catch (error) {
-      return failResponse(res, error);
+      return failResponse(res, { error: error });
     }
   },
   onSendMessage: async (req, res, next) => {

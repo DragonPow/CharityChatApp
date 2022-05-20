@@ -1,7 +1,7 @@
 import express from "express";
 import { checkSchema, validationResult } from "express-validator";
-import { INVALID_INPUT_MESSAGE } from "../config/constant.js";
-import { inputFailResponse } from "../controllers/index.js";
+import { INVALID_INPUT_MESSAGE } from "../../config/constant.js";
+import { inputFailResponse } from "../../controllers/index.js";
 
 const router = express.Router();
 

@@ -26,7 +26,7 @@ app.use(logger);
 app.use("/", indexRouter);
 app.use("/users", userRouter);
 app.use("/rooms", roomRouter);
-app.use("/:roomId", chatRouter);
+app.use("/messages", chatRouter);
 
 // import("./models/relationship.js");
 //Catch 404 and forward to error handler

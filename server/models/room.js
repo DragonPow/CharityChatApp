@@ -3,6 +3,7 @@ import sequelize from "../config/mysql.js";
 import Message from "./message.js";
 import UserRoom from "./user_room.js";
 import User from "./user.js";
+import config from "../config/index.js";
 
 class Room extends Model {
   static async getRoomsByPaging(
@@ -128,9 +129,16 @@ class Room extends Model {
     return rooms;
   }
 
-  static async createRoom(name, avatarUri, joinersId) {
+  static async createRoom(creatorId, name, avatarUri, joinersId) {
     const rs = await Room.create({
       name: name,
+      avatarId: avatarUri,
+      joiners: [
+        ...joinersId.map((userId) => {
+          return { id: userId };
+        }),
+        { id: creatorId },
+      ],
     });
     return rs;
   }

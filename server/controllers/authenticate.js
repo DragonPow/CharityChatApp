@@ -20,7 +20,7 @@ export default {
       }
 
       // create jwt
-      var token = jwt.sign(user.id, config.jwt.secretCode, {
+      var token = jwt.sign({ id: user.id }, config.jwt.secretCode, {
         expiresIn: config.jwt.expireTime,
       });
 

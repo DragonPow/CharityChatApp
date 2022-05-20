@@ -5,54 +5,55 @@ import User from "./user.js";
 import Message from "./message.js";
 import { GetDataFromSequelizeObject } from "../config/helper.js";
 
+class UserRoom extends Model {}
 
-const UserRoom = sequelize.define("UserRoom", {});
+UserRoom.init("UserRoom", { sequelize });
 
-UserRoom.getRoomsIdByPaging = async (startIndex, number, userId) => {
-    const userRooms = await Room.findAll({
-        include: [
-            {
-                model: User,
-                as: "container",
-                where: {
-                    userId: userId,
-                },
-                attributes: [],
-            },
-            {
-                model: Message,
-                as: "lastMessage",
-                attributes: [["timeCreate", "lastMessageTime"]],
-            },
-        ],
-        attributes: ["id"],
-        offset: startIndex,
-        limit: number,
-        // order: [["lastMessageTime", "DESC"]],
-    });
+// UserRoom.getRoomsIdByPaging = async (startIndex, number, userId) => {
+//     const userRooms = await Room.findAll({
+//         include: [
+//             {
+//                 model: User,
+//                 as: "container",
+//                 where: {
+//                     userId: userId,
+//                 },
+//                 attributes: [],
+//             },
+//             {
+//                 model: Message,
+//                 as: "lastMessage",
+//                 attributes: [["timeCreate", "lastMessageTime"]],
+//             },
+//         ],
+//         attributes: ["id"],
+//         offset: startIndex,
+//         limit: number,
+//         // order: [["lastMessageTime", "DESC"]],
+//     });
 
-    return GetDataFromSequelizeObject(userRooms).map((i) => i.roomId);
-};
+//     return GetDataFromSequelizeObject(userRooms).map((i) => i.roomId);
+// };
 
-UserRoom.getUsersByRoomId = async (roomId) => {
-    const userRooms = await UserRoom.findAll({
-        where: { roomId: roomId },
-        attributes: ["userId"],
-    });
-    return userRooms.map((i) => i.userId);
-};
+// UserRoom.getUsersByRoomId = async (roomId) => {
+//     const userRooms = await UserRoom.findAll({
+//         where: { roomId: roomId },
+//         attributes: ["userId"],
+//     });
+//     return userRooms.map((i) => i.userId);
+// };
 
-UserRoom.getUsersByRoomsId = async (roomsId) => {
-    const list = await UserRoom.findAll({
-        where: {
-            roomId: {
-                [Op.in]: roomsId
-            }
-        }
-    });
+// UserRoom.getUsersByRoomsId = async (roomsId) => {
+//     const list = await UserRoom.findAll({
+//         where: {
+//             roomId: {
+//                 [Op.in]: roomsId
+//             }
+//         }
+//     });
 
-    return list;
-}
+//     return list;
+// }
 
 // UserRoom.createRoom = async (roomInfo, listUsersId) => {
 //     const room = await Room.createRoom(roomInfo);
@@ -65,18 +66,18 @@ UserRoom.getUsersByRoomsId = async (roomsId) => {
 //     return room;
 // };
 
-UserRoom.deleteByRoomId = async (roomId) => {
-    try {
-        const rs = await UserRoom.destroy({
-            where: {
-                roomId: roomId,
-            },
-        });
-        //TODO: Should or Not delete messages in this room here?
-        return rs;
-    } catch (error) {
-        throw error;
-    }
-};
+// UserRoom.deleteByRoomId = async (roomId) => {
+//     try {
+//         const rs = await UserRoom.destroy({
+//             where: {
+//                 roomId: roomId,
+//             },
+//         });
+//         //TODO: Should or Not delete messages in this room here?
+//         return rs;
+//     } catch (error) {
+//         throw error;
+//     }
+// };
 
 export default UserRoom;

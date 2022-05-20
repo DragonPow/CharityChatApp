@@ -61,6 +61,11 @@ class User extends Model {
     return user;
   }
 
+  /**
+   * Get information of user in a room
+   * @param {string[]} roomsId must be array string
+   * @returns {User[]} Full information of joiner in room
+   */
   static async getJoinersInRoom(roomsId) {
     const list = await User.findAll({
       attributes: User._getBasicAttributes,

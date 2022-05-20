@@ -15,5 +15,5 @@ export const notFoundResponse = (res, message) => {
 }
 
 export const unAuthorizedResponse = (res) => {
-    return res.status(401).json("Do not permission to access");
+    return res.status(401).json({error: "Do not permission to access"});
 }

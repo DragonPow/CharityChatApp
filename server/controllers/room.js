@@ -70,10 +70,9 @@ export default {
   },
   onCreateRoom: async (req, res, next) => {
     const { name, joinersId } = req.body;
+    const userId = req.userId;
     try {
-      var avatarFile = res.download(avatar);
-      // TODO: add file to local, then set file url to userRoomModel
-      const newRoom = await RoomModel.createRoom(name, avatarUri, joinersId);
+      const newRoom = await RoomModel.createRoom(userId, name, avatarUri, joinersId);
 
       return successResponse(res, { room: newRoom });
     } catch (error) {
