@@ -80,6 +80,17 @@ class User extends Model {
     });
     return GetDataFromSequelizeObject(list);
   }
+
+  static async findByUserNameAndPassword(username, password) {
+    const user = await User.findOne({
+      where: {
+        username: username,
+        password: password,
+      }
+    });
+
+    return GetDataFromSequelizeObject(user);
+  }
 }
 
 User.init(

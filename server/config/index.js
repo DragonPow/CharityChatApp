@@ -11,6 +11,10 @@ const config = {
         database: "mocks",
         host: "localhost",
         port: 3306,
+    },
+    jwt: {
+        expireTime: 24, //24 hours
+        secretCode: 'SECRETE',
     }
 };
 

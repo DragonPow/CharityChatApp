@@ -1,7 +1,6 @@
 import express from "express";
 import room from "../controllers/room.js";
-import { checkSchema, param } from "express-validator";
-import { INVALID_INPUT_MESSAGE } from "../config/constant.js";
+import { checkSchema } from "express-validator";
 import validateInputRoute from "./invalid_input.js";
 
 const router = express.Router();
@@ -79,9 +78,32 @@ router.get(
   validateInputRoute,
   room.onGetRoomsByPaging
 );
-router.get("/roomName", room.onGetRoomsByName);
+// router.get("/roomName", room.onGetRoomsByName);
 
-router.post("/c/", room.onCreateRoom);
+router.post("/create", checkSchema({
+  token: {
+    in: ['headers'],
+    exists: {
+      options: {
+        checkFalsy: true,
+      },
+      errorMessage: 'Must provide token'
+    },
+  },
+  name: {
+    in: ['body'],
+
+  },
+  joinersId: {
+    in: ['body'],
+    isArray: {
+      options: {
+        min: 1
+      },
+      errorMessage: 'At least one member in room'
+    },
+  }
+}), validateInputRoute, room.onCreateRoom);
 router.put("/u/:roomId", room.onUpdateRoom);
 // router.put("/u/avatar/:roomId", room.onUpdateAvatarRoom);
 router.delete("/d/:roomId", room.onDeleteRoom);
