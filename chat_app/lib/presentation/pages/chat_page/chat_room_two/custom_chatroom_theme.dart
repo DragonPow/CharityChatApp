@@ -117,6 +117,7 @@ const CustomChatroomTheme = DefaultChatTheme(
       fontSize: 12,
       fontWeight: FontWeight.w800,
       height: 1.333,
+      color: cwColorBlack
     ),
     attachmentButtonMargin: null,
     backgroundColor: Color(0xffffffff));

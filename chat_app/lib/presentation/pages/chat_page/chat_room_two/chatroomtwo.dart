@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:chat_app/presentation/components/avatarcicle.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/custom_chatroom_theme.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/option.dart';
 import 'package:file_picker/file_picker.dart';
@@ -76,7 +75,7 @@ class _ChatRoomState extends State<ChatRoom> {
                   onPressed: () => Navigator.pop(context),
                   child: Align(
                     alignment: AlignmentDirectional.centerStart,
-                    child: Text('Cancel',  style: kText15RegularMain),
+                    child: Text('Hủy',  style: kText15RegularMain),
                   ),
                 ),
               ],
@@ -183,10 +182,11 @@ class _ChatRoomState extends State<ChatRoom> {
         bottom: false,
         child: Chat(
             showUserAvatars: true,
+            showUserNames: true,
             messages: _messages,
             onAttachmentPressed: _handleAtachmentPressed,
             onMessageTap: _handleMessageTap,
-            onPreviewDataFetched: _handlePreviewDataFetched,
+            //onPreviewDataFetched: _handlePreviewDataFetched,
             onSendPressed: _handleSendPressed,
             user: _user,
             theme: CustomChatroomTheme,

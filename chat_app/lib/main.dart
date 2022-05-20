@@ -1,4 +1,5 @@
 import 'package:chat_app/configs/colorconfig.dart';
+import 'package:chat_app/presentation/pages/login_page/login_page.dart';
 import 'package:chat_app/presentation/rootapp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
         //   scaffoldBackgroundColor: const Color(0xFF15202B),
         // ),
         // themeMode: isDarkModeEnabled ? ThemeMode.dark : ThemeMode.light,
-        home: const RootApp(),
+        home: LoginPage(),
       ),
     );
   }

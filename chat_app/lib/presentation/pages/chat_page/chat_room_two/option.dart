@@ -49,15 +49,15 @@ class OptionChatRoom extends StatelessWidget {
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title:Text('Chặn tin nhắn và cuộc gọi', style: ktext17RegularBlack,),
-          content: Text("Tài khoản của bạn từ bây giờ sẽ không nhận được tin nhắn hay cuộc goiij từ tài khoản này", style: kText15RegularBlack,),
+          content: Text("Tài khoản của bạn từ bây giờ sẽ không nhận được tin nhắn hay cuộc gọi từ tài khoản này", style: kText15RegularBlack,),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context, 'Hủy'),
               child: Text('Hủy',style: kText15RegularMain,),
             ),
              TextButton(
-              onPressed: () => Navigator.pop(context, 'Tìm kiếm'),
-              child: Text('Tìm kiếm', style: kText15RegularMain,),
+              onPressed: () => Navigator.pop(context, 'Chặn'),
+              child: Text('Chặn', style: kText15RegularMain,),
             ),
           ],
         ),
