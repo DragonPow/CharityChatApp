@@ -1,5 +1,7 @@
 import http from "http";
 import express from "express";
+import logger from './utils/logger/logger_service.js';
+import bodyParser from 'body-parser';
 import { Server } from "socket.io";
 import WebSocket from "./config/websocket.js";
 
@@ -16,8 +18,9 @@ const app = express();
 const port = process.env.PORT || "3000";
 app.set("port", port);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(logger);
 
 //Router
 app.use("/", indexRouter);

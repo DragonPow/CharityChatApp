@@ -36,7 +36,7 @@ const Message = sequelize.define("Message", {
  * @param {String} sender
  * @returns new message
  */
-Message.prototype.sendMessage = async (
+Message.sendMessage = async (
     content,
     typeContent,
     roomId,
@@ -51,7 +51,7 @@ Message.prototype.sendMessage = async (
     return message;
 };
 
-Message.prototype.sendImage = async (content, typeContent, roomId, senderId) => {
+Message.sendImage = async (content, typeContent, roomId, senderId) => {
     const message = await Message.build({
         content,
         typeContent: "image",
@@ -62,7 +62,7 @@ Message.prototype.sendImage = async (content, typeContent, roomId, senderId) => 
     return message;
 };
 
-Message.prototype.sendFile = async (content, typeContent, roomId, senderId) => {
+Message.sendFile = async (content, typeContent, roomId, senderId) => {
     const message = await Message.build({
         content,
         typeContent: "file",
@@ -73,7 +73,7 @@ Message.prototype.sendFile = async (content, typeContent, roomId, senderId) => {
     return message;
 };
 
-Message.prototype.getRoomMessages = async (roomId, startIndex, number) => {
+Message.getRoomMessages = async (roomId, startIndex, number) => {
     const messages = await Message.findAll({
         where: { roomId: roomId },
         order: [["timeCreate", "DESC"]],
@@ -92,7 +92,7 @@ Message.prototype.getRoomMessages = async (roomId, startIndex, number) => {
     return messages;
 };
 
-Message.prototype.getLastMessageInRoom = async (roomId) => {
+Message.getLastMessageInRoom = async (roomId) => {
     try {
         //? Should get message and sender data?
         const message = await Message.findOne({
@@ -114,7 +114,7 @@ Message.prototype.getLastMessageInRoom = async (roomId) => {
     }
 };
 
-Message.prototype.getMessagesByContent = async (
+Message.getMessagesByContent = async (
     textMatch,
     roomId,
     startIndex,
@@ -145,7 +145,7 @@ Message.prototype.getMessagesByContent = async (
     return { messages, count };
 };
 
-Message.prototype.deleteMessageInRoom = async (roomId) => {
+Message.deleteMessageInRoom = async (roomId) => {
     const rs = await Message.destroy({
         where: {
             roomId: roomId,
@@ -158,7 +158,7 @@ Message.deleteMessageById = async (messageId, TypeMessage) => {
     // TODO: delete and remove some relation object (file, image)
 };
 
-Message.prototype.getImages = async (startIndex, number, roomId) => {
+Message.getImages = async (startIndex, number, roomId) => {
     const messages = await Message.findAll({
         where: { roomId: roomId, typeContent: "image" },
         order: [["timeCreate", "DESC"]],
@@ -177,7 +177,7 @@ Message.prototype.getImages = async (startIndex, number, roomId) => {
     return messages;
 };
 
-Message.prototype.getFiles = async (startIndex, number, roomId) => {
+Message.getFiles = async (startIndex, number, roomId) => {
     const messages = await Message.findAll({
         where: { roomId: roomId, typeContent: "file" },
         order: [["timeCreate", "DESC"]],

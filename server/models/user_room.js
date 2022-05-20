@@ -3,6 +3,7 @@ import sequelize from "../config/mysql.js";
 import Room from "./room.js";
 import User from "./user.js";
 import Message from "./message.js";
+import { GetDataFromSequelizeObject } from "../config/helper.js";
 
 
 const UserRoom = sequelize.define("UserRoom", {});
@@ -29,25 +30,8 @@ UserRoom.getRoomsIdByPaging = async (startIndex, number, userId) => {
         limit: number,
         // order: [["lastMessageTime", "DESC"]],
     });
-    // const userRooms = await UserRoom.findAll({
-    //     where: { userId: userId },
-    //     include: [{
-    //         model: Room,
-    //         as: 'container',
-    //         // attributes: [],
-    //         // include: {
-    //         //     model: Message,
-    //         //     as: "lastMessage",
-    //         //     attributes: [["timeCreate", "lastMessageTime"]],
-    //         // },
-    //     }],
-    //     attributes: ["roomId"],
-    //     // offset: startIndex,
-    //     // limit: number,
-    //     // order: [['lastMessageTime','DESC']],
-    // });
-    console.log(userRooms);
-    return userRooms.map((i) => i.dataValues.roomId);
+
+    return GetDataFromSequelizeObject(userRooms).map((i) => i.roomId);
 };
 
 UserRoom.getUsersByRoomId = async (roomId) => {
@@ -67,19 +51,19 @@ UserRoom.getUsersByRoomsId = async (roomsId) => {
         }
     });
 
-    return list.map(i=>i.dataValues);
+    return list;
 }
 
-UserRoom.createRoom = async (roomInfo, listUsersId) => {
-    const room = await Room.createRoom(roomInfo);
-    await UserRoom.bulkCreate(
-        listUsersId.map((userId) => {
-            return { roomId: room.id, userId };
-        })
-    );
+// UserRoom.createRoom = async (roomInfo, listUsersId) => {
+//     const room = await Room.createRoom(roomInfo);
+//     await UserRoom.bulkCreate(
+//         listUsersId.map((userId) => {
+//             return { roomId: room.id, userId };
+//         })
+//     );
 
-    return room;
-};
+//     return room;
+// };
 
 UserRoom.deleteByRoomId = async (roomId) => {
     try {

@@ -1,5 +1,3 @@
-"user_strict";
-
 import config from "./index.js";
 import Sequelize from "sequelize";
 import { default as path, dirname } from "path";

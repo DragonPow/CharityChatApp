@@ -1,34 +1,41 @@
 import RoomModel from "../models/room.js";
 import UserModel from "../models/user.js";
-import UserRoomModel from "../models/user_room.js";
+import MessageModel from "../models/message.js";
 import Model from "../models/model.js";
 import { failResponse, successResponse } from "./index.js";
 
 export default {
   onGetRoomsByPaging: async (req, res, next) => {
-    const { userId } = req.query;
-    const startIndex = parseInt(req.query.startIndex);
-    const number = parseInt(req.query.number);
-
-    console.log(appDir);
-
+    const {
+      userId,
+      orderby,
+      orderdirection,
+      startIndex,
+      number,
+      searchby,
+      searchvalue,
+    } = req.query;
     try {
-      if (!userId || !startIndex || !number) throw new Error("Invalid input");
-
+      // get room
       const rooms = await RoomModel.getRoomsByPaging(
         startIndex,
         number,
-        userId
+        userId,
+        orderby,
+        orderdirection,
+        searchby,
+        searchvalue
       );
-      const list = await UserRoomModel.getUsersByRoomsId(
-        rooms.map((i) => i.id)
-      );
+
+      // get user of room
+      const joiners = await UserModel.getJoinersInRoom(rooms.map((i) => i.id));
       rooms.forEach((i) => {
-        i.joinersId = [
-          ...list
-            .filter((item) => item.roomId === i.id)
-            .map((item) => item.userId),
-        ];
+        var list = joiners
+          .filter((item) =>
+            Array.from(item.container).some((room) => room.id == i.id)
+          )
+          .map(({ container, ...item }) => item);
+        i.joiners = list;
       });
 
       return successResponse(res, { rooms: rooms });
@@ -42,7 +49,13 @@ export default {
     const number = parseInt(req.query.number);
 
     try {
-      if (textMatch === (undefined | null) || !userId || (startIndex===undefined) || (number===undefined)) throw new Error("Invalid input");
+      if (
+        textMatch === (undefined | null) ||
+        !userId ||
+        startIndex === undefined ||
+        number === undefined
+      )
+        throw new Error("Invalid input");
       const rooms = await RoomModel.getRoomsByName(
         textMatch,
         startIndex,
@@ -52,15 +65,15 @@ export default {
 
       return successResponse(res, rooms);
     } catch (error) {
-      return failResponse(res, {error: error.message} );
+      return failResponse(res, { error: error.message });
     }
   },
   onCreateRoom: async (req, res, next) => {
     const { name, joinersId } = req.body;
-    // const {avatar} = req.files;
     try {
-      res.download(avatar)
-      const newRoom = await UserRoomModel.createRoom(name, avatar, joinersId);
+      var avatarFile = res.download(avatar);
+      // TODO: add file to local, then set file url to userRoomModel
+      const newRoom = await RoomModel.createRoom(name, avatarUri, joinersId);
 
       return successResponse(res, { room: newRoom });
     } catch (error) {
@@ -72,7 +85,7 @@ export default {
     try {
       const success = await Model.callTransaction(async () => {
         //Delete all message in room
-        await Message.deleteMessageInRoom(roomId);
+        await MessageModel.deleteMessageInRoom(roomId);
         //Delete room
         await UserRoomModel.deleteByRoomId(roomId);
       });
@@ -81,6 +94,7 @@ export default {
         description: `Room ${roomId} delete success`,
       });
     } catch (error) {
+      //TODO: trace back transaction
       return failResponse(res, {
         error,
         description: `Room ${roomId} cannot delete`,
