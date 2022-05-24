@@ -48,6 +48,9 @@ class Room extends Model {
           where: {
             id: userId,
           },
+          through: {
+            attributes: []
+          },
           attributes: [],
         },
       ],

@@ -43,31 +43,31 @@ export default {
       return failResponse(res, { error: error.message });
     }
   },
-  onGetRoomsByName: async (req, res, next) => {
-    const { textMatch, userId } = req.query;
-    const startIndex = parseInt(req.query.startIndex);
-    const number = parseInt(req.query.number);
+  // onGetRoomsByName: async (req, res, next) => {
+  //   const { textMatch, userId } = req.query;
+  //   const startIndex = parseInt(req.query.startIndex);
+  //   const number = parseInt(req.query.number);
 
-    try {
-      if (
-        textMatch === (undefined | null) ||
-        !userId ||
-        startIndex === undefined ||
-        number === undefined
-      )
-        throw new Error("Invalid input");
-      const rooms = await RoomModel.getRoomsByName(
-        textMatch,
-        startIndex,
-        number,
-        userId
-      );
+  //   try {
+  //     if (
+  //       textMatch === (undefined | null) ||
+  //       !userId ||
+  //       startIndex === undefined ||
+  //       number === undefined
+  //     )
+  //       throw new Error("Invalid input");
+  //     const rooms = await RoomModel.getRoomsByName(
+  //       textMatch,
+  //       startIndex,
+  //       number,
+  //       userId
+  //     );
 
-      return successResponse(res, rooms);
-    } catch (error) {
-      return failResponse(res, { error: error.message });
-    }
-  },
+  //     return successResponse(res, rooms);
+  //   } catch (error) {
+  //     return failResponse(res, { error: error.message });
+  //   }
+  // },
   onCreateRoom: async (req, res, next) => {
     const { name, joinersId } = req.body;
     const userId = req.userId;

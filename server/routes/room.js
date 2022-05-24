@@ -1,112 +1,127 @@
 import express from "express";
 import room from "../controllers/room.js";
 import { checkSchema } from "express-validator";
-import checkInput from '../utils/middleware/check_input.js';
-import checkToken from '../utils/middleware/check_token.js';
+import checkInput from "../utils/middleware/check_input.js";
+import checkToken from "../utils/middleware/check_token.js";
 
 const router = express.Router();
 
-router.get(
-  "/select",
-  checkSchema({
-    userId: {
-      in: ["query"],
-      errorMessage: "Need contain",
-      exists: true,
-    },
-    startIndex: {
-      in: ["query"],
-      errorMessage: "Must be positive number",
-      exists: true,
-      isInt: {
-        options: {
-            min: 0,
-        },
-        errorMessage: 'Larger or equal 0'
-    },
-      toInt: true,
-    },
-    number: {
-      in: ["query"],
-      errorMessage: "Must be positive number",
-      exists: true,
-      isInt: {
-          options: {
-              min: 1,
-          },
-          errorMessage: 'Larger or equal 1'
+const getRoomInputValidate = checkSchema({
+  userId: {
+    in: ["query"],
+    errorMessage: "Need contain",
+    exists: true,
+  },
+  startIndex: {
+    in: ["query"],
+    errorMessage: "Must be positive number",
+    exists: true,
+    isInt: {
+      options: {
+        min: 0,
       },
-      toInt: true,
+      errorMessage: "Larger or equal 0",
     },
-    orderby: {
-      in: ["query"],
-      isIn: {
-        options: [["name", "lastMessage", "createTime"]],
-        errorMessage: "Must be 'name', 'lastMessage' or 'createTime'",
+    toInt: true,
+  },
+  number: {
+    in: ["query"],
+    errorMessage: "Must be positive number",
+    exists: true,
+    isInt: {
+      options: {
+        min: 1,
       },
-      errorMessage: "Not null",
-      exists: {
-        options: {
-          checkFalsy: true, // for 0, '', false, null
-        },
+      errorMessage: "Larger or equal 1",
+    },
+    toInt: true,
+  },
+  orderby: {
+    in: ["query"],
+    isIn: {
+      options: [["name", "lastMessage", "timeCreate"]],
+      errorMessage: "Must be 'name', 'lastMessage' or 'timeCreate'",
+    },
+    errorMessage: "Not null",
+    exists: {
+      options: {
+        checkFalsy: true, // for 0, '', false, null
       },
     },
-    orderdirection: {
-      in: ["query"],
-      isIn: {
-        options: [["asc", "desc"]],
-        errorMessage: "Must be 'asc', or 'desc'",
-      },
-      errorMessage: "Not null",
-      exists: {
-        options: {
-          checkFalsy: true, // for 0, '', false, null
-        },
-      },
+  },
+  orderdirection: {
+    in: ["query"],
+    isIn: {
+      options: [["asc", "desc"]],
+      errorMessage: "Must be 'asc', or 'desc'",
     },
-    searchby: {
-      in: ["query"],
-      isIn: {
-        options: [["name"]],
-        errorMessage: "Must be 'name'",
+    errorMessage: "Not null",
+    exists: {
+      options: {
+        checkFalsy: true, // for 0, '', false, null
       },
     },
-    searchvalue: {
-        in: ["query"],
-        trim: true,
+  },
+  searchby: {
+    in: ["query"],
+    isIn: {
+      options: [["name"]],
+      errorMessage: "Must be 'name'",
     },
-  }),
-  checkInput,
-  room.onGetRoomsByPaging
-);
-// router.get("/roomName", room.onGetRoomsByName);
+  },
+  searchvalue: {
+    in: ["query"],
+    trim: true,
+  },
+});
 
-router.post("/create", checkSchema({
+const createRoomInputValidate = checkSchema({
   token: {
-    in: ['headers'],
+    in: ["headers"],
     exists: {
       options: {
         checkFalsy: true,
       },
-      errorMessage: 'Must provide token'
+      errorMessage: "Must provide token",
     },
   },
   name: {
-    in: ['body'],
+    in: ["body"],
   },
   joinersId: {
-    in: ['body'],
+    in: ["body"],
     isArray: {
       options: {
-        min: 1
+        min: 1,
       },
-      errorMessage: 'At least one member in room'
+      errorMessage: "At least one member in room",
     },
-  }
-}), checkInput, checkToken, room.onCreateRoom);
-router.put("/u/:roomId", checkSchema({
-  
-}), checkInput, checkToken, room.onUpdateRoom);
+  },
+});
+
+router.get(
+  "/select",
+  getRoomInputValidate,
+  checkInput,
+  room.onGetRoomsByPaging
+);
+
+router.post(
+  "/create",
+  createRoomInputValidate,
+  checkInput,
+  checkToken,
+  room.onCreateRoom
+);
+
+router.put(
+  "/u/:roomId",
+  checkSchema({}),
+  checkInput,
+  checkToken,
+  room.onUpdateRoom
+);
+
 // router.put("/u/avatar/:roomId", room.onUpdateAvatarRoom);
 router.delete("/d/:roomId", checkInput, checkToken, room.onDeleteRoom);
 

@@ -1,8 +1,5 @@
 import { DataTypes, Model, Op } from "sequelize";
 import sequelize from "../config/mysql.js";
-import Room from "./room.js";
-import User from "./user.js";
-import Message from "./message.js";
 import { GetDataFromSequelizeObject } from "../config/helper.js";
 
 class UserRoom extends Model {}

@@ -33,6 +33,44 @@ class User extends Model {
   }
 
   /**
+   * Get user in database
+   * @param {number} startIndex
+   * @param {number} number number user need get
+   * @param {string} mainUserId userId to find friends
+   * @returns List user is friend and in online of mainUserId
+   */
+   static async getUserByPaging(orderby, orderdirection, startIndex, number, searchby, searchvalue, ) {
+    let searchOrderby;
+    switch (orderby) {
+      case "name":
+        searchOrderby = ["name"];
+        break;
+      case "timeCreate":
+        searchOrderby = ["timeCreate"];
+        break;
+      default:
+        break;
+    }
+
+    const users = await User.findAll({
+      where: {
+        name: {
+          [Op.substring]: searchvalue,
+        },
+      },
+      // include: {
+      //   model: Friend,
+      // },
+      attributes: { exclude: ["lastMessageId"] },
+      offset: startIndex,
+      limit: number,
+      order: [[...searchOrderby, orderdirection]],
+    });
+
+    return GetDataFromSequelizeObject(users);
+  }
+
+  /**
    * Find user by name text
    * @param {string} textMatch
    * @param {number} startIndex start query at position is $startIndex
