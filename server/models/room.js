@@ -49,7 +49,7 @@ class Room extends Model {
             id: userId,
           },
           through: {
-            attributes: []
+            attributes: [],
           },
           attributes: [],
         },
@@ -93,57 +93,48 @@ class Room extends Model {
     return rooms;
   }
 
-  /**
-   * Get rooms by name and userId
-   * @param {String} textMatch
-   * @param {Number} startIndex
-   * @param {Number} number
-   * @param {String} userId
-   * @returns room with last message
-   */
-  static async getRoomsByName(textMatch, startIndex, number, userId) {
-    //Order by nearest last message
-    const rooms = await Room.findAll({
-      where: {
-        name: {
-          [Op.substring]: textMatch,
-        },
-      },
-      include: [
-        {
-          model: User,
-          as: "joiners",
-          // attributes: [["userId", "userName"]],
-          through: {
-            attributes: [],
-          },
-        },
-        // UserRoom,
-        {
-          model: Message,
-          as: "lastMessage",
-          attributes: { exclude: ["roomId"] },
-        },
-      ],
-      order: [["lastMessage", "content", "DESC"]],
-      offset: startIndex,
-      limit: number,
-    });
-    return rooms;
-  }
-
   static async createRoom(creatorId, name, avatarUri, joinersId) {
-    const rs = await Room.create({
-      name: name,
-      avatarId: avatarUri,
-      joiners: [
-        ...joinersId.map((userId) => {
-          return { id: userId };
-        }),
-        { id: creatorId },
-      ],
-    });
-    return rs;
+    const transaction = await sequelize.transaction();
+
+    try {
+      const room = await Room.create(
+        {
+          name: name,
+          avatarId: avatarUri,
+        },
+        {
+          transaction: transaction,
+        }
+      );
+
+      await UserRoom.bulkCreate(
+        [
+          ...joinersId.map((userId) => {
+            return {
+              lastReadMessageId: null,
+              userId: userId,
+              roomId: room.id,
+            };
+          }),
+          (creatorId !== config.adminId) && {
+            lastReadMessageId: null,
+            userId: creatorId,
+            roomId: room.id,
+          },
+        ],
+        { transaction: transaction }
+      );
+
+      await transaction.commit();
+
+      return room;
+    } catch (error) {
+      await transaction.rollback();
+      if (error.name === 'SequelizeForeignKeyConstraintError') {
+        throw new Error('The user in list joiner not exists');
+      }
+      throw error;
+    }
   }
 
   static async deleteById(roomId) {
@@ -159,14 +150,6 @@ class Room extends Model {
   static async updateRoom(room) {
     const rs = Room.update(room, { where: { id: room.id } });
     return rs;
-  }
-
-  static async updateAvatarRoom(roomId, avatar) {
-    // TODO: remove current avatar of room
-
-    // TODO: add new avatar
-
-    return { success: true, id: "" };
   }
 }
 

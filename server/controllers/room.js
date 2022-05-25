@@ -43,44 +43,26 @@ export default {
       return failResponse(res, { error: error.message });
     }
   },
-  // onGetRoomsByName: async (req, res, next) => {
-  //   const { textMatch, userId } = req.query;
-  //   const startIndex = parseInt(req.query.startIndex);
-  //   const number = parseInt(req.query.number);
 
-  //   try {
-  //     if (
-  //       textMatch === (undefined | null) ||
-  //       !userId ||
-  //       startIndex === undefined ||
-  //       number === undefined
-  //     )
-  //       throw new Error("Invalid input");
-  //     const rooms = await RoomModel.getRoomsByName(
-  //       textMatch,
-  //       startIndex,
-  //       number,
-  //       userId
-  //     );
-
-  //     return successResponse(res, rooms);
-  //   } catch (error) {
-  //     return failResponse(res, { error: error.message });
-  //   }
-  // },
   onCreateRoom: async (req, res, next) => {
     const { name, joinersId } = req.body;
     const userId = req.userId;
+    const avatarUri = req.file?.path ?? null;
     try {
       const newRoom = await RoomModel.createRoom(userId, name, avatarUri, joinersId);
-
-      return successResponse(res, { room: newRoom });
+      if (!newRoom) {
+        return successResponse(res, { success: false });
+      }
+      return successResponse(res, { success: true, room: newRoom });
     } catch (error) {
-      return failResponse(res, { error, description: "Cannot create room" });
+      console.log(error);
+      return failResponse(res, { error: error.message, description: "Cannot create room" });
     }
   },
   onDeleteRoom: async (req, res, next) => {
     const { roomId } = req.body;
+    const userId = req.userId;
+
     try {
       const success = await Model.callTransaction(async () => {
         //Delete all message in room

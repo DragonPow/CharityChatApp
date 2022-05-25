@@ -24,8 +24,9 @@ export default {
     const userId = req.userId;
     console.log('ID', userId);
     // If is admin, next
-    if (userId === config.adminId) {
+    if (userId !== config.adminId) {
       const joinerInRoom = await UserModel.getJoinersInRoom([roomId]);
+      console.log(joinerInRoom);
       // If is not joiner, can not access
       if (!joinerInRoom.some((joiner) => joiner.id === userId)) {
         return unAuthorizedResponse(res);

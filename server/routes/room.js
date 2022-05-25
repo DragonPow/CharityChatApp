@@ -3,8 +3,12 @@ import room from "../controllers/room.js";
 import { checkSchema } from "express-validator";
 import checkInput from "../utils/middleware/check_input.js";
 import checkToken from "../utils/middleware/check_token.js";
+import multer from 'multer';
+import { ROOM_UPLOAD_DIR } from "../config/constant.js";
+
 
 const router = express.Router();
+const uploadRoomFile = multer({dest: ROOM_UPLOAD_DIR});
 
 const getRoomInputValidate = checkSchema({
   userId: {
@@ -87,17 +91,23 @@ const createRoomInputValidate = checkSchema({
   },
   name: {
     in: ["body"],
+    isString: true,
   },
   joinersId: {
     in: ["body"],
-    isArray: {
-      options: {
-        min: 1,
+    custom: {
+      options: (value) => {
+        const list = String(value).split(',');
+        return list.length > 0;
       },
-      errorMessage: "At least one member in room",
+      errorMessage: "At least one member in room"
     },
+    customSanitizer: {
+      options: (value) => String(value).split(','),
+    }
   },
 });
+
 
 router.get(
   "/select",
@@ -108,6 +118,7 @@ router.get(
 
 router.post(
   "/create",
+  uploadRoomFile.single('image'),
   createRoomInputValidate,
   checkInput,
   checkToken,

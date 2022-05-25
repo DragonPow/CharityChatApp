@@ -10,7 +10,7 @@ router.use((req, res, next) => {
     if (token) {
         // Check is admin
         if (token === config.jwt.tokenAdmin) {
-            console.log('CHECK_TOKEN', 'Token is admin');
+            console.log('TOKEN_CHECK_SUCCESS:', 'Token is admin');
             req.userId = config.adminId;
             return next();
         }
@@ -21,6 +21,7 @@ router.use((req, res, next) => {
                 return successResponse(res,{message: 'Invalid token'});
             }
             else {
+                console.log('TOKEN_CHECK_SUCCESS:', 'Token is user: ' + decoded.id);
                 req.userId = decoded.id;
                 return next();
             }
