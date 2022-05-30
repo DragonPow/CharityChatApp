@@ -51,7 +51,8 @@ export default {
     }
   },
   onSendMessage: async (req, res, next) => {
-    const { content, senderId, typeContent } = req.body;
+    const { content, typeContent } = req.body;
+    const senderId = req.userId;
     const { roomId } = req.query;
 
     try {

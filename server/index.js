@@ -5,6 +5,9 @@ import bodyParser from 'body-parser';
 import { Server } from "socket.io";
 import WebSocket from "./config/websocket.js";
 
+import { default as path, dirname } from "path";
+import { fileURLToPath } from "url";
+
 import './models/index.js';
 
 import indexRouter from "./routes/index.js";
@@ -12,6 +15,7 @@ import userRouter from "./routes/user.js";
 import chatRouter from "./routes/chat.js";
 import roomRouter from "./routes/room.js";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
@@ -21,6 +25,8 @@ app.set("port", port);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logger);
+// app.use(express.static('public'));
+app.use('/public', express.static('public'));
 
 //Router
 app.use("/", indexRouter);

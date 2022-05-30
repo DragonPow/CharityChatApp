@@ -95,7 +95,6 @@ class Room extends Model {
 
   static async createRoom(creatorId, name, avatarUri, joinersId) {
     const transaction = await sequelize.transaction();
-
     try {
       const room = await Room.create(
         {
@@ -116,11 +115,6 @@ class Room extends Model {
               roomId: room.id,
             };
           }),
-          (creatorId !== config.adminId) && {
-            lastReadMessageId: null,
-            userId: creatorId,
-            roomId: room.id,
-          },
         ],
         { transaction: transaction }
       );
@@ -130,8 +124,8 @@ class Room extends Model {
       return room;
     } catch (error) {
       await transaction.rollback();
-      if (error.name === 'SequelizeForeignKeyConstraintError') {
-        throw new Error('The user in list joiner not exists');
+      if (error.name === "SequelizeForeignKeyConstraintError") {
+        throw new Error("The user in list joiner not exists");
       }
       throw error;
     }

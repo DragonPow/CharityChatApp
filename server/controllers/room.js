@@ -50,15 +50,18 @@ export default {
     const avatarUri = req.file?.path ?? null;
     try {
       const newRoom = await RoomModel.createRoom(userId, name, avatarUri, joinersId);
+
       if (!newRoom) {
         return successResponse(res, { success: false });
       }
+
       return successResponse(res, { success: true, room: newRoom });
     } catch (error) {
       console.log(error);
       return failResponse(res, { error: error.message, description: "Cannot create room" });
     }
   },
+
   onDeleteRoom: async (req, res, next) => {
     const { roomId } = req.body;
     const userId = req.userId;
