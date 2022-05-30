@@ -6,7 +6,7 @@ export const failResponse = (res, error) => {
     return res.status(500).json(error);
 }
 
-export const inputFailResponse = (res, error) => {
+export const badRequestResponse = (res, error) => {
     return res.status(400).json(error);
 }
 

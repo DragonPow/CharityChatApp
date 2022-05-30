@@ -1,7 +1,7 @@
 import express from "express";
 import { checkSchema, validationResult } from "express-validator";
 import { INVALID_INPUT_MESSAGE } from "../../config/constant.js";
-import { inputFailResponse } from "../../controllers/index.js";
+import { badRequestResponse } from "../../controllers/index.js";
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.use((req, res, next) => {
     validationResult(req).throw();
     next();
   } catch (error) {
-    return inputFailResponse(res, {
+    return badRequestResponse(res, {
       message: INVALID_INPUT_MESSAGE,
       errors: myValidationResult(req).mapped(),
     });

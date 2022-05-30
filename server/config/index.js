@@ -17,7 +17,8 @@ const config = {
         secretCode: 'SECRETE',
         tokenAdmin: 'ADMIN_TOKEN',
     },
-    adminId: 'ADMIN_ID',
+    // adminId: 'ADMIN_ID',
+    adminId: '1',
 };
 
 export default config;

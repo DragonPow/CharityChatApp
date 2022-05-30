@@ -25,8 +25,10 @@ app.set("port", port);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logger);
-// app.use(express.static('public'));
-app.use('/public', express.static('public'));
+
+// show image and other file in 'public' directory
+app.use('/public',express.static('public'));
+// app.use('/public',express.static('public/room')); // use localhost:3000/public/...jpg to access public/room/...jpg file
 
 //Router
 app.use("/", indexRouter);

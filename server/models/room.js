@@ -90,10 +90,60 @@ class Room extends Model {
         },
       ],
     });
+
     return rooms;
   }
 
-  static async createRoom(creatorId, name, avatarUri, joinersId) {
+  static async findRoomByUserId(userId1, userId2) {
+    const roomsBeforeCheck = await Room.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["id"],
+          as: "joiners",
+          where: {
+            id: {
+              [Op.in]: [userId1, userId2],
+            },
+          },
+          through: {
+            attributes: [],
+          },
+        },
+      ],
+    });
+
+    const roomsAfterCheck = roomsBeforeCheck
+      .filter((room) => room.joiners.length === 2)
+      .map((room) => room.id);
+
+    const rooms = await Room.findAll({
+      where: {
+        id: {
+          [Op.in]: roomsAfterCheck,
+        },
+      },
+      include: [
+        {
+          model: Message,
+          as: "lastMessage",
+        },
+        {
+          model: User,
+          as: "joiners",
+          through: {
+            attributes: [],
+          },
+        },
+      ],
+    });
+
+    return rooms.length > 0
+      ? rooms.find((room) => room.joiners.length === 2)
+      : null;
+  }
+
+  static async createRoom(name, avatarUri, joinersId) {
     const transaction = await sequelize.transaction();
     try {
       const room = await Room.create(

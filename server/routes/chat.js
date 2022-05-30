@@ -3,8 +3,15 @@ import chat from "../controllers/chat.js";
 import { checkSchema } from "express-validator";
 import checkInput from "../utils/middleware/check_input.js";
 import checkToken from "../utils/middleware/check_token.js";
+import {
+  CHAT_UPLOAD_DIR,
+  MAX_FILE_NUMBER_RECEIVE,
+} from "../config/constant.js";
+import multer from "multer";
 
 const router = express.Router();
+const uploadMessageFile = multer({ dest: CHAT_UPLOAD_DIR });
+
 const getMessagesInRoomInputValidate = checkSchema({
   roomId: {
     in: ["query"],
@@ -75,24 +82,24 @@ const getMessagesInRoomInputValidate = checkSchema({
 });
 const sendMessageInputValidate = checkSchema({
   token: {
-    in: ['headers'],
+    in: ["headers"],
     exists: {
       options: {
         checkFalsy: true,
       },
       errorMessage: "Must provide token",
-    }
+    },
   },
   content: {
     // in: ["body"],
     exists: {
       options: {
         checkFalsy: true,
-      }
-    }
+      },
+    },
   },
   roomId: {
-    in: ['body'],
+    in: ["body"],
     isString: true,
     exists: {
       options: {
@@ -100,8 +107,8 @@ const sendMessageInputValidate = checkSchema({
       },
       errorMessage: "Must provide roomId",
     },
-  }
-})
+  },
+});
 
 router.get(
   "/select",
@@ -113,7 +120,14 @@ router.get(
 // router.get("/img/:startIndex&:number", chat.onGetImages);
 // router.get("/file/:startIndex&:number", chat.onGetFile);
 
-router.post("/send", chat.onSendMessage);
+router.post(
+  "/send",
+  uploadMessageFile.array("images", MAX_FILE_NUMBER_RECEIVE),
+  sendMessageInputValidate,
+  checkInput,
+  checkToken,
+  chat.onSendMessage
+);
 
 router.delete("/:messageId", chat.onDeleteMessage);
 

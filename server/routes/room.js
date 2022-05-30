@@ -2,7 +2,7 @@ import express from "express";
 import room from "../controllers/room.js";
 import { checkSchema } from "express-validator";
 import checkInput from "../utils/middleware/check_input.js";
-import checkToken from "../utils/middleware/check_token.js";
+import checkToken, { tokenSchema } from "../utils/middleware/check_token.js";
 import multer from 'multer';
 import { ROOM_UPLOAD_DIR } from "../config/constant.js";
 
@@ -11,6 +11,7 @@ const router = express.Router();
 const uploadRoomFile = multer({dest: ROOM_UPLOAD_DIR});
 
 const getRoomInputValidate = checkSchema({
+  tokenSchema,
   userId: {
     in: ["query"],
     errorMessage: "Need contain",
@@ -79,16 +80,20 @@ const getRoomInputValidate = checkSchema({
   },
 });
 
-const createRoomInputValidate = checkSchema({
-  token: {
-    in: ["headers"],
+const findRoomInputValidate = checkSchema({
+  otherUserId: {
+    in:['query'],
+    isString: true,
     exists: {
       options: {
-        checkFalsy: true,
-      },
-      errorMessage: "Must provide token",
+        checkFalsy: true
+      }
     },
-  },
+    errorMessage: 'userId must be string and not empty',
+  }
+})
+
+const createRoomInputValidate = checkSchema({
   name: {
     in: ["body"],
     isString: true,
@@ -113,8 +118,17 @@ router.get(
   "/select",
   getRoomInputValidate,
   checkInput,
+  checkToken,
   room.onGetRoomsByPaging
 );
+
+router.get(
+  '/find',
+  findRoomInputValidate,
+  checkInput,
+  checkToken,
+  room.onFindRoomByUserId
+)
 
 router.post(
   "/create",

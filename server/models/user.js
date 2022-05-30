@@ -70,25 +70,16 @@ class User extends Model {
     return GetDataFromSequelizeObject(users);
   }
 
-  /**
-   * Find user by name text
-   * @param {string} textMatch
-   * @param {number} startIndex start query at position is $startIndex
-   * @param {number} number
-   * @returns List user
-   */
-  static async getUsersByName(textMatch, startIndex, number) {
-    const users = await User.findAll({
-      attributes: ["id", "name", "avatarUri", "gender"],
+  static async checkExists(usersId) {
+    const userNumber = await User.count({
       where: {
-        name: {
-          [Op.substring]: textMatch,
-        },
+        id: {
+          [Op.in]: usersId
+        }
       },
-      limit: number,
-      offset: startIndex,
     });
-    return users;
+
+    return userNumber === usersId.length;
   }
 
   static async getUserById(userId) {

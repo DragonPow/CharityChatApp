@@ -2,7 +2,13 @@ import RoomModel from "../models/room.js";
 import UserModel from "../models/user.js";
 import MessageModel from "../models/message.js";
 import Model from "../models/model.js";
-import { failResponse, successResponse } from "./index.js";
+import {
+  badRequestResponse,
+  failResponse,
+  notFoundResponse,
+  successResponse,
+} from "./index.js";
+import config from "../config/index.js";
 
 export default {
   onGetRoomsByPaging: async (req, res, next) => {
@@ -44,12 +50,39 @@ export default {
     }
   },
 
+  onFindRoomByUserId: async (req, res, next) => {
+    const { otherUserId } = req.query;
+    const userId = req.userId;
+    try {
+      const isUsersExists = await UserModel.checkExists([userId, otherUserId]);
+
+      if (!isUsersExists) {
+        return badRequestResponse(res, { error: "The user not exists" });
+      }
+
+      const room = await RoomModel.findRoomByUserId(userId, otherUserId);
+
+      if (!room) {
+        return notFoundResponse(res, { message: "The room not found" });
+      }
+      return successResponse(res, { room: room });
+    } catch (error) {
+      console.log(error);
+      return failResponse(res, {
+        error: error.message,
+        description: "Cannot find room",
+      });
+    }
+  },
+
   onCreateRoom: async (req, res, next) => {
     const { name, joinersId } = req.body;
     const userId = req.userId;
     const avatarUri = req.file?.path ?? null;
     try {
-      const newRoom = await RoomModel.createRoom(userId, name, avatarUri, joinersId);
+      const joiners =
+        userId === config.adminId ? joinersId : [...joinersId, userId]; // If creator is admin, don't add
+      const newRoom = await RoomModel.createRoom(name, avatarUri, joiners);
 
       if (!newRoom) {
         return successResponse(res, { success: false });
@@ -58,7 +91,10 @@ export default {
       return successResponse(res, { success: true, room: newRoom });
     } catch (error) {
       console.log(error);
-      return failResponse(res, { error: error.message, description: "Cannot create room" });
+      return failResponse(res, {
+        error: error.message,
+        description: "Cannot create room",
+      });
     }
   },
 
