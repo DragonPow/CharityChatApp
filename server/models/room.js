@@ -143,7 +143,13 @@ class Room extends Model {
       : null;
   }
 
-  static async createRoom(name, avatarUri, joinersId) {
+  /**
+   * Create room
+   * @param {string} name name of the room
+   * @param {string} avatarUri avatar of the room, directory to server location, it can be null
+   * @param {string[]} joinersId list joiners of the room
+   */
+  static async createRoom(name, avatarUri = null, joinersId) {
     const transaction = await sequelize.transaction();
     try {
       const room = await Room.create(
@@ -195,6 +201,11 @@ class Room extends Model {
     const rs = Room.update(room, { where: { id: room.id } });
     return rs;
   }
+
+  static async setLastMessage(roomId, messageId) {
+    const room = await Room.findByPk(roomId);
+    room.setDataValue('lastMessageId', messageId);
+}
 }
 
 Room.init(

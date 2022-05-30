@@ -13,8 +13,11 @@ class Message extends Model {
    * @param {String} sender
    * @returns new message
    */
-  static async sendMessage(content, typeContent, roomId, senderId) {
-    const message = await Message.build({
+  static async createMessage(value, roomId, senderId) {
+    const typeContent = Array.isArray(value) ? 'content' : 'file';
+    const content = Array.isArray(value) ? value.join(', ') : value; // if is list file, join with ','
+
+    const message = await Message.create({
       content,
       typeContent,
       senderId,

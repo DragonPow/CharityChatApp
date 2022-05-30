@@ -80,7 +80,7 @@ const getMessagesInRoomInputValidate = checkSchema({
     trim: true,
   },
 });
-const sendMessageInputValidate = checkSchema({
+const createMessageByRoomInputValidate = checkSchema({
   token: {
     in: ["headers"],
     exists: {
@@ -91,12 +91,12 @@ const sendMessageInputValidate = checkSchema({
     },
   },
   content: {
-    // in: ["body"],
-    exists: {
-      options: {
-        checkFalsy: true,
-      },
-    },
+    in: ["body"],
+    // exists: {
+    //   options: {
+    //     checkFalsy: true,
+    //   },
+    // },
   },
   roomId: {
     in: ["body"],
@@ -106,6 +106,44 @@ const sendMessageInputValidate = checkSchema({
         checkFalsy: true,
       },
       errorMessage: "Must provide roomId",
+    },
+  },
+});
+const createMessageByUserInputValidate = checkSchema({
+  token: {
+    in: ["headers"],
+    exists: {
+      options: {
+        checkFalsy: true,
+      },
+      errorMessage: "Must provide token",
+    },
+  },
+  content: {
+    in: ["body"],
+    // exists: {
+    //   options: {
+    //     checkFalsy: true,
+    //   },
+    // },
+  },
+  usersId: {
+    in: ["body"],    
+    custom: {
+      options: (value) => {
+        const list = String(value).split(',');
+        return list.length > 0;
+      },
+      errorMessage: "At least one user to chat"
+    },
+    customSanitizer: {
+      options: (value) => String(value).split(','),
+    },
+    exists: {
+      options: {
+        checkFalsy: true,
+      },
+      errorMessage: "Must provide usersId",
     },
   },
 });
@@ -121,12 +159,21 @@ router.get(
 // router.get("/file/:startIndex&:number", chat.onGetFile);
 
 router.post(
-  "/send",
-  uploadMessageFile.array("images", MAX_FILE_NUMBER_RECEIVE),
-  sendMessageInputValidate,
+  "/send/byRoomId",
+  uploadMessageFile.array("files", MAX_FILE_NUMBER_RECEIVE),
+  createMessageByRoomInputValidate,
   checkInput,
   checkToken,
-  chat.onSendMessage
+  chat.onCreateMessageByRoomId
+);
+
+router.post(
+  "/send/byUserId",
+  uploadMessageFile.array("files", MAX_FILE_NUMBER_RECEIVE),
+  createMessageByUserInputValidate,
+  checkInput,
+  checkToken,
+  chat.onCreateMessageByUserId
 );
 
 router.delete("/:messageId", chat.onDeleteMessage);

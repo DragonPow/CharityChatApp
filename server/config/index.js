@@ -16,9 +16,10 @@ const config = {
         expireTime: 24, //24 hours
         secretCode: 'SECRETE',
         tokenAdmin: 'ADMIN_TOKEN',
+        tokenExample: 'EXAMPLE_TOKEN',
     },
-    // adminId: 'ADMIN_ID',
-    adminId: '1',
+    adminId: 'ADMIN_ID',
+    exampleId: '1',
 };
 
 export default config;

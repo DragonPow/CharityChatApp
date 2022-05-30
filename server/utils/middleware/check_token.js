@@ -16,6 +16,13 @@ router.use((req, res, next) => {
       return next();
     }
 
+    // ? Can delete it if not needed
+    if (token === config.jwt.token) {
+      console.log("TOKEN_CHECK_SUCCESS:", "Token is example");
+      req.userId = config.exampleId;
+      return next();
+    }
+
     // Check is user
     jwt.verify(token, config.jwt.secretCode, (error, decoded) => {
       if (error) {

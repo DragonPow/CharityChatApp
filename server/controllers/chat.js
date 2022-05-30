@@ -1,5 +1,5 @@
 import { TypeMessage } from "../models/message.js";
-import Message from "../models/message.js";
+import MessageModel from "../models/message.js";
 import { NUMBER_MESSAGE_PER_LOAD } from "../config/constant.js";
 import {
   failResponse,
@@ -8,6 +8,7 @@ import {
 } from "./index.js";
 import UserModel from "../models/user.js";
 import config from "../config/index.js";
+import RoomModel from "../models/room.js";
 
 export default {
   onGetRoomMessages: async (req, res, next) => {
@@ -22,7 +23,7 @@ export default {
     } = req.query;
 
     const userId = req.userId;
-    console.log('ID', userId);
+    console.log("ID", userId);
     // If is admin, next
     if (userId !== config.adminId) {
       const joinerInRoom = await UserModel.getJoinersInRoom([roomId]);
@@ -35,7 +36,7 @@ export default {
 
     try {
       // const { startIndex, number } = req.body;
-      const messages = await Message.getMessagesByRoomId(
+      const messages = await MessageModel.getMessagesByRoomId(
         roomId,
         startIndex,
         number,
@@ -50,36 +51,111 @@ export default {
       return failResponse(res, { error: error });
     }
   },
-  onSendMessage: async (req, res, next) => {
-    const { content, typeContent } = req.body;
+
+  onCreateMessageByRoomId: async (req, res, next) => {
+    const { content, roomId } = req.body;
     const senderId = req.userId;
-    const { roomId } = req.query;
+    const files = req.files;
 
     try {
-      const newMessage = await Message.sendMessage(
-        content,
-        typeContent,
+      let value;
+      if (content) {
+        value = content;
+      } else if (files) {
+        value = files;
+      } else {
+        throw new Error("One of the Content and Files must not empty");
+      }
+
+      const newMessage = await MessageModel.createMessage(
+        value,
         roomId,
         senderId
       );
-      const id = newMessage.id;
+
+      // Set last message for room model
+      RoomModel.setLastMessage(roomId, newMessage.id);
 
       return successResponse(res, {
-        description: `Message send success:\n${(content, typeContent, roomId)}`,
-        messageId: id,
+        success: true,
+        message: newMessage,
       });
     } catch (error) {
+      // TODO: if fail, delete files from server
       return failResponse(res, {
         error,
         description: "Message cannot send",
       });
     }
   },
+
+  onCreateMessageByUserId: async (req, res, next) => {
+    const { content, usersId } = req.body;
+    const senderId = req.userId;
+    const files = req.files;
+
+    try {
+      let value;
+      if (content) {
+        value = content;
+      } else if (files) {
+        value = files;
+      } else {
+        throw new Error("One of the Content and Files must not empty");
+      }
+
+      let roomId;
+      // Send message for one people, check room exists
+      if (usersId.length === 1) {
+        // Exists room chat of sender and receiver
+        const room = await RoomModel.findRoomByUserId(senderId, usersId[0]);
+        if (room) {
+          roomId = room.id;
+        }
+        else {
+          // If not exists, create new room
+          roomId = await RoomModel.createRoom(
+            "Room no name",
+            null,
+            [senderId, ...usersId],
+          );
+        }
+      } else {
+        // Create new room for group user
+        roomId = await RoomModel.createRoom(
+          "Group no name",
+          null,
+          [senderId, ...usersId],
+        );
+      }
+
+      const newMessage = await MessageModel.createMessage(
+        value,
+        roomId,
+        senderId
+      );
+
+      // Set last message for room model
+      RoomModel.setLastMessage(roomId, newMessage.id);
+
+      return successResponse(res, {
+        success: true,
+        message: newMessage,
+      });
+    } catch (error) {
+      // TODO: if fail, delete files from server
+      return failResponse(res, {
+        error,
+        description: "Message cannot send",
+      });
+    }
+  },
+
   onSendImage: async (req, res, next) => {
     const { content, roomId } = req.body;
 
     try {
-      await Message.send(content, "image", roomId);
+      await MessageModel.send(content, "image", roomId);
       return successResponse(res);
     } catch (error) {
       return failResponse(res, error);
@@ -89,7 +165,7 @@ export default {
     const { content, roomId } = req.body;
 
     try {
-      await Message.send(content, "file", roomId);
+      await MessageModel.send(content, "file", roomId);
       return successResponse(res);
     } catch (error) {
       return failResponse(res, error);
@@ -100,9 +176,9 @@ export default {
 
     try {
       if (messageId) {
-        await Message.deleteMessageById(messageId, TypeMessage.key);
+        await MessageModel.deleteMessageById(messageId, TypeMessage.key);
       } else {
-        await Message.deleteMessageInRoom(roomId);
+        await MessageModel.deleteMessageInRoom(roomId);
       }
 
       return successResponse(res, { description: "Message delete success" });
@@ -115,7 +191,7 @@ export default {
     const { roomId, startIndex, number } = req.query;
 
     try {
-      const images = await Message.getImages(startIndex, number, roomId);
+      const images = await MessageModel.getImages(startIndex, number, roomId);
 
       return successResponse(res, images);
     } catch (error) {
@@ -127,7 +203,7 @@ export default {
     const { roomId, startIndex, number } = req.query;
 
     try {
-      const files = await Message.getFiles(startIndex, number, roomId);
+      const files = await MessageModel.getFiles(startIndex, number, roomId);
 
       return successResponse(res, files);
     } catch (error) {

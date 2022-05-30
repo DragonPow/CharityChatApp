@@ -11,7 +11,7 @@ const router = express.Router();
 const uploadRoomFile = multer({dest: ROOM_UPLOAD_DIR});
 
 const getRoomInputValidate = checkSchema({
-  tokenSchema,
+  // tokenSchema, // TODO: fix token here
   userId: {
     in: ["query"],
     errorMessage: "Need contain",
@@ -79,7 +79,6 @@ const getRoomInputValidate = checkSchema({
     trim: true,
   },
 });
-
 const findRoomInputValidate = checkSchema({
   otherUserId: {
     in:['query'],
@@ -92,7 +91,6 @@ const findRoomInputValidate = checkSchema({
     errorMessage: 'userId must be string and not empty',
   }
 })
-
 const createRoomInputValidate = checkSchema({
   name: {
     in: ["body"],
@@ -109,7 +107,13 @@ const createRoomInputValidate = checkSchema({
     },
     customSanitizer: {
       options: (value) => String(value).split(','),
-    }
+    },
+    exists: {
+      options: {
+        checkFalsy: true,
+      },
+      errorMessage: "Must provide joinersId",
+    },
   },
 });
 
@@ -118,7 +122,7 @@ router.get(
   "/select",
   getRoomInputValidate,
   checkInput,
-  checkToken,
+  // checkToken,
   room.onGetRoomsByPaging
 );
 
