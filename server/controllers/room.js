@@ -60,7 +60,7 @@ export default {
         return badRequestResponse(res, { error: "The user not exists" });
       }
 
-      const room = await RoomModel.findRoomByUserId(userId, otherUserId);
+      const room = await RoomModel.findRoomOf2UserId(userId, otherUserId);
 
       if (!room) {
         return notFoundResponse(res, { message: "The room not found" });

@@ -4,8 +4,13 @@ import Message from "./message.js";
 import UserRoom from "./user_room.js";
 import User from "./user.js";
 import config from "../config/index.js";
+import { GetDataFromSequelizeObject } from "../config/helper.js";
 
 class Room extends Model {
+  static async checkExists(roomId) {
+    const rs = await Room.findByPk(roomId, { attributes: ['id'] });
+    return rs !== null;
+  }
   static async getRoomsByPaging(
     startIndex,
     number,
@@ -91,10 +96,16 @@ class Room extends Model {
       ],
     });
 
-    return rooms;
+    return GetDataFromSequelizeObject(rooms);
   }
 
-  static async findRoomByUserId(userId1, userId2) {
+  /**
+   * Find room by 2 user id, if not found, return null
+   * @param {string} userId1
+   * @param {string} userId2
+   * @returns {Room | null} room or null if not exists
+   */
+  static async findRoomOf2UserId(userId1, userId2) {
     const roomsBeforeCheck = await Room.findAll({
       include: [
         {
@@ -138,8 +149,8 @@ class Room extends Model {
       ],
     });
 
-    return rooms.length > 0
-      ? rooms.find((room) => room.joiners.length === 2)
+    return rooms?.length > 0
+      ? rooms.find((room) => room.joiners.length === 2) ?? null
       : null;
   }
 
@@ -187,6 +198,35 @@ class Room extends Model {
     }
   }
 
+  /**
+   * find or create room if not found room containt user
+   * @param {string[]} joinersId joiners of the room, at least 2
+   * @returns {Room} the new or exists room
+   * @throws {Error} 'Joiners of the room at least 2'
+   */
+  static async findOrCreateRoom(joinersId) {
+    let room;
+
+    if (joinersId.length < 2) {
+      throw new Error("Joiners of the room at least 2");
+    }
+
+    // Send message for one people, check room exists
+    if (joinersId.length === 2) {
+      // Exists room chat of sender and receiver
+      room = await Room.findRoomOf2UserId(joinersId[0], joinersId[1]);
+
+      if (!room) {
+        // If not exists, create new room
+        room = await Room.createRoom("Room no name", null, joinersId);
+      }
+    } else {
+      // Create new room for group user
+      room = await Room.createRoom("Group no name", null, joinersId);
+    }
+    return room;
+  }
+
   static async deleteById(roomId) {
     const rs = await Room.destroy({
       where: {
@@ -202,10 +242,31 @@ class Room extends Model {
     return rs;
   }
 
-  static async setLastMessage(roomId, messageId) {
-    const room = await Room.findByPk(roomId);
-    room.setDataValue('lastMessageId', messageId);
-}
+  static async checkAndSetLastMessage(roomId, message) {
+    const room = await Room.findByPk(roomId, {
+      attributes: ["id"],
+      include: [
+        {
+          model: Message,
+          as: "lastMessage",
+          attributes: ["id", "createTime"],
+        },
+      ],
+    });
+
+    if (!room.lastMessage || room.lastMessage.createTime < message.createTime) {
+      room.set({
+        lastMessageId: message.id,
+      });
+      const logResult = { roomId: room.id, messageId: message.id };
+      room
+        .save()
+        .then((rs) => console.log("SET_LAST_MESSAGE_SUCCESS: ", logResult))
+        .catch((error) =>
+          console.log("SET_LAST_MESSAGE_FAIL: ", { ...logResult, error: error })
+        );
+    }
+  }
 }
 
 Room.init(

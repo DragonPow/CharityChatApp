@@ -1,7 +1,9 @@
 import { TypeMessage } from "../models/message.js";
 import MessageModel from "../models/message.js";
 import { NUMBER_MESSAGE_PER_LOAD } from "../config/constant.js";
+import { deleteFiles } from "../utils/file/file_service.js";
 import {
+  badRequestResponse,
   failResponse,
   successResponse,
   unAuthorizedResponse,
@@ -9,6 +11,7 @@ import {
 import UserModel from "../models/user.js";
 import config from "../config/index.js";
 import RoomModel from "../models/room.js";
+import { CheckIsImageFile, TranferFileMulterToString } from "../config/helper.js";
 
 export default {
   onGetRoomMessages: async (req, res, next) => {
@@ -48,7 +51,40 @@ export default {
 
       return successResponse(res, { messages: messages });
     } catch (error) {
-      return failResponse(res, { error: error });
+      return failResponse(res, { error: error.message });
+    }
+  },
+
+  onGetAllMessages: async (req, res, next) => {
+    const {
+      startIndex,
+      number,
+      orderby,
+      orderdirection,
+      searchby,
+      searchvalue,
+    } = req.query;
+
+    const userId = req.userId;
+    // If is admin, next
+    if (userId !== config.adminId) {
+      return unAuthorizedResponse(res, "Only admin can access this route");
+    }
+
+    try {
+      // const { startIndex, number } = req.body;
+      const messages = await MessageModel.getAllMessages(
+        startIndex,
+        number,
+        orderby,
+        orderdirection,
+        searchby,
+        searchvalue
+      );
+
+      return successResponse(res, { messages: messages });
+    } catch (error) {
+      return failResponse(res, { error: error.message });
     }
   },
 
@@ -59,14 +95,30 @@ export default {
 
     try {
       let value;
+      // Check content or file is nto empty
       if (content) {
         value = content;
-      } else if (files) {
+      } else if (files && files.length) {
         value = files;
       } else {
-        throw new Error("One of the Content and Files must not empty");
+        return badRequestResponse(res, {
+          errorCode: "CONTENT_OR_FILE_NOT_EMPTY",
+          error: "One of the Content and Files must not empty",
+        });
       }
 
+      // Check room exists
+      const roomsCheck = await RoomModel.getRoomsById([roomId]);
+      if (!roomsCheck || roomsCheck.length !== 1) {
+        return badRequestResponse(res, {code: 'ROOM_NOT_EXISTS', error: 'Room is not exists'});
+      }
+      else {
+        if (!roomsCheck[0].joiners.some(user => user.id === senderId)) {
+          return unAuthorizedResponse(res);
+        }
+      }
+
+      // Create message
       const newMessage = await MessageModel.createMessage(
         value,
         roomId,
@@ -74,16 +126,25 @@ export default {
       );
 
       // Set last message for room model
-      RoomModel.setLastMessage(roomId, newMessage.id);
+      RoomModel.checkAndSetLastMessage(roomId, newMessage);
 
       return successResponse(res, {
         success: true,
         message: newMessage,
       });
     } catch (error) {
-      // TODO: if fail, delete files from server
+      console.log('ERROR', error);
+      // Delete all file in request
+      if (files) {
+        deleteFiles(files.map((file) => TranferFileMulterToString(file))).catch(
+          (error) => {
+            console.log("DELETE_FILE_FAIL:", error);
+          }
+        );
+      }
+
       return failResponse(res, {
-        error,
+        error: error?.message ?? error,
         description: "Message cannot send",
       });
     }
@@ -94,83 +155,63 @@ export default {
     const senderId = req.userId;
     const files = req.files;
 
+    const isExists = await UserModel.checkExists([...usersId, senderId]);
+    if (!isExists)
+      return badRequestResponse(res, {
+        errorCode: "USER_NOT_FOUND",
+        error: "The user is not exists",
+      });
+
     try {
       let value;
+      // Check content or file is nto empty
       if (content) {
         value = content;
-      } else if (files) {
+      } else if (files && files.length) {
         value = files;
       } else {
-        throw new Error("One of the Content and Files must not empty");
+        return badRequestResponse(res, {
+          errorCode: "CONTENT_NOT_EMPTY",
+          error: "One of the Content and Files must not empty",
+        });
       }
 
-      let roomId;
-      // Send message for one people, check room exists
-      if (usersId.length === 1) {
-        // Exists room chat of sender and receiver
-        const room = await RoomModel.findRoomByUserId(senderId, usersId[0]);
-        if (room) {
-          roomId = room.id;
-        }
-        else {
-          // If not exists, create new room
-          roomId = await RoomModel.createRoom(
-            "Room no name",
-            null,
-            [senderId, ...usersId],
-          );
-        }
-      } else {
-        // Create new room for group user
-        roomId = await RoomModel.createRoom(
-          "Group no name",
-          null,
-          [senderId, ...usersId],
-        );
-      }
+      // Find or create new room by usersId
+      const room = await RoomModel.findOrCreateRoom([...usersId, senderId]);
 
+      // Create message
       const newMessage = await MessageModel.createMessage(
         value,
-        roomId,
+        room.id,
         senderId
       );
 
       // Set last message for room model
-      RoomModel.setLastMessage(roomId, newMessage.id);
+      RoomModel.checkAndSetLastMessage(room.id, newMessage);
 
       return successResponse(res, {
         success: true,
         message: newMessage,
       });
     } catch (error) {
-      // TODO: if fail, delete files from server
+      // Delete all file in request
+      if (files) {
+        deleteFiles(files).catch((error) => {
+          console.log("DELETE_FILE_FAIL:", error);
+        });
+      }
+
       return failResponse(res, {
-        error,
+        error: error?.message ?? error,
         description: "Message cannot send",
       });
     }
   },
 
-  onSendImage: async (req, res, next) => {
-    const { content, roomId } = req.body;
-
-    try {
-      await MessageModel.send(content, "image", roomId);
-      return successResponse(res);
-    } catch (error) {
-      return failResponse(res, error);
-    }
+  onUpdateMessage: async (req, res, next) => {
+    const {} = req.body;
   },
-  onSendFile: async (req, res, next) => {
-    const { content, roomId } = req.body;
 
-    try {
-      await MessageModel.send(content, "file", roomId);
-      return successResponse(res);
-    } catch (error) {
-      return failResponse(res, error);
-    }
-  },
   onDeleteMessage: async (req, res, next) => {
     const { messageId, roomId } = req.body;
 
@@ -186,28 +227,28 @@ export default {
       return failResponse(res, { error, description: "Message cannot delete" });
     }
   },
-  onGetImages: async (req, res, next) => {
-    // const { startIndex, number } = req.body;
-    const { roomId, startIndex, number } = req.query;
+  // onGetImages: async (req, res, next) => {
+  //   // const { startIndex, number } = req.body;
+  //   const { roomId, startIndex, number } = req.query;
 
-    try {
-      const images = await MessageModel.getImages(startIndex, number, roomId);
+  //   try {
+  //     const images = await MessageModel.getImages(startIndex, number, roomId);
 
-      return successResponse(res, images);
-    } catch (error) {
-      return failResponse(res, error);
-    }
-  },
-  onGetFile: async (req, res, next) => {
-    // const { startIndex, number } = req.body;
-    const { roomId, startIndex, number } = req.query;
+  //     return successResponse(res, images);
+  //   } catch (error) {
+  //     return failResponse(res, error);
+  //   }
+  // },
+  // onGetFile: async (req, res, next) => {
+  //   // const { startIndex, number } = req.body;
+  //   const { roomId, startIndex, number } = req.query;
 
-    try {
-      const files = await MessageModel.getFiles(startIndex, number, roomId);
+  //   try {
+  //     const files = await MessageModel.getFiles(startIndex, number, roomId);
 
-      return successResponse(res, files);
-    } catch (error) {
-      return failResponse(res, error);
-    }
-  },
+  //     return successResponse(res, files);
+  //   } catch (error) {
+  //     return failResponse(res, error);
+  //   }
+  // },
 };

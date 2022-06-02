@@ -1,4 +1,8 @@
 import { DataTypes, Model, Op } from "sequelize";
+import {
+  CheckIsImageFile,
+  TranferFileMulterToString,
+} from "../config/helper.js";
 import sequelize from "../config/mysql.js";
 import User from "./user.js";
 
@@ -14,39 +18,45 @@ class Message extends Model {
    * @returns new message
    */
   static async createMessage(value, roomId, senderId) {
-    const typeContent = Array.isArray(value) ? 'content' : 'file';
-    const content = Array.isArray(value) ? value.join(', ') : value; // if is list file, join with ','
+    const typeContent = Array.isArray(value)
+      ? CheckIsImageFile(value[0].filename)
+        ? "image"
+        : "file"
+      : "text";
+    const content = Array.isArray(value)
+      ? value.map((file) => TranferFileMulterToString(file)).join(", ")
+      : value; // if is list file, join with ','
 
     const message = await Message.create({
-      content,
-      typeContent,
+      content: content,
+      typeContent: typeContent,
       senderId,
       roomId,
     });
     return message;
   }
 
-  static async sendImage(content, typeContent, roomId, senderId) {
-    const message = await Message.create({
-      content,
-      typeContent: "image",
-      senderId,
-      roomId,
-    });
-    //TODO: upload image to db
-    return message;
-  }
+  // static async sendImage(content, typeContent, roomId, senderId) {
+  //   const message = await Message.create({
+  //     content,
+  //     typeContent: "image",
+  //     senderId,
+  //     roomId,
+  //   });
+  //   //TODO: upload image to db
+  //   return message;
+  // }
 
-  static async sendFile(content, typeContent, roomId, senderId) {
-    const message = await Message.create({
-      content,
-      typeContent: "file",
-      senderId,
-      roomId,
-    });
-    //TODO: upload file to db
-    return message;
-  }
+  // static async sendFile(content, typeContent, roomId, senderId) {
+  //   const message = await Message.create({
+  //     content,
+  //     typeContent: "file",
+  //     senderId,
+  //     roomId,
+  //   });
+  //   //TODO: upload file to db
+  //   return message;
+  // }
 
   static async getMessagesByRoomId(
     roomId,
@@ -94,14 +104,14 @@ class Message extends Model {
         typeContent: { [Op.in]: searchTypeBy },
       },
       attributes: {
-        exclude: ['roomId','senderId']
+        exclude: ["roomId", "senderId"],
       },
       include: {
         model: User, //Get sender data
         as: "sender",
         attributes: {
-          exclude: ['numberEvent','numberFollower']
-        }
+          exclude: ["numberEvent", "numberFollower"],
+        },
       },
       limit: number,
       offset: startIndex,
@@ -110,53 +120,115 @@ class Message extends Model {
     return messages;
   }
 
-  static async getLastMessageInRoom(roomId) {
-    try {
-      //? Should get message and sender data?
-      const message = await Message.findOne({
-        where: { roomId: roomId },
-        order: [["timeCreate", "DESC"]],
-        include: {
-          model: User, //Get sender data
-          as: "sender",
-          attribute: [
-            ["id", "senderId"],
-            ["name", "senderName"],
-            ["imageUri", "senderImageUri"],
-          ],
-        },
-      });
-      return message;
-    } catch (error) {
-      throw error;
-    }
-  }
+  static async getAllMessages(
+    startIndex,
+    number,
+    orderby,
+    orderdirection,
+    searchby,
+    searchvalue
+  ) {
+    var searchOrderby;
+    var searchTypeBy;
 
-  static async getMessagesByContent(textMatch, roomId, startIndex, number) {
-    //Just find text message
-    const { count, rows: messages } = await Message.findAndCountAll({
-      where: {
-        roomId: roomId,
-        typeContent: "text",
-        content: {
-          [Op.substring]: textMatch,
-        },
+    switch (orderby) {
+      case "createTime":
+        searchOrderby = ["createTime"];
+        break;
+      default:
+        break;
+    }
+
+    switch (searchby) {
+      case "all":
+        searchTypeBy = TypeMessage.values;
+        break;
+      case "text":
+        searchTypeBy = ["text"];
+        break;
+      case "media":
+        searchTypeBy = ["image", "video"];
+        break;
+      case "file":
+        searchTypeBy = ["file"];
+        break;
+      default:
+        break;
+    }
+
+    var searchWhere = {
+      content: {
+        [Op.substring]: searchvalue,
       },
-      order: [["timeCreate", "DESC"]],
+      typeContent: { [Op.in]: searchTypeBy },
+    };
+
+    const messages = await Message.findAll({
+      where: searchWhere,
+      attributes: {
+        exclude: ["senderId"],
+      },
       include: {
         model: User, //Get sender data
         as: "sender",
-        attribute: [
-          ["id", "senderId"],
-          ["name", "senderName"],
-          ["imageUri", "senderImageUri"],
-        ],
+        attributes: {
+          include: ["password"],
+        },
       },
       limit: number,
       offset: startIndex,
+      order: [[...searchOrderby, orderdirection]],
     });
-    return { messages, count };
+    return messages;
   }
+
+  // static async getLastMessageInRoom(roomId) {
+  //   try {
+  //     //? Should get message and sender data?
+  //     const message = await Message.findOne({
+  //       where: { roomId: roomId },
+  //       order: [["timeCreate", "DESC"]],
+  //       include: {
+  //         model: User, //Get sender data
+  //         as: "sender",
+  //         attribute: [
+  //           ["id", "senderId"],
+  //           ["name", "senderName"],
+  //           ["imageUri", "senderImageUri"],
+  //         ],
+  //       },
+  //     });
+  //     return message;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+  // static async getMessagesByContent(textMatch, roomId, startIndex, number) {
+  //   //Just find text message
+  //   const { count, rows: messages } = await Message.findAndCountAll({
+  //     where: {
+  //       roomId: roomId,
+  //       typeContent: "text",
+  //       content: {
+  //         [Op.substring]: textMatch,
+  //       },
+  //     },
+  //     order: [["timeCreate", "DESC"]],
+  //     include: {
+  //       model: User, //Get sender data
+  //       as: "sender",
+  //       attribute: [
+  //         ["id", "senderId"],
+  //         ["name", "senderName"],
+  //         ["imageUri", "senderImageUri"],
+  //       ],
+  //     },
+  //     limit: number,
+  //     offset: startIndex,
+  //   });
+  //   return { messages, count };
+  // }
 
   static async deleteMessageInRoom(roomId) {
     const rs = await Message.destroy({
@@ -171,43 +243,43 @@ class Message extends Model {
     // TODO: delete and remove some relation object (file, image)
   }
 
-  static async getImages(startIndex, number, roomId) {
-    const messages = await Message.findAll({
-      where: { roomId: roomId, typeContent: "image" },
-      order: [["timeCreate", "DESC"]],
-      // include: {
-      //     model: User, //Get sender data
-      //     as: "sender",
-      //     attribute: [
-      //         ["id", "senderId"],
-      //         ["name", "senderName"],
-      //         ["imageUri", "senderImageUri"],
-      //     ],
-      // },
-      limit: number,
-      offset: startIndex,
-    });
-    return messages;
-  }
+  // static async getImages(startIndex, number, roomId) {
+  //   const messages = await Message.findAll({
+  //     where: { roomId: roomId, typeContent: "image" },
+  //     order: [["timeCreate", "DESC"]],
+  //     // include: {
+  //     //     model: User, //Get sender data
+  //     //     as: "sender",
+  //     //     attribute: [
+  //     //         ["id", "senderId"],
+  //     //         ["name", "senderName"],
+  //     //         ["imageUri", "senderImageUri"],
+  //     //     ],
+  //     // },
+  //     limit: number,
+  //     offset: startIndex,
+  //   });
+  //   return messages;
+  // }
 
-  static async getFiles(startIndex, number, roomId) {
-    const messages = await Message.findAll({
-      where: { roomId: roomId, typeContent: "file" },
-      order: [["timeCreate", "DESC"]],
-      // include: {
-      //     model: User, //Get sender data
-      //     as: "sender",
-      //     attribute: [
-      //         ["id", "senderId"],
-      //         ["name", "senderName"],
-      //         ["imageUri", "senderImageUri"],
-      //     ],
-      // },
-      limit: number,
-      offset: startIndex,
-    });
-    return messages;
-  }
+  // static async getFiles(startIndex, number, roomId) {
+  //   const messages = await Message.findAll({
+  //     where: { roomId: roomId, typeContent: "file" },
+  //     order: [["timeCreate", "DESC"]],
+  //     // include: {
+  //     //     model: User, //Get sender data
+  //     //     as: "sender",
+  //     //     attribute: [
+  //     //         ["id", "senderId"],
+  //     //         ["name", "senderName"],
+  //     //         ["imageUri", "senderImageUri"],
+  //     //     ],
+  //     // },
+  //     limit: number,
+  //     offset: startIndex,
+  //   });
+  //   return messages;
+  // }
 }
 
 Message.init(

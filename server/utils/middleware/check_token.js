@@ -17,7 +17,7 @@ router.use((req, res, next) => {
     }
 
     // ? Can delete it if not needed
-    if (token === config.jwt.token) {
+    if (token === config.jwt.tokenExample) {
       console.log("TOKEN_CHECK_SUCCESS:", "Token is example");
       req.userId = config.exampleId;
       return next();

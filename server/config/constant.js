@@ -1,12 +1,19 @@
 const NUMBER_ROOM_PER_LOAD = 10;
 const NUMBER_MESSAGE_PER_LOAD = 10;
 const NUMBER_ACTIVE_UER_PER_LOAD = 10;
-const MAX_FILE_NUMBER_RECEIVE = 10;
+
+const MAX_FILE_NUMBER_RECEIVE = 2;
+const MAX_FILE_SIZE_RECEIVE = 1024 * 1024 * 2 // 2MB
 
 const INVALID_INPUT_MESSAGE='Invalid input';
 
 const ROOM_UPLOAD_DIR = 'public/room/';
-const CHAT_UPLOAD_DIR = 'public/message/'
+const CHAT_UPLOAD_DIR = 'public/message/';
+
+const ERROR_CODE = {
+    FILE: 'FILE_INPUT_ERROR',
+    ACCESS_DENIED: '',
+};
 
 export {
     NUMBER_ROOM_PER_LOAD,
@@ -15,5 +22,6 @@ export {
     INVALID_INPUT_MESSAGE,
     ROOM_UPLOAD_DIR,
     CHAT_UPLOAD_DIR,
-    MAX_FILE_NUMBER_RECEIVE
+    MAX_FILE_NUMBER_RECEIVE,
+    MAX_FILE_SIZE_RECEIVE
 };
