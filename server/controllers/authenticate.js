@@ -2,6 +2,7 @@ import UserModel from "../models/user.js";
 import { failResponse, successResponse } from "./index.js";
 import jwt from "jsonwebtoken";
 import config from "../config/index.js";
+import { buildToken } from "../utils/middleware/token_service.js";
 
 export default {
   onLogin: async (req, res) => {
@@ -20,11 +21,9 @@ export default {
       }
 
       // create jwt
-      var token = jwt.sign({ id: user.id }, config.jwt.secretCode, {
-        expiresIn: config.jwt.expireTime,
-      });
+      var token = buildToken({id: userId});
 
-      return successResponse(res, { status: true, user, token });
+      return successResponse(res, { status: true, user: user, token: token });
     } catch (error) {
       return failResponse(res, error);
     }

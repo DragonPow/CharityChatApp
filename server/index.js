@@ -2,11 +2,8 @@ import http from "http";
 import express from "express";
 import logger from './utils/logger/logger_service.js';
 import bodyParser from 'body-parser';
-import { Server } from "socket.io";
-import WebSocket from "./config/websocket.js";
-
-import { default as path, dirname } from "path";
-import { fileURLToPath } from "url";
+import webSocket from './config/websocket.js';
+import config from './config/index.js'
 
 import './models/index.js';
 
@@ -15,11 +12,9 @@ import userRouter from "./routes/user.js";
 import chatRouter from "./routes/chat.js";
 import roomRouter from "./routes/room.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const port = config.server.port;
 
 const app = express();
-
-const port = process.env.PORT || "3000";
 app.set("port", port);
 
 app.use(bodyParser.json());
@@ -36,7 +31,6 @@ app.use("/users", userRouter);
 app.use("/rooms", roomRouter);
 app.use("/messages", chatRouter);
 
-// import("./models/relationship.js");
 //Catch 404 and forward to error handler
 app.use("*", (req, res) => {
     return res.status(404).json({
@@ -45,12 +39,10 @@ app.use("*", (req, res) => {
     });
 });
 
+
 //Create HTTP server
 const httpServer = http.createServer(app);
-//Create socket connection
-//TODO: make socket listen from server
-const io = new Server(httpServer);
-io.on("connection", WebSocket.connection);
+const socket = webSocket;
 
 //Listen on provided port
 httpServer.listen(port);

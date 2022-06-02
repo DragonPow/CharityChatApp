@@ -1,8 +1,8 @@
 import express from "express";
 import room from "../controllers/room.js";
 import { checkSchema } from "express-validator";
-import checkInput from "../utils/middleware/check_input.js";
-import checkToken, { tokenSchema } from "../utils/middleware/check_token.js";
+import {checkInput} from "../utils/middleware/input_validate_service.js";
+import {checkToken} from "../utils/middleware/token_service.js";
 import multer from 'multer';
 import { ROOM_UPLOAD_DIR } from "../config/constant.js";
 
@@ -10,117 +10,119 @@ import { ROOM_UPLOAD_DIR } from "../config/constant.js";
 const router = express.Router();
 const uploadRoomFile = multer({dest: ROOM_UPLOAD_DIR});
 
-const getRoomInputValidate = checkSchema({
-  // tokenSchema, // TODO: fix token here
-  userId: {
-    in: ["query"],
-    errorMessage: "Need contain",
-    exists: true,
-  },
-  startIndex: {
-    in: ["query"],
-    errorMessage: "Must be positive number",
-    exists: true,
-    isInt: {
-      options: {
-        min: 0,
+class RoomInputValidateBuilder {
+  static onGetRoom = checkSchema({
+    // tokenSchema, // TODO: fix token here
+    userId: {
+      in: ["query"],
+      errorMessage: "Need contain",
+      exists: true,
+    },
+    startIndex: {
+      in: ["query"],
+      errorMessage: "Must be positive number",
+      exists: true,
+      isInt: {
+        options: {
+          min: 0,
+        },
+        errorMessage: "Larger or equal 0",
       },
-      errorMessage: "Larger or equal 0",
+      toInt: true,
     },
-    toInt: true,
-  },
-  number: {
-    in: ["query"],
-    errorMessage: "Must be positive number",
-    exists: true,
-    isInt: {
-      options: {
-        min: 1,
+    number: {
+      in: ["query"],
+      errorMessage: "Must be positive number",
+      exists: true,
+      isInt: {
+        options: {
+          min: 1,
+        },
+        errorMessage: "Larger or equal 1",
       },
-      errorMessage: "Larger or equal 1",
+      toInt: true,
     },
-    toInt: true,
-  },
-  orderby: {
-    in: ["query"],
-    isIn: {
-      options: [["name", "lastMessage", "timeCreate"]],
-      errorMessage: "Must be 'name', 'lastMessage' or 'timeCreate'",
-    },
-    errorMessage: "Not null",
-    exists: {
-      options: {
-        checkFalsy: true, // for 0, '', false, null
+    orderby: {
+      in: ["query"],
+      isIn: {
+        options: [["name", "lastMessage", "timeCreate"]],
+        errorMessage: "Must be 'name', 'lastMessage' or 'timeCreate'",
       },
-    },
-  },
-  orderdirection: {
-    in: ["query"],
-    isIn: {
-      options: [["asc", "desc"]],
-      errorMessage: "Must be 'asc', or 'desc'",
-    },
-    errorMessage: "Not null",
-    exists: {
-      options: {
-        checkFalsy: true, // for 0, '', false, null
+      errorMessage: "Not null",
+      exists: {
+        options: {
+          checkFalsy: true, // for 0, '', false, null
+        },
       },
     },
-  },
-  searchby: {
-    in: ["query"],
-    isIn: {
-      options: [["name"]],
-      errorMessage: "Must be 'name'",
-    },
-  },
-  searchvalue: {
-    in: ["query"],
-    trim: true,
-  },
-});
-const findRoomInputValidate = checkSchema({
-  otherUserId: {
-    in:['query'],
-    isString: true,
-    exists: {
-      options: {
-        checkFalsy: true
-      }
-    },
-    errorMessage: 'userId must be string and not empty',
-  }
-})
-const createRoomInputValidate = checkSchema({
-  name: {
-    in: ["body"],
-    isString: true,
-  },
-  joinersId: {
-    in: ["body"],
-    custom: {
-      options: (value) => {
-        const list = String(value).split(',');
-        return list.length > 0;
+    orderdirection: {
+      in: ["query"],
+      isIn: {
+        options: [["asc", "desc"]],
+        errorMessage: "Must be 'asc', or 'desc'",
       },
-      errorMessage: "At least one member in room"
-    },
-    customSanitizer: {
-      options: (value) => String(value).split(','),
-    },
-    exists: {
-      options: {
-        checkFalsy: true,
+      errorMessage: "Not null",
+      exists: {
+        options: {
+          checkFalsy: true, // for 0, '', false, null
+        },
       },
-      errorMessage: "Must provide joinersId",
     },
-  },
-});
+    searchby: {
+      in: ["query"],
+      isIn: {
+        options: [["name"]],
+        errorMessage: "Must be 'name'",
+      },
+    },
+    searchvalue: {
+      in: ["query"],
+      trim: true,
+    },
+  });
+  static onFindRoom = checkSchema({
+    otherUserId: {
+      in:['query'],
+      isString: true,
+      exists: {
+        options: {
+          checkFalsy: true
+        }
+      },
+      errorMessage: 'userId must be string and not empty',
+    }
+  })
+  static onCreateRoom = checkSchema({
+    name: {
+      in: ["body"],
+      isString: true,
+    },
+    joinersId: {
+      in: ["body"],
+      custom: {
+        options: (value) => {
+          const list = String(value).split(',');
+          return list.length > 0;
+        },
+        errorMessage: "At least one member in room"
+      },
+      customSanitizer: {
+        options: (value) => String(value).split(','),
+      },
+      exists: {
+        options: {
+          checkFalsy: true,
+        },
+        errorMessage: "Must provide joinersId",
+      },
+    },
+  });
 
+}
 
 router.get(
   "/select",
-  getRoomInputValidate,
+  RoomInputValidateBuilder.onGetRoom,
   checkInput,
   // checkToken,
   room.onGetRoomsByPaging
@@ -128,7 +130,7 @@ router.get(
 
 router.get(
   '/find',
-  findRoomInputValidate,
+  RoomInputValidateBuilder.onFindRoom,
   checkInput,
   checkToken,
   room.onFindRoomByUserId
@@ -137,7 +139,7 @@ router.get(
 router.post(
   "/create",
   uploadRoomFile.single('image'),
-  createRoomInputValidate,
+  RoomInputValidateBuilder.onCreateRoom,
   checkInput,
   checkToken,
   room.onCreateRoom

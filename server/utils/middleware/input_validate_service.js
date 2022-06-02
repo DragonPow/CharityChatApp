@@ -1,5 +1,5 @@
 import express from "express";
-import { checkSchema, validationResult } from "express-validator";
+import { validationResult } from "express-validator";
 import { INVALID_INPUT_MESSAGE } from "../../config/constant.js";
 import { badRequestResponse } from "../../controllers/index.js";
 
@@ -23,4 +23,4 @@ router.use((req, res, next) => {
   }
 });
 
-export default router;
+export {router as checkInput};

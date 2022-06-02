@@ -1,8 +1,8 @@
 import express from "express";
 import chat from "../controllers/chat.js";
 import { checkSchema } from "express-validator";
-import checkInput from "../utils/middleware/check_input.js";
-import checkToken from "../utils/middleware/check_token.js";
+import {checkInput} from "../utils/middleware/input_validate_service.js";
+import { checkToken } from "../utils/middleware/token_service.js";
 import {
   CHAT_UPLOAD_DIR,
   MAX_FILE_NUMBER_RECEIVE,
@@ -19,229 +19,230 @@ const upload = myMulter(
   MAX_FILE_NUMBER_RECEIVE
 ).array("files");
 
-// Validate input
-const getMessagesInRoomInputValidate = checkSchema({
-  roomId: {
-    in: ["query"],
-    errorMessage: "Need contain",
-    exists: true,
-  },
-  startIndex: {
-    in: ["query"],
-    errorMessage: "Must be positive number",
-    exists: true,
-    isInt: {
-      options: {
-        min: 0,
+class ChatInputValidateBuilder {
+  static onGetMessagesInRoom = checkSchema({
+    roomId: {
+      in: ["query"],
+      errorMessage: "Need contain",
+      exists: true,
+    },
+    startIndex: {
+      in: ["query"],
+      errorMessage: "Must be positive number",
+      exists: true,
+      isInt: {
+        options: {
+          min: 0,
+        },
+        errorMessage: "Larger or equal 0",
       },
-      errorMessage: "Larger or equal 0",
+      toInt: true,
     },
-    toInt: true,
-  },
-  number: {
-    in: ["query"],
-    errorMessage: "Must be positive number",
-    exists: true,
-    isInt: {
-      options: {
-        min: 1,
+    number: {
+      in: ["query"],
+      errorMessage: "Must be positive number",
+      exists: true,
+      isInt: {
+        options: {
+          min: 1,
+        },
+        errorMessage: "Larger or equal 1",
       },
-      errorMessage: "Larger or equal 1",
+      toInt: true,
     },
-    toInt: true,
-  },
-  orderby: {
-    in: ["query"],
-    isIn: {
-      options: [["createTime"]],
-      errorMessage: "Must be 'createTime'",
-    },
-    errorMessage: "Not null",
-    exists: {
-      options: {
-        checkFalsy: true, // for 0, '', false, null
+    orderby: {
+      in: ["query"],
+      isIn: {
+        options: [["createTime"]],
+        errorMessage: "Must be 'createTime'",
       },
-    },
-  },
-  orderdirection: {
-    in: ["query"],
-    isIn: {
-      options: [["asc", "desc"]],
-      errorMessage: "Must be 'asc', or 'desc'",
-    },
-    errorMessage: "Not null",
-    exists: {
-      options: {
-        checkFalsy: true, // for 0, '', false, null
+      errorMessage: "Not null",
+      exists: {
+        options: {
+          checkFalsy: true, // for 0, '', false, null
+        },
       },
     },
-  },
-  searchby: {
-    in: ["query"],
-    isIn: {
-      options: [["all", "text", "media", "file"]],
-      errorMessage: "Must be 'all', 'text','media' or 'file'",
-    },
-  },
-  searchvalue: {
-    in: ["query"],
-    trim: true,
-  },
-});
-const getAllMessagesInputValidate = checkSchema({
-  startIndex: {
-    in: ["query"],
-    errorMessage: "Must be positive number",
-    exists: true,
-    isInt: {
-      options: {
-        min: 0,
+    orderdirection: {
+      in: ["query"],
+      isIn: {
+        options: [["asc", "desc"]],
+        errorMessage: "Must be 'asc', or 'desc'",
       },
-      errorMessage: "Larger or equal 0",
-    },
-    toInt: true,
-  },
-  number: {
-    in: ["query"],
-    errorMessage: "Must be positive number",
-    exists: true,
-    isInt: {
-      options: {
-        min: 1,
-      },
-      errorMessage: "Larger or equal 1",
-    },
-    toInt: true,
-  },
-  orderby: {
-    in: ["query"],
-    isIn: {
-      options: [["createTime"]],
-      errorMessage: "Must be 'createTime'",
-    },
-    errorMessage: "Not null",
-    exists: {
-      options: {
-        checkFalsy: true, // for 0, '', false, null
+      errorMessage: "Not null",
+      exists: {
+        options: {
+          checkFalsy: true, // for 0, '', false, null
+        },
       },
     },
-  },
-  orderdirection: {
-    in: ["query"],
-    isIn: {
-      options: [["asc", "desc"]],
-      errorMessage: "Must be 'asc', or 'desc'",
-    },
-    errorMessage: "Not null",
-    exists: {
-      options: {
-        checkFalsy: true, // for 0, '', false, null
+    searchby: {
+      in: ["query"],
+      isIn: {
+        options: [["all", "text", "media", "file"]],
+        errorMessage: "Must be 'all', 'text','media' or 'file'",
       },
     },
-  },
-  searchby: {
-    in: ["query"],
-    isIn: {
-      options: [["all", "text", "media", "file"]],
-      errorMessage: "Must be 'all', 'text','media' or 'file'",
+    searchvalue: {
+      in: ["query"],
+      trim: true,
     },
-  },
-  searchvalue: {
-    in: ["query"],
-    trim: true,
-  },
-});
-const createMessageByRoomInputValidate = checkSchema({
-  token: {
-    in: ["headers"],
-    exists: {
-      options: {
-        checkFalsy: true,
+  });
+  static onGetAllMessages = checkSchema({
+    startIndex: {
+      in: ["query"],
+      errorMessage: "Must be positive number",
+      exists: true,
+      isInt: {
+        options: {
+          min: 0,
+        },
+        errorMessage: "Larger or equal 0",
       },
-      errorMessage: "Must provide token",
+      toInt: true,
     },
-  },
-  content: {
-    in: ["body"],
-    // exists: {
-    //   options: {
-    //     checkFalsy: true,
-    //   },
-    // },
-  },
-  roomId: {
-    in: ["body"],
-    isString: true,
-    exists: {
-      options: {
-        checkFalsy: true,
+    number: {
+      in: ["query"],
+      errorMessage: "Must be positive number",
+      exists: true,
+      isInt: {
+        options: {
+          min: 1,
+        },
+        errorMessage: "Larger or equal 1",
       },
-      errorMessage: "Must provide roomId",
+      toInt: true,
     },
-  },
-});
-const createMessageByUserInputValidate = checkSchema({
-  token: {
-    in: ["headers"],
-    exists: {
-      options: {
-        checkFalsy: true,
+    orderby: {
+      in: ["query"],
+      isIn: {
+        options: [["createTime"]],
+        errorMessage: "Must be 'createTime'",
       },
-      errorMessage: "Must provide token",
-    },
-  },
-  content: {
-    in: ["body"],
-    // exists: {
-    //   options: {
-    //     checkFalsy: true,
-    //   },
-    // },
-  },
-  usersId: {
-    in: ["body"],
-    custom: {
-      options: (value) => {
-        const list = String(value).split(",");
-        return list.length > 0;
+      errorMessage: "Not null",
+      exists: {
+        options: {
+          checkFalsy: true, // for 0, '', false, null
+        },
       },
-      errorMessage: "At least one user to chat",
     },
-    customSanitizer: {
-      options: (value) => String(value).split(","),
-    },
-    exists: {
-      options: {
-        checkFalsy: true,
+    orderdirection: {
+      in: ["query"],
+      isIn: {
+        options: [["asc", "desc"]],
+        errorMessage: "Must be 'asc', or 'desc'",
       },
-      errorMessage: "Must provide usersId",
-    },
-  },
-});
-const updateMessageInputValidate = checkSchema({
-  token: {
-    in: ["headers"],
-    exists: {
-      options: {
-        checkFalsy: true,
+      errorMessage: "Not null",
+      exists: {
+        options: {
+          checkFalsy: true, // for 0, '', false, null
+        },
       },
-      errorMessage: "Must provide token",
     },
-  },
-  content: {
-    in: ["body"],
-    // exists: {
-    //   options: {
-    //     checkFalsy: true,
-    //   },
-    // },
-  },
-});
+    searchby: {
+      in: ["query"],
+      isIn: {
+        options: [["all", "text", "media", "file"]],
+        errorMessage: "Must be 'all', 'text','media' or 'file'",
+      },
+    },
+    searchvalue: {
+      in: ["query"],
+      trim: true,
+    },
+  });
+  static onCreateMessageByRoom = checkSchema({
+    token: {
+      in: ["headers"],
+      exists: {
+        options: {
+          checkFalsy: true,
+        },
+        errorMessage: "Must provide token",
+      },
+    },
+    content: {
+      in: ["body"],
+      // exists: {
+      //   options: {
+      //     checkFalsy: true,
+      //   },
+      // },
+    },
+    roomId: {
+      in: ["body"],
+      isString: true,
+      exists: {
+        options: {
+          checkFalsy: true,
+        },
+        errorMessage: "Must provide roomId",
+      },
+    },
+  });
+  static onCreateMessageByUser = checkSchema({
+    token: {
+      in: ["headers"],
+      exists: {
+        options: {
+          checkFalsy: true,
+        },
+        errorMessage: "Must provide token",
+      },
+    },
+    content: {
+      in: ["body"],
+      // exists: {
+      //   options: {
+      //     checkFalsy: true,
+      //   },
+      // },
+    },
+    usersId: {
+      in: ["body"],
+      custom: {
+        options: (value) => {
+          const list = String(value).split(",");
+          return list.length > 0;
+        },
+        errorMessage: "At least one user to chat",
+      },
+      customSanitizer: {
+        options: (value) => String(value).split(","),
+      },
+      exists: {
+        options: {
+          checkFalsy: true,
+        },
+        errorMessage: "Must provide usersId",
+      },
+    },
+  });
+  static onUpdateMessage = checkSchema({
+    token: {
+      in: ["headers"],
+      exists: {
+        options: {
+          checkFalsy: true,
+        },
+        errorMessage: "Must provide token",
+      },
+    },
+    content: {
+      in: ["body"],
+      // exists: {
+      //   options: {
+      //     checkFalsy: true,
+      //   },
+      // },
+    },
+  });
+}
 
 // Route
 router.get(
   "/select",
-  getMessagesInRoomInputValidate,
+  ChatInputValidateBuilder.onGetMessagesInRoom,
   checkInput,
   checkToken,
   chat.onGetRoomMessages
@@ -249,7 +250,7 @@ router.get(
 
 router.get(
   "/selectAll",
-  getAllMessagesInputValidate,
+  ChatInputValidateBuilder.onGetAllMessages,
   checkInput,
   checkToken,
   chat.onGetAllMessages
@@ -267,7 +268,7 @@ router.post(
       }
       return next();
     }),
-  createMessageByRoomInputValidate,
+  ChatInputValidateBuilder.onCreateMessageByRoom,
   checkInput,
   checkToken,
   chat.onCreateMessageByRoomId
@@ -285,7 +286,7 @@ router.post(
       }
       return next();
     }),
-  createMessageByUserInputValidate,
+  ChatInputValidateBuilder.onCreateMessageByUser,
   checkInput,
   checkToken,
   chat.onCreateMessageByUserId
@@ -303,7 +304,7 @@ router.post(
       }
       return next();
     }),
-  updateMessageInputValidate,
+  ChatInputValidateBuilder.onUpdateMessage,
   checkInput,
   checkToken,
   chat.onUpdateMessage
