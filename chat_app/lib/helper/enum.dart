@@ -1,3 +1,3 @@
-enum MessageType {
+enum MessageChatType {
   text, image, video, file
 }

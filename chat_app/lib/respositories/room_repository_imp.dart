@@ -1,21 +1,7 @@
 import 'package:chat_app/domain/entities/room_entity.dart';
 import 'package:chat_app/domain/repositories/room_repository.dart';
 
-import '../../helper/network/network_info.dart';
-import '../datasources/local/local_datasource.dart';
-import '../datasources/remote/remote_datasource.dart';
-
-class RoomRepositoryImp implements IRoomRepository {
-  final RemoteDataSource remoteDataSource;
-  final LocalDataSource localDataSource;
-  final NetworkInfo networkInfo;
-
-  RoomRepositoryImp({
-    required this.remoteDataSource,
-    required this.localDataSource,
-    required this.networkInfo,
-  });
-
+class RoomReposityImp extends IRoomRepository{
   @override
   Future<bool> addUser(String roomId, String userId) {
     // TODO: implement addUser
@@ -50,7 +36,6 @@ class RoomRepositoryImp implements IRoomRepository {
   Future<List<RoomEntity>> findRoomsByName(String textMatch) {
     // TODO: implement findRoomsByName
     throw UnimplementedError();
-    
   }
 
   @override
@@ -64,4 +49,5 @@ class RoomRepositoryImp implements IRoomRepository {
     // TODO: implement removeUser
     throw UnimplementedError();
   }
+  
 }

@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:chat_app/presentation/components/avatarcicle.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/custom_chatroom_theme.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/option.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,6 +18,8 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../configs/colorconfig.dart';
 import '../../../../configs/fontconfig.dart';
+import '../../../../helper/helper.dart';
+import '../../../bloc/chat_detail/chat_detail_bloc.dart';
 
 class ChatRoom extends StatefulWidget {
   const ChatRoom({Key? key}) : super(key: key);
@@ -28,14 +30,23 @@ class ChatRoom extends StatefulWidget {
 
 class _ChatRoomState extends State<ChatRoom> {
   List<types.Message> _messages = [];
-  final _user = const types.User(id: '00'); // id of current user 
+  final _user = const types.User(id: '00'); // id of current user
+  var _chatDetailBloc;
 
   @override
   void initState() {
     super.initState();
-    _loadMessages();
-  }
+    _chatDetailBloc = BlocProvider.of<ChatDetailBloc>(context);
+    _chatDetailBloc.add(
+        const ChatDetailLoadMessage(number: 10, roomId: "1", startIndex: 0));
 
+    //_loadMessages();
+  }
+ @override
+  void dispose() {
+  //  _chatDetailBloc.dispose();
+    super.dispose();
+  }
   void _addMessage(types.Message message) {
     setState(() {
       _messages.insert(0, message);
@@ -59,7 +70,10 @@ class _ChatRoomState extends State<ChatRoom> {
                   },
                   child: Align(
                     alignment: AlignmentDirectional.centerStart,
-                    child: Text('Photo', style: kText15RegularMain,),
+                    child: Text(
+                      'Photo',
+                      style: kText15RegularMain,
+                    ),
                   ),
                 ),
                 TextButton(
@@ -69,14 +83,14 @@ class _ChatRoomState extends State<ChatRoom> {
                   },
                   child: Align(
                     alignment: AlignmentDirectional.centerStart,
-                    child: Text('File',  style: kText15RegularMain),
+                    child: Text('File', style: kText15RegularMain),
                   ),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Align(
                     alignment: AlignmentDirectional.centerStart,
-                    child: Text('Cancel',  style: kText15RegularMain),
+                    child: Text('Hủy', style: kText15RegularMain),
                   ),
                 ),
               ],
@@ -178,36 +192,47 @@ class _ChatRoomState extends State<ChatRoom> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: getAppBar(),
-      body: SafeArea(
-        bottom: false,
-        child: Chat(
-            showUserAvatars: true,
-            messages: _messages,
-            onAttachmentPressed: _handleAtachmentPressed,
-            onMessageTap: _handleMessageTap,
-            onPreviewDataFetched: _handlePreviewDataFetched,
-            onSendPressed: _handleSendPressed,
-            user: _user,
-            theme: CustomChatroomTheme,
-            emptyState: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Icon(
-                  FontAwesomeIcons.commentDots,
-                  color: cwColorGreyNoteText,
-                  size: 160,
-                ),
-                const SizedBox(height: 20,),
-                Text(
-                  "Oh, hãy bắt đầu cuộc trò chuyện nào!",
-                  style: kText15RegularGreyNotetext,
-                )
-              ],
-            )),
-      ),
-    );
+        appBar: getAppBar(),
+        body: SafeArea(
+          bottom: false,
+          child: BlocBuilder<ChatDetailBloc, ChatDetailState>(
+            builder: (context, state) {
+              if (state is ChatDetailLoadSuccess){
+                  return Chat(
+                  showUserAvatars: true,
+                  showUserNames: true,
+                  messages: parsedEntityMessageToMessages(state.listMessage),
+                  onAttachmentPressed: _handleAtachmentPressed,
+                  onMessageTap: _handleMessageTap,
+                  //onPreviewDataFetched: _handlePreviewDataFetched,
+                  onSendPressed: _handleSendPressed,
+                  user: _user,
+                  theme: CustomChatroomTheme,
+                  emptyState: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        FontAwesomeIcons.commentDots,
+                        color: cwColorGreyNoteText,
+                        size: 160,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        "Oh, hãy bắt đầu cuộc trò chuyện nào!",
+                        style: kText15RegularGreyNotetext,
+                      )
+                    ],
+                  ));
+              }
+              else{
+                return const Text("Load failer");
+              }
+            },
+          ),
+        ));
   }
 }
 
@@ -221,7 +246,7 @@ AppBar getAppBar() {
       titleSpacing: 0,
       title: Row(
         children: [
-           CircleAvatar(
+          CircleAvatar(
             radius: 22.w,
             backgroundImage: const NetworkImage(
                 "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"),
@@ -248,7 +273,7 @@ AppBar getAppBar() {
       actions: [
         IconButton(
           padding: const EdgeInsets.all(0),
-          icon:  Icon(
+          icon: Icon(
             Icons.phone,
             size: 25.w,
             color: cwColorMain,
@@ -258,41 +283,41 @@ AppBar getAppBar() {
         Padding(
           padding: const EdgeInsets.only(bottom: 5),
           child: IconButton(
-                padding: const EdgeInsets.all(0),
-                icon: Icon(
-                  FontAwesomeIcons.video,
-                  size: 25.w,
-                  color: cwColorMain,
-                ),
-                onPressed: () {}),
+              padding: const EdgeInsets.all(0),
+              icon: Icon(
+                FontAwesomeIcons.video,
+                size: 25.w,
+                color: cwColorMain,
+              ),
+              onPressed: () {}),
         ),
         Padding(
-          padding:  EdgeInsets.fromLTRB(0, 0, 0, 10.h),
+          padding: EdgeInsets.fromLTRB(0, 0, 0, 10.h),
           child: PopupMenuButton(
             padding: const EdgeInsets.all(0),
-          icon:Icon(
-            FontAwesomeIcons.ellipsisV,
-            color: cwColorMain,
-            size: 20.w,
-          ),
-          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-            PopupMenuItem(
-              child: InkWell(
-                onTap: () { 
-                   Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const OptionChatRoom()),
-                  );
-                },
-                child:const  ListTile(
-                  title: Text('Tùy chọn'),
+            icon: Icon(
+              FontAwesomeIcons.ellipsisV,
+              color: cwColorMain,
+              size: 20.w,
+            ),
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              PopupMenuItem(
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const OptionChatRoom()),
+                    );
+                  },
+                  child: const ListTile(
+                    title: Text('Tùy chọn'),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-        ),
-        
       ]);
 }
 

@@ -12,7 +12,7 @@ class MessageModel {
   final String roomId;
   final DateTime createTime;
   final String content;
-  final MessageType type;
+  final MessageChatType type;
 
   MessageModel({
     required this.id,
