@@ -227,7 +227,7 @@ User.init(
       defaultValue: DataTypes.NOW,
     },
     imageUri: {
-      type: DataTypes.STRING({ binary: true }),
+      type: DataTypes.STRING,
       allowNull: true,
     },
     birthday: {

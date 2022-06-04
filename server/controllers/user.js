@@ -2,6 +2,7 @@ import { TranferFileMulterToString } from "../config/helper.js";
 import { MyWebSocket } from "../config/websocket.js";
 import UserModel from "../models/user.js";
 import { failResponse, successResponse } from "./index.js";
+import { deleteFiles } from "../utils/file/file_service.js";
 
 export default {
   onGetUserByPaging: async (req, res) => {

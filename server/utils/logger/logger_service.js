@@ -4,7 +4,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
-const fileLog = path.join(path.dirname(__filename), "history.log");
+const fileLog = path.join(path.dirname(__filename), "history.txt");
 
 const logger = morgan("combined", {
   stream: fs.createWriteStream(

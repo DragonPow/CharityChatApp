@@ -4,8 +4,8 @@ import { default as path, dirname } from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
 
-const connection = config.db; // remote database
-// const connection = config.testing_db; // localhost database
+// const connection = config.db; // remote database
+const connection = config.testing_db; // localhost database
 
 const connection_url = connection.host;
 const username = connection.username;

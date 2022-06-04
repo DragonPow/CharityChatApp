@@ -1,4 +1,4 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Op } from "sequelize";
 import sequelize from "../config/mysql.js";
 import { GetDataFromSequelizeObject } from "../config/helper.js";
 
@@ -7,19 +7,16 @@ class UserRoom extends Model {
     const transaction = await sequelize.transaction();
 
     try {
-      // const userRooms = await UserRoom.findAll({
-      //   where: { roomId: roomId },
-      //   attributes: ["userId"],
-      // });
+      console.log(roomId + removeIds);
 
-      await UserRoom.bulkCreate(
+      const added = (await UserRoom.bulkCreate(
         addIds.map((i) => {
           return { userId: i, roomId: roomId };
         }),
         { transaction: transaction }
-      );
+      )).length;
 
-      await UserRoom.destroy(
+      const deleted = await UserRoom.destroy(
         {
           where: {
             roomId: roomId,
@@ -32,8 +29,9 @@ class UserRoom extends Model {
       );
 
       await transaction.commit();
+      return added + deleted;
     } catch (error) {
-      transaction.callback();
+      await transaction.rollback();
       throw error;
     }
   }

@@ -141,7 +141,7 @@ export default {
     try {
       // Get string url
       const imageUrl = image ? TranferFileMulterToString(image) : undefined;
-      
+
       // Update
       const room = await RoomModel.updateRoom(roomId, roomName, imageUrl);
 
@@ -172,12 +172,25 @@ export default {
     const { addedJoiners, deletedJoiners } = req.body;
 
     // Check user added is exists
-    const userExists = await UserModel.checkExists(addedJoiners);
-    if (!userExists) {
-      return badRequestResponse(res, {
-        code: ERROR_CODE.USER_NOT_EXISTS,
-        error: "User added not exists",
-      });
+    if (addedJoiners && addedJoiners.length) {
+      const userExists = await UserModel.checkExists(addedJoiners);
+      if (!userExists) {
+        return badRequestResponse(res, {
+          code: ERROR_CODE.USER_NOT_EXISTS,
+          error: "User added not exists",
+        });
+      }
+    }
+
+    // Check user added is exists
+    if (deletedJoiners && deletedJoiners.length) {
+      const userExists = await UserModel.checkExists(deletedJoiners);
+      if (!userExists) {
+        return badRequestResponse(res, {
+          code: ERROR_CODE.USER_NOT_EXISTS,
+          error: "User deleted not exists",
+        });
+      }
     }
 
     try {

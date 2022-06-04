@@ -171,49 +171,31 @@ class UserInputValidateBuilder {
     phone: {
       in: ["body"],
       isString: true,
-      exists: {
-        options: {
-          checkFalsy: true,
-        },
-        errorMessage: "phone is required",
-      },
+      optional: true,
     },
     birthday: {
       in: ["body"],
       isString: true,
-      // exists: {
-      //   options: {
-      //     checkFalsy: true,
-      //   },
-      //   errorMessage: 'Birthday is required',
-      // }
+      optional: true,
     },
     gender: {
       in: ["body"],
       isIn: {
         options: [[0,1,2]],
         errorMessage: 'Gender is in 0,1,2',
-      }
+      },
+      optional: true,
+      default: 0,
     },
     address: {
       in: ["body"],
       isString: true,
-      // exists: {
-      //   options: {
-      //     checkFalsy: true,
-      //   },
-      //   errorMessage: 'Name is required',
-      // }
+      optional: true,
     },
     description: {
       in: ["body"],
       isString: true,
-      exists: {
-        options: {
-          checkFalsy: false,
-          checkNull: false,
-        }
-      },
+      optional: true,
     },
   });
 }
