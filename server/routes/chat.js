@@ -1,7 +1,7 @@
 import express from "express";
 import chat from "../controllers/chat.js";
 import { checkSchema } from "express-validator";
-import {checkInput} from "../utils/middleware/input_validate_service.js";
+import { checkInput } from "../utils/middleware/input_validate_service.js";
 import { checkToken } from "../utils/middleware/token_service.js";
 import {
   CHAT_UPLOAD_DIR,
@@ -13,11 +13,7 @@ import myMulter from "../utils/file/my_multer.js";
 
 const router = express.Router();
 
-const upload = myMulter(
-  CHAT_UPLOAD_DIR,
-  MAX_FILE_SIZE_RECEIVE,
-  MAX_FILE_NUMBER_RECEIVE
-).array("files");
+const upload = myMulter(CHAT_UPLOAD_DIR).array("files");
 
 class ChatInputValidateBuilder {
   static onGetMessagesInRoom = checkSchema({

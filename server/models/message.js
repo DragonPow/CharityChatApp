@@ -1,6 +1,6 @@
 import { DataTypes, Model, Op } from "sequelize";
 import {
-  CheckIsImageFile,
+  IsImageFile,
   TranferFileMulterToString,
 } from "../config/helper.js";
 import sequelize from "../config/mysql.js";
@@ -19,7 +19,7 @@ class Message extends Model {
    */
   static async createMessage(value, roomId, senderId) {
     const typeContent = Array.isArray(value)
-      ? CheckIsImageFile(value[0].filename)
+      ? IsImageFile(value[0].filename)
         ? "image"
         : "file"
       : "text";

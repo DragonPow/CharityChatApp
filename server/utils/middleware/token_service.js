@@ -48,7 +48,7 @@ router.use((req, res, next) => {
       req.userId = id;
       return next();
     } catch (error) {
-      return successResponse(res, { message: "Invalid token" });
+      return unAuthorizedResponse(res, { message: "Invalid token" });
     }
     // jwt.verify(token, config.jwt.secretCode, (error, decoded) => {
     //   if (error) {

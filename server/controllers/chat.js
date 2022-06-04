@@ -11,7 +11,8 @@ import {
 import UserModel from "../models/user.js";
 import config from "../config/index.js";
 import RoomModel from "../models/room.js";
-import { CheckIsImageFile, TranferFileMulterToString } from "../config/helper.js";
+import { IsImageFile, TranferFileMulterToString } from "../config/helper.js";
+import UserRoomModel from "../models/user_room.js";
 
 export default {
   onGetRoomMessages: async (req, res, next) => {
@@ -26,15 +27,20 @@ export default {
     } = req.query;
 
     const userId = req.userId;
-    console.log("ID", userId);
+
     // If is admin, next
     if (userId !== config.adminId) {
-      const joinerInRoom = await UserModel.getJoinersInRoom([roomId]);
-      console.log(joinerInRoom);
-      // If is not joiner, can not access
-      if (!joinerInRoom.some((joiner) => joiner.id === userId)) {
-        return unAuthorizedResponse(res);
+      // Check joiner is in room
+      const isJoinerRoom = await UserRoomModel.CheckIsJoinerOfRoom(userId, roomId);
+      if (!isJoinerRoom) {
+        return unAuthorizedResponse(res, 'Must be joiner of the room');
       }
+      // const joinerInRoom = await UserModel.getJoinersInRoom([roomId]);
+      // console.log('JOINERS IN ROOM:', joinerInRoom);
+      // // If is not joiner, can not access
+      // if (!joinerInRoom.some((joiner) => joiner.id === userId)) {
+      //   return unAuthorizedResponse(res);
+      // }
     }
 
     try {

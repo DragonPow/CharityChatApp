@@ -1,18 +1,17 @@
 import express from "express";
 import room from "../controllers/room.js";
-import { checkSchema } from "express-validator";
+import { check, checkSchema } from "express-validator";
 import {checkInput} from "../utils/middleware/input_validate_service.js";
 import {checkToken} from "../utils/middleware/token_service.js";
-import multer from 'multer';
+import MyMulter from '../utils/file/my_multer.js';
 import { ROOM_UPLOAD_DIR } from "../config/constant.js";
 
 
 const router = express.Router();
-const uploadRoomFile = multer({dest: ROOM_UPLOAD_DIR});
+const uploadRoomFile = MyMulter(ROOM_UPLOAD_DIR);
 
 class RoomInputValidateBuilder {
   static onGetRoom = checkSchema({
-    // tokenSchema, // TODO: fix token here
     userId: {
       in: ["query"],
       errorMessage: "Need contain",
@@ -80,6 +79,7 @@ class RoomInputValidateBuilder {
       trim: true,
     },
   });
+
   static onFindRoom = checkSchema({
     otherUserId: {
       in:['query'],
@@ -91,7 +91,8 @@ class RoomInputValidateBuilder {
       },
       errorMessage: 'userId must be string and not empty',
     }
-  })
+  });
+
   static onCreateRoom = checkSchema({
     name: {
       in: ["body"],
@@ -118,13 +119,61 @@ class RoomInputValidateBuilder {
     },
   });
 
+  static onChangeInfo = checkSchema({
+    roomName: {
+      in: ['body'],
+      isString: true,
+      errorMessage: 'Room name must be string',
+    },
+  });
+
+  static onChangeJoiners = checkSchema({
+    addedJoiners: {
+      in: ["body"],
+      // custom: {
+      //   options: (value) => {
+      //     const list = String(value).split(',');
+      //     return list.length > 0;
+      //   },
+      //   errorMessage: "At least one member in room"
+      // },
+      customSanitizer: {
+        options: (value) => String(value).split(','),
+      },
+      exists: {
+        options: {
+          checkFalsy: true,
+        },
+        errorMessage: "Added user must provide id",
+      },
+    },
+    deletedJoiners: {
+      in: ["body"],
+      // custom: {
+      //   options: (value) => {
+      //     const list = String(value).split(',');
+      //     return list.length > 0;
+      //   },
+      //   errorMessage: "At least one member in room"
+      // },
+      customSanitizer: {
+        options: (value) => String(value).split(','),
+      },
+      exists: {
+        options: {
+          checkFalsy: true,
+        },
+        errorMessage: "Deleted user must provide id",
+      },
+    }
+  })
 }
 
 router.get(
   "/select",
   RoomInputValidateBuilder.onGetRoom,
   checkInput,
-  // checkToken,
+  checkToken,
   room.onGetRoomsByPaging
 );
 
@@ -146,17 +195,23 @@ router.post(
 );
 
 router.put(
-  "/u/:roomId",
-  checkSchema({}),
+  "/u/:roomId/info",
+  uploadRoomFile.single('image'),
+  RoomInputValidateBuilder.onChangeInfo,
   checkInput,
   checkToken,
-  room.onUpdateRoom
+  room.onChangeInfo
 );
+
+router.put(
+  '/u/:roomId/joiners',
+  RoomInputValidateBuilder.onChangeJoiners,
+  checkInput,
+  checkToken,
+  room.onJoinersChange,
+)
 
 // router.put("/u/avatar/:roomId", room.onUpdateAvatarRoom);
 router.delete("/d/:roomId", checkInput, checkToken, room.onDeleteRoom);
-
-// TODO: add route addUserToRoom
-// TODO: add route removeUserFromRoom
 
 export default router;

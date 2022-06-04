@@ -5,11 +5,13 @@ const config = {
         username: "VuNgocThach",
         password: "Thach4162311",
         port: 3306,
-        cert_url: "./DigiCertGlobalRootCA.crt.pem",
     },
+    cert_url: "./DigiCertGlobalRootCA.crt.pem",
     testing_db: {
-        database: "mocks",
+        database: "charityapp",
         host: "localhost",
+        username: 'root',
+        password: 'ngocthach',
         port: 3306,
     },
     jwt: {

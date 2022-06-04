@@ -9,6 +9,10 @@ import {
   successResponse,
 } from "./index.js";
 import config from "../config/index.js";
+import UserRoomModel from "../models/user_room.js";
+import { deleteFiles } from "../utils/file/file_service.js";
+import { IsImageFile, TranferFileMulterToString } from "../config/helper.js";
+import { ERROR_CODE } from "../config/constant.js";
 
 export default {
   onGetRoomsByPaging: async (req, res, next) => {
@@ -121,37 +125,72 @@ export default {
       });
     }
   },
-  onUpdateRoom: async (req, res, next) => {
-    const { room } = req.body;
+  onChangeInfo: async (req, res, next) => {
+    const { roomId } = req.params;
+    const { roomName } = req.body;
+    const image = req.file;
+
+    // Check file is image
+    if (image && !IsImageFile(image.filename)) {
+      return badRequestResponse(res, {
+        code: ERROR_CODE,
+        error: "Must be image file",
+      });
+    }
+
     try {
-      await RoomModel.updateRoom(room);
+      // Get string url
+      const imageUrl = image ? TranferFileMulterToString(image) : undefined;
+      
+      // Update
+      const room = await RoomModel.updateRoom(roomId, roomName, imageUrl);
 
       return successResponse(res, {
-        description: `Room ${room.id} update success`,
+        success: true,
+        description: `Room ${roomId} update complete`,
+        room: room,
       });
     } catch (error) {
+      console.log(error);
+
+      // Delete image
+      if (image) {
+        deleteFiles(TranferFileMulterToString(image)).catch((error) =>
+          console.log("DELETE_FILE_FAIL", error)
+        );
+      }
+
       return failResponse(res, {
-        error,
-        description: `Room cannot update:\n${room}`,
+        error: error.message ?? error,
+        description: `Room cannot update: ${roomId}`,
       });
     }
   },
-  onUpdateAvatarRoom: async (req, res, next) => {
-    const { avatar } = req.body;
+
+  onJoinersChange: async (req, res, next) => {
     const { roomId } = req.params;
+    const { addedJoiners, deletedJoiners } = req.body;
+
+    // Check user added is exists
+    const userExists = await UserModel.checkExists(addedJoiners);
+    if (!userExists) {
+      return badRequestResponse(res, {
+        code: ERROR_CODE.USER_NOT_EXISTS,
+        error: "User added not exists",
+      });
+    }
 
     try {
-      const rs = await RoomModel.updateAvatarRoom(roomId, avatar);
-      if (rs.error) throw rs.error;
-
+      await UserRoomModel.changeJoiners(roomId, addedJoiners, deletedJoiners);
       return successResponse(res, {
-        description: `Avatar room ${roomId} update success`,
-        avatarId: rs.id,
+        success: true,
+        description: `Room ${roomId} change joiners success`,
       });
     } catch (error) {
+      console.log(error);
       return failResponse(res, {
-        error,
-        description: `Avatar room cannot update`,
+        error: error.message ?? error,
+        description: `Room cannot change joiners: ${roomId}`,
       });
     }
   },

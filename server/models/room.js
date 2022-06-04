@@ -8,7 +8,7 @@ import { GetDataFromSequelizeObject } from "../config/helper.js";
 
 class Room extends Model {
   static async checkExists(roomId) {
-    const rs = await Room.findByPk(roomId, { attributes: ['id'] });
+    const rs = await Room.findByPk(roomId, { attributes: ["id"] });
     return rs !== null;
   }
   static async getRoomsByPaging(
@@ -237,9 +237,15 @@ class Room extends Model {
     return rs;
   }
 
-  static async updateRoom(room) {
-    const rs = Room.update(room, { where: { id: room.id } });
-    return rs;
+  static async updateRoom(roomId, roomName, imageUrl) {
+    const room = await Room.findByPk(roomId, {
+      attributes: ["id", "name", "avatarId"],
+    });
+
+    roomName && room.set("name", roomName);
+    imageUrl && room.set("avatarId", imageUrl);
+
+    return room.save();
   }
 
   static async checkAndSetLastMessage(roomId, message) {

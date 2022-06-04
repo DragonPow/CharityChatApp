@@ -1,80 +1,63 @@
-import { DataTypes, Model, Op } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/mysql.js";
 import { GetDataFromSequelizeObject } from "../config/helper.js";
 
-class UserRoom extends Model {}
+class UserRoom extends Model {
+  static async changeJoiners(roomId, addIds, removeIds) {
+    const transaction = await sequelize.transaction();
 
-UserRoom.init("UserRoom", { sequelize });
+    try {
+      // const userRooms = await UserRoom.findAll({
+      //   where: { roomId: roomId },
+      //   attributes: ["userId"],
+      // });
 
-// UserRoom.getRoomsIdByPaging = async (startIndex, number, userId) => {
-//     const userRooms = await Room.findAll({
-//         include: [
-//             {
-//                 model: User,
-//                 as: "container",
-//                 where: {
-//                     userId: userId,
-//                 },
-//                 attributes: [],
-//             },
-//             {
-//                 model: Message,
-//                 as: "lastMessage",
-//                 attributes: [["timeCreate", "lastMessageTime"]],
-//             },
-//         ],
-//         attributes: ["id"],
-//         offset: startIndex,
-//         limit: number,
-//         // order: [["lastMessageTime", "DESC"]],
-//     });
+      await UserRoom.bulkCreate(
+        addIds.map((i) => {
+          return { userId: i, roomId: roomId };
+        }),
+        { transaction: transaction }
+      );
 
-//     return GetDataFromSequelizeObject(userRooms).map((i) => i.roomId);
-// };
+      await UserRoom.destroy(
+        {
+          where: {
+            roomId: roomId,
+            userId: {
+              [Op.in]: removeIds,
+            },
+          },
+        },
+        { transaction: transaction }
+      );
 
-// UserRoom.getUsersByRoomId = async (roomId) => {
-//     const userRooms = await UserRoom.findAll({
-//         where: { roomId: roomId },
-//         attributes: ["userId"],
-//     });
-//     return userRooms.map((i) => i.userId);
-// };
+      await transaction.commit();
+    } catch (error) {
+      transaction.callback();
+      throw error;
+    }
+  }
 
-// UserRoom.getUsersByRoomsId = async (roomsId) => {
-//     const list = await UserRoom.findAll({
-//         where: {
-//             roomId: {
-//                 [Op.in]: roomsId
-//             }
-//         }
-//     });
+  static async CheckIsJoinerOfRoom(joinerId, roomId) {
+    const count = await UserRoom.count({
+      where: {
+        userId: joinerId,
+        roomId: roomId,
+      },
+    });
 
-//     return list;
-// }
+    return count === 1;
+  }
+}
 
-// UserRoom.createRoom = async (roomInfo, listUsersId) => {
-//     const room = await Room.createRoom(roomInfo);
-//     await UserRoom.bulkCreate(
-//         listUsersId.map((userId) => {
-//             return { roomId: room.id, userId };
-//         })
-//     );
-
-//     return room;
-// };
-
-// UserRoom.deleteByRoomId = async (roomId) => {
-//     try {
-//         const rs = await UserRoom.destroy({
-//             where: {
-//                 roomId: roomId,
-//             },
-//         });
-//         //TODO: Should or Not delete messages in this room here?
-//         return rs;
-//     } catch (error) {
-//         throw error;
-//     }
-// };
+UserRoom.init(
+  {
+    nameAlias: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+  },
+  { sequelize, modelName: "UserRoom" }
+);
 
 export default UserRoom;

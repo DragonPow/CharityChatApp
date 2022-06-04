@@ -1,6 +1,7 @@
 import { v4 as uuidV4 } from "uuid";
 import path from "path";
 import multer from "multer";
+import { MAX_FILE_NUMBER_RECEIVE, MAX_FILE_SIZE_RECEIVE } from "../../config/constant.js";
 
 const myMulter = (pathStorage, maxFileSize, maxFileReceive) => {
     // Set storage
@@ -17,8 +18,8 @@ const myMulter = (pathStorage, maxFileSize, maxFileReceive) => {
     const uploadMessageFile = multer({
       storage: multerStorage,
       limits: {
-        files: maxFileReceive,
-        fileSize: maxFileSize,
+        files: maxFileReceive ?? MAX_FILE_NUMBER_RECEIVE,
+        fileSize: maxFileSize ?? MAX_FILE_SIZE_RECEIVE,
       },
     });
 

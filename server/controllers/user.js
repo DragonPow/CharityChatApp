@@ -1,3 +1,5 @@
+import { TranferFileMulterToString } from "../config/helper.js";
+import { MyWebSocket } from "../config/websocket.js";
 import UserModel from "../models/user.js";
 import { failResponse, successResponse } from "./index.js";
 
@@ -12,7 +14,7 @@ export default {
       searchvalue,
     } = req.query;
     try {
-        console.log('test')
+      console.log("test");
       const users = await UserModel.getUserByPaging(
         orderby,
         orderdirection,
@@ -26,41 +28,83 @@ export default {
       return failResponse(res, { error: error.message });
     }
   },
+
   onGetActiveUsersByPage: async (req, res) => {
+    const { startIndex, number, orderby, orderdirection } = req.query;
+    const userId = req.userId;
+
     try {
-      const { startIndex, number } = req.params;
-      const users = await UserModel.getActiveUsersByPage(startIndex, number);
+      // const usersActiveId = ["2", "3", "4"]; // mock data
+      const usersActiveId = MyWebSocket.getActiveUsers();
+      console.log("active user: ", usersActiveId);
+      const users = await UserModel.getFriendByIds(
+        userId,
+        usersActiveId,
+        startIndex,
+        number,
+        orderby,
+        orderdirection
+      );
 
       return res.status(200).json({ success: true, users });
     } catch (error) {
-      return res.status(500).json({ success: false, error: error });
+      return res.status(500).json({ success: false, error: error.message });
     }
   },
 
-  onGetUsersByName: async (req, res) => {
+  // onGetUserById: async (req, res) => {
+  //   try {
+  //     const { userId } = req.params;
+  //     console.log("onGetUserById");
+  //     const user = await UserModel.getUserById(userId);
+
+  //     return res.status(200).json({ super: true, user: user });
+  //   } catch (error) {
+  //     return res.status(500).json({ success: false, error: error });
+  //   }
+  // },
+
+  onCreateUser: async (req, res, next) => {
+    const {
+      name,
+      email,
+      password,
+      phone,
+      birthday,
+      gender,
+      address,
+      description,
+    } = req.body;
+    const image = req.file;
+
     try {
-      const { textMatch, startIndex, number } = req.params;
-      const users = await UserModel.getUsersByName(
-        textMatch,
-        startIndex,
-        number
+      const user = await UserModel.createUser(
+        name,
+        image ? TranferFileMulterToString(image) : undefined,
+        email,
+        password,
+        phone,
+        birthday,
+        gender,
+        address,
+        description
       );
 
-      return res.status(200).json({ super: true, users });
+      return successResponse(res, { success: true, user: user });
     } catch (error) {
-      return res.status(500).json({ success: false, error: error });
-    }
-  },
+      console.log(error);
 
-  onGetUserById: async (req, res) => {
-    try {
-      const { userId } = req.params;
-      console.log("onGetUserById");
-      const user = await UserModel.getUserById(userId);
+      // Delete image
+      if (image) {
+        deleteFiles(TranferFileMulterToString(image)).catch((error) =>
+          console.log("DELETE_FILE_FAIL", error)
+        );
+      }
 
-      return res.status(200).json({ super: true, user: user });
-    } catch (error) {
-      return res.status(500).json({ success: false, error: error });
+      return failResponse(res, {
+        error: error.message ?? error,
+        description: `Cannot create user`,
+      });
     }
   },
 };

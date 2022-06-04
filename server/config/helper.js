@@ -5,10 +5,10 @@ export const GetDataFromSequelizeObject = (record) => {
 };
 
 export const TranferFileMulterToString = (file) => {
-  return file.destination + "/" + file.filename;
+  return file.destination + file.filename;
 };
 
-export const CheckIsImageFile = (fileName) => {
+export const IsImageFile = (fileName) => {
   console.log(path.extname(fileName));
   return [".jpeg", ".png", ".gif", ".tiff", ".jpg"].includes(
     path.extname(fileName)

@@ -1,13 +1,20 @@
 import { DataTypes, Model, Op } from "sequelize";
 import sequelize from "../config/mysql.js";
 import { v4 as uuidv4 } from "uuid";
-import Friend from "./friend.js";
 import Room from "./room.js";
+import Friend from "./friend.js";
 import UserRoom from "./user_room.js";
-import {GetDataFromSequelizeObject} from '../config/helper.js';
+import { GetDataFromSequelizeObject } from "../config/helper.js";
 
 class User extends Model {
-  static _getBasicAttributes = ['id','name','email','phone','imageUri','timeCreate'];
+  static _getBasicAttributes = [
+    "id",
+    "name",
+    "email",
+    "phone",
+    "imageUri",
+    "timeCreate",
+  ];
   static _getAllAttributes = undefined;
   /**
    * Get user online of logging activity
@@ -16,17 +23,48 @@ class User extends Model {
    * @param {string} mainUserId userId to find friends
    * @returns List user is friend and in online of mainUserId
    */
-  static async getActiveUsersByPage(startIndex, number, mainUserId) {
-    //TODO: Open websocket to check current online user of server of specific user
+  static async getFriendByIds(
+    mainUserId,
+    ids,
+    startIndex,
+    number,
+    orderby,
+    orderdirection
+  ) {
+    let searchOrderby;
+    switch (orderby) {
+      case "name":
+        searchOrderby = ["name"];
+        break;
+      case "timeCreate":
+        searchOrderby = ["timeCreate"];
+        break;
+      default:
+        break;
+    }
+
+    const usersId = await Friend.findAll({
+      where: {
+        [Op.or]: [
+          { id1: mainUserId, id2: { [Op.in]: ids } },
+          { id2: mainUserId, id1: { [Op.in]: ids } },
+        ],
+      },
+    });
+
+    const friendsId = usersId.map((i) =>
+      i.id1 === mainUserId ? i.id2 : i.id1
+    );
+
     const users = await User.findAll({
       where: {
-        id: mainUserId,
+        id: {
+          [Op.in]: friendsId,
+        },
       },
-      include: {
-        model: Friend,
-      },
-      limit: number,
       offset: startIndex,
+      limit: number,
+      order: [[...searchOrderby, orderdirection]],
     });
 
     return users;
@@ -39,7 +77,14 @@ class User extends Model {
    * @param {string} mainUserId userId to find friends
    * @returns List user is friend and in online of mainUserId
    */
-   static async getUserByPaging(orderby, orderdirection, startIndex, number, searchby, searchvalue, ) {
+  static async getUserByPaging(
+    orderby,
+    orderdirection,
+    startIndex,
+    number,
+    searchby,
+    searchvalue
+  ) {
     let searchOrderby;
     switch (orderby) {
       case "name":
@@ -74,8 +119,8 @@ class User extends Model {
     const userNumber = await User.count({
       where: {
         id: {
-          [Op.in]: usersId
-        }
+          [Op.in]: usersId,
+        },
       },
     });
 
@@ -102,7 +147,7 @@ class User extends Model {
         {
           model: Room,
           as: "container",
-          attributes: ['id'],
+          attributes: ["id"],
           through: {
             attributes: [],
             where: {
@@ -120,10 +165,36 @@ class User extends Model {
       where: {
         username: username,
         password: password,
-      }
+      },
     });
 
     return GetDataFromSequelizeObject(user);
+  }
+
+  static async createUser(
+    name,
+    imageUri,
+    email,
+    password,
+    phone,
+    birthday,
+    gender,
+    address,
+    description
+  ) {
+    const user = await User.create({
+      name: name,
+      email: email,
+      password: password,
+      phone: phone,
+      imageUri: imageUri,
+      birthday: birthday,
+      gender: gender,
+      address: address,
+      description: description,
+    });
+
+    return user;
   }
 }
 
@@ -193,8 +264,8 @@ User.init(
     sequelize,
     modelName: "User",
     defaultScope: {
-      attributes: {exclude: ['password']}
-    }
+      attributes: { exclude: ["password"] },
+    },
   }
 );
 

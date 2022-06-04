@@ -9,10 +9,12 @@ const INVALID_INPUT_MESSAGE='Invalid input';
 
 const ROOM_UPLOAD_DIR = 'public/room/';
 const CHAT_UPLOAD_DIR = 'public/message/';
+const USER_UPLOAD_DIR = 'public/user/';
 
 const ERROR_CODE = {
     FILE: 'FILE_INPUT_ERROR',
     ACCESS_DENIED: '',
+    USER_NOT_EXISTS: 'USER_NOT_EXISTS',
 };
 
 export {
@@ -22,6 +24,8 @@ export {
     INVALID_INPUT_MESSAGE,
     ROOM_UPLOAD_DIR,
     CHAT_UPLOAD_DIR,
+    USER_UPLOAD_DIR,
     MAX_FILE_NUMBER_RECEIVE,
-    MAX_FILE_SIZE_RECEIVE
+    MAX_FILE_SIZE_RECEIVE,
+    ERROR_CODE
 };

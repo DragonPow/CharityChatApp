@@ -3,6 +3,7 @@ import { failResponse, successResponse } from "./index.js";
 import jwt from "jsonwebtoken";
 import config from "../config/index.js";
 import { buildToken } from "../utils/middleware/token_service.js";
+import { MyWebSocket } from "../config/websocket.js";
 
 export default {
   onLogin: async (req, res) => {
