@@ -8,9 +8,9 @@ part of 'message_model.dart';
 
 MessageModel _$MessageModelFromJson(Map<String, dynamic> json) => MessageModel(
       id: json['id'] as String,
-      senderId: json['creatorId'] as String,
+      senderId: json['senderId'] as String,
       roomId: json['roomId'] as String,
-      createTime: DateTime.parse(json['timeCreate'] as String),
+      createTime: DateTime.parse(json['createTime'] as String),
       content: json['content'] as String,
       type: $enumDecode(_$MessageTypeEnumMap, json['type']),
     );
@@ -18,16 +18,16 @@ MessageModel _$MessageModelFromJson(Map<String, dynamic> json) => MessageModel(
 Map<String, dynamic> _$MessageModelToJson(MessageModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'creatorId': instance.senderId,
+      'senderId': instance.senderId,
       'roomId': instance.roomId,
-      'timeCreate': instance.createTime.toIso8601String(),
+      'createTime': instance.createTime.toIso8601String(),
       'content': instance.content,
       'type': _$MessageTypeEnumMap[instance.type],
     };
 
 const _$MessageTypeEnumMap = {
-  MessageType.text: 'text',
-  MessageType.image: 'image',
-  MessageType.video: 'video',
-  MessageType.file: 'file',
+  MessageChatType.text: 'text',
+  MessageChatType.image: 'image',
+  MessageChatType.video: 'video',
+  MessageChatType.file: 'file',
 };

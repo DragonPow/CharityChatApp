@@ -4,7 +4,10 @@ import 'package:chat_app/dataexample/active_user.dart';
 import 'package:chat_app/dataexample/shortchat.dart';
 import 'package:chat_app/presentation/components/avataruser.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../dependencies_injection.dart';
+import '../../bloc/chat_detail/chat_detail_bloc.dart';
 import '../../components/avatarcicle.dart';
 import 'package:skeleton_loader/skeleton_loader.dart';
 
@@ -78,8 +81,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                           scrollDirection: Axis.horizontal,
                           child: Row(
                               children: List.generate(
-                                   actives.length
-                                   ,
+                                  actives.length,
                                   (index) => AvatarUser(
                                       radius: 50,
                                       imageUrl: actives[index]['img'],
@@ -119,16 +121,21 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           ),
         ];
       },
-      body: 
-      SingleChildScrollView(
+      body: SingleChildScrollView(
         child: ListView.builder(
             shrinkWrap: true,
-            itemCount:shortChats.length,
+            itemCount: shortChats.length,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (BuildContext context, int index) {
-              return ShortChat(imgUrl:shortChats[shortChats.length - index - 1]['img'], name: shortChats[shortChats.length - index - 1]['name'], shortchat: shortChats[shortChats.length - index - 1]['shortchat'], time: shortChats[shortChats.length - index - 1]['time'], number: shortChats[shortChats.length - index - 1]['number']);
+              return ShortChat(
+                  imgUrl: shortChats[shortChats.length - index - 1]['img'],
+                  name: shortChats[shortChats.length - index - 1]['name'],
+                  shortchat: shortChats[shortChats.length - index - 1]
+                      ['shortchat'],
+                  time: shortChats[shortChats.length - index - 1]['time'],
+                  number: shortChats[shortChats.length - index - 1]['number']);
             }),
-            // SkeletonloaderChat()
+        // SkeletonloaderChat()
       ),
     );
   }
@@ -142,63 +149,72 @@ class SkeletonloaderChat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SkeletonLoader(
-      builder:Column(children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-        child: Row(
-          children: <Widget>[
+      builder: Column(children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+          child: Row(
+            children: <Widget>[
               CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 30.h,
-            ),
-            SizedBox(
-              width: 5.w,
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(
-                    height: 3.h,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                       SizedBox(height: 20, width: 100,),
-                       SizedBox(height: 10, width: 50,),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                       const SizedBox(height: 10, width: 200,),
-                       CircleAvatar(
+                backgroundColor: Colors.white,
+                radius: 30.h,
+              ),
+              SizedBox(
+                width: 5.w,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 3.h,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        SizedBox(
+                          height: 20,
+                          width: 100,
+                        ),
+                        SizedBox(
+                          height: 10,
+                          width: 50,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const SizedBox(
+                          height: 10,
+                          width: 200,
+                        ),
+                        CircleAvatar(
                           backgroundColor: Colors.white,
                           radius: 15.h,
-                       ),
-                    ],
-                  )
-                ],
-              ),
-            )
-          ],
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
-      ),
-      const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 30),
-        child: Divider(
-          color: cwColorBackground,
-          height: 2,
-        ),
-      )
-    ]),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30),
+          child: Divider(
+            color: cwColorBackground,
+            height: 2,
+          ),
+        )
+      ]),
       items: 10,
       period: const Duration(seconds: 2),
-      highlightColor:const  Color(0x505AA469),
+      highlightColor: const Color(0x505AA469),
       direction: SkeletonDirection.ltr,
     );
   }
@@ -210,14 +226,14 @@ class ShortChat extends StatelessWidget {
   final String shortchat;
   final String time;
   final int number;
-  const ShortChat({
-    Key? key,
-    required this.imgUrl,
-    required this.name,
-    required this.shortchat,
-     required this.time,
-     required this.number
-  }) : super(key: key);
+  const ShortChat(
+      {Key? key,
+      required this.imgUrl,
+      required this.name,
+      required this.shortchat,
+      required this.time,
+      required this.number})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -227,9 +243,7 @@ class ShortChat extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
           child: Row(
             children: <Widget>[
-              AvatarCicle(
-                  imgUrl: imgUrl,
-                  radius: 45),
+              AvatarCicle(imgUrl: imgUrl, radius: 45),
               SizedBox(
                 width: 5.w,
               ),
@@ -258,7 +272,7 @@ class ShortChat extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                         shortchat,
+                          shortchat,
                           style: kText11RegularHintText,
                         ),
                         Container(
@@ -290,10 +304,13 @@ class ShortChat extends StatelessWidget {
         )
       ]),
       onTap: () => {
-          Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const ChatRoom()),
-  )
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (_) => BlocProvider.value(
+                    value: BlocProvider.of<ChatDetailBloc>(context),
+                    child: const ChatRoom(),
+                  )),
+        )
       },
     );
   }

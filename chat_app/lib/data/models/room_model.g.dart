@@ -21,6 +21,6 @@ Map<String, dynamic> _$RoomModelToJson(RoomModel instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'joinersId': instance.joinersId,
-      'lastMessages': instance.lastMessage,
+      'lastMessage': instance.lastMessage,
       'avatarId': instance.avatarId,
     };

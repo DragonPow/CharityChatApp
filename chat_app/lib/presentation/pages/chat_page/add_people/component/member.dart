@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../configs/colorconfig.dart';
-import '../../../../components/avataruser.dart';
+import '../../../../components/avataruser.dart'; 
 
 class Member extends StatefulWidget {
   final String name;
