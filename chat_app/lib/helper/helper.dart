@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:chat_app/domain/entities/message_entity.dart';
 import 'package:chat_app/helper/enum.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 
 Map<String, dynamic> parsedJsonToMap(String response) {
   final parsed = json.decode(response).cast<Map<String, dynamic>>();
@@ -56,4 +55,8 @@ List<types.Message> parsedEntityMessageToMessages(
         );
     }
   }).toList();
+}
+
+String parseDatetimeToTime(DateTime date){
+  return (date.hour == 12? 12 : date.hour % 12 ).toString() + ":" + (date.minute > 9 ? date.minute.toString() : "0" + date.minute.toString()) + (date.hour % 12 == 0 || date.hour == 12 ? " am" : " pm");
 }

@@ -1,13 +1,18 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
+import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
 import 'package:chat_app/presentation/pages/chat_page/chatpage.dart';
 import 'package:chat_app/presentation/pages/profile_page/profile_page.dart';
 import 'package:chat_app/presentation/pages/newchatpage/new_chat_page.dart';
 import 'package:chat_app/presentation/pages/newchatpage/sort_infor_component.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../dependencies_injection.dart';
+import 'bloc/active_user/active_user_bloc.dart';
 
 class RootApp extends StatefulWidget {
   const RootApp({Key? key}) : super(key: key);
@@ -52,7 +57,7 @@ class _RootAppState extends State<RootApp> {
       //centerTitle: true,
       elevation: 0,
       title: Padding(
-        padding:  EdgeInsets.symmetric(vertical: 15.h),
+        padding: EdgeInsets.symmetric(vertical: 15.h),
         child: Text(
           "MeerChats",
           style: kText24BoldMain,
@@ -87,7 +92,17 @@ class _RootAppState extends State<RootApp> {
 
   Widget getBody(int currentPage) {
     return currentPage == 0
-        ? const ChatPage()
+        ? MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) => ChatOverviewBloc(sl()),
+              ),
+              BlocProvider(
+                create: (context) => ActiveUserBloc(sl()),
+              ),
+            ],
+            child: const ChatPage(),
+          )
         : currentPage == 1
             ? const NewChatPage()
             : const ProfilePage();

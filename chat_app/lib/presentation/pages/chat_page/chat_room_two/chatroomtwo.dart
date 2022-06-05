@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:chat_app/domain/entities/user_active_entity.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/custom_chatroom_theme.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/option.dart';
 import 'package:file_picker/file_picker.dart';
@@ -18,11 +19,13 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../configs/colorconfig.dart';
 import '../../../../configs/fontconfig.dart';
+import '../../../../domain/entities/room_overview_entity.dart';
 import '../../../../helper/helper.dart';
 import '../../../bloc/chat_detail/chat_detail_bloc.dart';
 
 class ChatRoom extends StatefulWidget {
-  const ChatRoom({Key? key}) : super(key: key);
+  final RoomOverviewEntity roomOverview;
+  const ChatRoom({Key? key, required this.roomOverview}) : super(key: key);
 
   @override
   _ChatRoomState createState() => _ChatRoomState();
@@ -38,7 +41,7 @@ class _ChatRoomState extends State<ChatRoom> {
     super.initState();
     _chatDetailBloc = BlocProvider.of<ChatDetailBloc>(context);
     _chatDetailBloc.add(
-        const ChatDetailLoadMessage(number: 10, roomId: "1", startIndex: 0));
+        ChatDetailLoadMessage(number: 10, roomId: widget.roomOverview.id, startIndex: 0));
 
     //_loadMessages();
   }
@@ -234,9 +237,7 @@ class _ChatRoomState extends State<ChatRoom> {
           ),
         ));
   }
-}
-
-AppBar getAppBar() {
+  AppBar getAppBar() {
   return AppBar(
       iconTheme: const IconThemeData(color: cwColorBlackIcon),
       backgroundColor: cwColorBackground,
@@ -248,9 +249,7 @@ AppBar getAppBar() {
         children: [
           CircleAvatar(
             radius: 22.w,
-            backgroundImage: const NetworkImage(
-                "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"),
-          ),
+            backgroundImage: widget.roomOverview.avatarUrl == null ?  const AssetImage("assets/images/defauldavatar.png") as ImageProvider: NetworkImage(widget.roomOverview.avatarUrl!)),
           SizedBox(
             width: 5.w,
           ),
@@ -259,7 +258,7 @@ AppBar getAppBar() {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Minh Phương",
+                widget.roomOverview.name,
                 style: kText15MediumBlack,
               ),
               Text(
@@ -320,6 +319,9 @@ AppBar getAppBar() {
         ),
       ]);
 }
+
+}
+
 
 class SkeletonloaderChatRoom extends StatelessWidget {
   const SkeletonloaderChatRoom({

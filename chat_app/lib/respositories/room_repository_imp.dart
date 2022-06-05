@@ -52,9 +52,11 @@ class RoomReposityImp extends IRoomRepository{
   }
 
   @override
-  Future<List<RoomOverviewEntity>> getRoomOverviews(int userId, int startIndex, int number) {
+  Future<List<RoomOverviewEntity>> getRoomOverviews(String userId, int startIndex, int number, String searchtype) {
     // TODO: implement getRoomOverviews
     throw UnimplementedError();
   }
+
+
   
 }

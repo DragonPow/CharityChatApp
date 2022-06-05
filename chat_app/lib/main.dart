@@ -18,20 +18,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(360, 780),
-      minTextAdapt: true,
-      builder: () => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(primaryColor: cwColorMain),
-        home: MultiBlocProvider(
-          providers: [
-            BlocProvider<ChatDetailBloc>(
-              create: (context) => ChatDetailBloc(chatRepository: sl()),
-            ),
-          ],
-          child:const RootApp(),
-        ),
-      ),
-    );
+        designSize: const Size(360, 780),
+        minTextAdapt: true,
+        builder: () => MultiBlocProvider(
+              providers: [
+                BlocProvider<ChatDetailBloc>(
+                  create: (context) => ChatDetailBloc(chatRepository: sl()),
+                ),
+              ],
+              child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                theme: ThemeData(primaryColor: cwColorMain),
+                home: const RootApp(),
+              ),
+            ));
   }
 }

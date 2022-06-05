@@ -23,9 +23,8 @@ class AvatarCicle extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                        image: NetworkImage(imgUrl != ""
-                            ? imgUrl
-                            : "images/avatar.png"),
+                        image: imgUrl != "" ? NetworkImage(imgUrl) :
+                            const AssetImage( "assets/images/defauldavatar.png") as ImageProvider,
                         fit: BoxFit.cover),
                     border: Border.all(color: cwColorBackground, width: 2.w),
                   ),
