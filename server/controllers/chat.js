@@ -16,6 +16,7 @@ import UserRoomModel from "../models/user_room.js";
 
 export default {
   onGetRoomMessages: async (req, res, next) => {
+    try {
     const {
       roomId,
       startIndex,
@@ -43,7 +44,6 @@ export default {
       // }
     }
 
-    try {
       // const { startIndex, number } = req.body;
       const messages = await MessageModel.getMessagesByRoomId(
         roomId,
@@ -62,6 +62,7 @@ export default {
   },
 
   onGetAllMessages: async (req, res, next) => {
+    try {
     const {
       startIndex,
       number,
@@ -77,7 +78,6 @@ export default {
       return unAuthorizedResponse(res, "Only admin can access this route");
     }
 
-    try {
       // const { startIndex, number } = req.body;
       const messages = await MessageModel.getAllMessages(
         startIndex,
@@ -95,11 +95,11 @@ export default {
   },
 
   onCreateMessageByRoomId: async (req, res, next) => {
+    try {
     const { content, roomId } = req.body;
     const senderId = req.userId;
     const files = req.files;
 
-    try {
       let value;
       // Check content or file is nto empty
       if (content) {
@@ -157,6 +157,7 @@ export default {
   },
 
   onCreateMessageByUserId: async (req, res, next) => {
+    try {
     const { content, usersId } = req.body;
     const senderId = req.userId;
     const files = req.files;
@@ -168,7 +169,6 @@ export default {
         error: "The user is not exists",
       });
 
-    try {
       let value;
       // Check content or file is nto empty
       if (content) {
@@ -219,9 +219,9 @@ export default {
   },
 
   onDeleteMessage: async (req, res, next) => {
+    try {
     const { messageId, roomId } = req.body;
 
-    try {
       if (messageId) {
         await MessageModel.deleteMessageById(messageId, TypeMessage.key);
       } else {

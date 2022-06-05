@@ -16,6 +16,7 @@ import { ERROR_CODE } from "../config/constant.js";
 
 export default {
   onGetRoomsByPaging: async (req, res, next) => {
+    try {
     const {
       userId,
       orderby,
@@ -25,7 +26,6 @@ export default {
       searchby,
       searchvalue,
     } = req.query;
-    try {
       // get room
       const rooms = await RoomModel.getRoomsByPaging(
         startIndex,
@@ -55,9 +55,9 @@ export default {
   },
 
   onFindRoomByUserId: async (req, res, next) => {
+    try {
     const { otherUserId } = req.query;
     const userId = req.userId;
-    try {
       const isUsersExists = await UserModel.checkExists([userId, otherUserId]);
 
       if (!isUsersExists) {
@@ -80,10 +80,10 @@ export default {
   },
 
   onCreateRoom: async (req, res, next) => {
+    try {
     const { name, joinersId } = req.body;
     const userId = req.userId;
     const avatarUri = req.file?.path ?? null;
-    try {
       const joiners =
         userId === config.adminId ? joinersId : [...joinersId, userId]; // If creator is admin, don't add
       const newRoom = await RoomModel.createRoom(name, avatarUri, joiners);
@@ -103,10 +103,10 @@ export default {
   },
 
   onDeleteRoom: async (req, res, next) => {
+    try {
     const { roomId } = req.body;
     const userId = req.userId;
 
-    try {
       const success = await Model.callTransaction(async () => {
         //Delete all message in room
         await MessageModel.deleteMessageInRoom(roomId);
@@ -126,6 +126,7 @@ export default {
     }
   },
   onChangeInfo: async (req, res, next) => {
+    try {
     const { roomId } = req.params;
     const { roomName } = req.body;
     const image = req.file;
@@ -138,7 +139,6 @@ export default {
       });
     }
 
-    try {
       // Get string url
       const imageUrl = image ? TranferFileMulterToString(image) : undefined;
 
@@ -168,6 +168,7 @@ export default {
   },
 
   onJoinersChange: async (req, res, next) => {
+    try {
     const { roomId } = req.params;
     const { addedJoiners, deletedJoiners } = req.body;
 
@@ -193,7 +194,6 @@ export default {
       }
     }
 
-    try {
       await UserRoomModel.changeJoiners(roomId, addedJoiners, deletedJoiners);
       return successResponse(res, {
         success: true,
