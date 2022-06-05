@@ -157,7 +157,7 @@ class RoomInputValidateBuilder {
       //   errorMessage: "At least one member in room"
       // },
       customSanitizer: {
-        options: (value) => String(value).split(','),
+        options: (value) => value.trim() ? String(value).split(',') : [],
       },
       exists: {
         options: {

@@ -23,7 +23,7 @@ const config = {
     adminId: 'ADMIN_ID',
     exampleId: '1',
     server: {
-        port: process.env.port || 3000,
+        port: process.env.port || 8080,
         port_socket: process.env.port_socket || 3001,
     }
 };
