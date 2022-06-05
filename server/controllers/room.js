@@ -13,6 +13,7 @@ import UserRoomModel from "../models/user_room.js";
 import { deleteFiles } from "../utils/file/file_service.js";
 import { IsImageFile, TranferFileMulterToString } from "../config/helper.js";
 import { ERROR_CODE } from "../config/constant.js";
+import { MyNotifySocket } from "../config/websocket.js";
 
 export default {
   onGetRoomsByPaging: async (req, res, next) => {
@@ -213,6 +214,10 @@ export default {
         typeRoom
       );
 
+      RoomModel.getRoomsById([roomId]).then(rooms=>{
+        MyNotifySocket.RoomUpdate(rooms[0]);
+      });
+
       return successResponse(res, {
         success: true,
         description: `Room ${roomId} update complete`,
@@ -263,6 +268,11 @@ export default {
       }
 
       await UserRoomModel.changeJoiners(roomId, addedJoiners, deletedJoiners);
+
+      RoomModel.getRoomsById([roomId]).then(rooms=>{
+        MyNotifySocket.RoomUpdate(rooms[0]);
+      });
+
       return successResponse(res, {
         success: true,
         description: `Room ${roomId} change joiners success`,

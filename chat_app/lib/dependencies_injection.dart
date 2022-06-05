@@ -24,8 +24,8 @@ final sl = GetIt.instance;
 
 Future<void> init() async {
   // socket
-  sl.registerSingleton<IO.Socket>(IO.io('http://localhost:3000'));
-  sl.registerSingleton(SocketService(socket: sl()));
+  // sl.registerSingleton<IO.Socket>(IO.io('http://localhost:3000'));
+  sl.registerSingleton<SocketService>(SocketService());
 
   // datasource
   sl.registerSingleton(http.Client());

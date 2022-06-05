@@ -98,7 +98,7 @@ class Message extends Model {
     return messages;
   }
 
-  static async getMessageByIdsAndType(messageIds) {
+  static async getMessageByIds(messageIds) {
     const messages = await Message.findAll({
       where: {
         id: {

@@ -104,7 +104,7 @@ class Room extends Model {
   /**
    * Get rooms by ids
    * @param {string[]} roomsId
-   * @returns {Room[]} rooms with last message include
+   * @returns {Promise<Room[]>} rooms with last message include
    */
   static async getRoomsById(roomsId) {
     const rooms = await Room.findAll({

@@ -65,9 +65,11 @@ class WebSocket {
 
   removeUser(sessionId) {
     if (sessionId) {
-      let userId = this.activeUsers.find((i) => i.sessionId === sessionId).userId;
-      this.activeUsers = this.activeUsers.filter((i) => i.sessionId !== sessionId);
-      console.log('user is remove from active: ' + userId);
+      let userId = this.activeUsers.find((i) => i.sessionId === sessionId)?.userId;
+      if (userId) {
+        this.activeUsers = this.activeUsers.filter((i) => i.sessionId !== sessionId);
+        console.log('user is remove from active: ' + userId);
+      }
     }
   }
 

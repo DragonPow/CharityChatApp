@@ -1,6 +1,8 @@
 import 'package:chat_app/configs/colorconfig.dart';
+import 'package:chat_app/helper/network/socket_service.dart';
 import 'package:chat_app/presentation/bloc/chat_detail/chat_detail_bloc.dart';
 import 'package:chat_app/presentation/rootapp.dart';
+import 'package:chat_app/utils/account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,6 +19,7 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    sl<SocketService>().connect();
     return ScreenUtilInit(
         designSize: const Size(360, 780),
         minTextAdapt: true,

@@ -13,6 +13,7 @@ import config from "../config/index.js";
 import RoomModel from "../models/room.js";
 import { IsImageFile, TranferFileMulterToString } from "../config/helper.js";
 import UserRoomModel from "../models/user_room.js";
+import { MyNotifySocket } from "../config/websocket.js";
 
 export default {
   onGetRoomMessages: async (req, res, next) => {
@@ -138,6 +139,10 @@ export default {
       // Set last message for room model
       RoomModel.checkAndSetLastMessage(roomId, newMessage);
 
+      MessageModel.getMessageByIds([newMessage.id]).then((messages) =>
+        MyNotifySocket.MessageSent(roomId, messages[0])
+      );
+
       return successResponse(res, {
         success: true,
         message: newMessage,
@@ -199,6 +204,10 @@ export default {
       // Set last message for room model
       RoomModel.checkAndSetLastMessage(room.id, newMessage);
 
+      MessageModel.getMessageByIds([newMessage.id]).then((messages) =>
+        MyNotifySocket.MessageSent(room.id, messages[0])
+      );
+
       return successResponse(res, {
         success: true,
         message: newMessage,
@@ -238,7 +247,7 @@ export default {
         }
       }
 
-      const messages = await MessageModel.getMessageByIdsAndType(messageIds);
+      const messages = await MessageModel.getMessageByIds(messageIds);
       const setRoomIds = new Set(messages.map((i) => i.roomId));
       const previousFile = messages
         .filter((i) => ["image", "file", "video"].includes(i.typeContent))
