@@ -36,28 +36,6 @@ class Message extends Model {
     return message;
   }
 
-  // static async sendImage(content, typeContent, roomId, senderId) {
-  //   const message = await Message.create({
-  //     content,
-  //     typeContent: "image",
-  //     senderId,
-  //     roomId,
-  //   });
-  //   //TODO: upload image to db
-  //   return message;
-  // }
-
-  // static async sendFile(content, typeContent, roomId, senderId) {
-  //   const message = await Message.create({
-  //     content,
-  //     typeContent: "file",
-  //     senderId,
-  //     roomId,
-  //   });
-  //   //TODO: upload file to db
-  //   return message;
-  // }
-
   static async getMessagesByRoomId(
     roomId,
     startIndex,
@@ -117,6 +95,18 @@ class Message extends Model {
       offset: startIndex,
       order: [[...searchOrderby, orderdirection]],
     });
+    return messages;
+  }
+
+  static async getMessageByIdsAndType(messageIds) {
+    const messages = await Message.findAll({
+      where: {
+        id: {
+          [Op.in]: messageIds,
+        }
+      }
+    });
+
     return messages;
   }
 
@@ -182,53 +172,18 @@ class Message extends Model {
     return messages;
   }
 
-  // static async getLastMessageInRoom(roomId) {
-  //   try {
-  //     //? Should get message and sender data?
-  //     const message = await Message.findOne({
-  //       where: { roomId: roomId },
-  //       order: [["timeCreate", "DESC"]],
-  //       include: {
-  //         model: User, //Get sender data
-  //         as: "sender",
-  //         attribute: [
-  //           ["id", "senderId"],
-  //           ["name", "senderName"],
-  //           ["imageUri", "senderImageUri"],
-  //         ],
-  //       },
-  //     });
-  //     return message;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+  static async checkIsSender(messageIds, senderId) {
+    const rs = await Message.count({
+      where: {
+        senderId: senderId,
+        id: {
+          [Op.in]: messageIds,
+        }
+      }
+    });
 
-  // static async getMessagesByContent(textMatch, roomId, startIndex, number) {
-  //   //Just find text message
-  //   const { count, rows: messages } = await Message.findAndCountAll({
-  //     where: {
-  //       roomId: roomId,
-  //       typeContent: "text",
-  //       content: {
-  //         [Op.substring]: textMatch,
-  //       },
-  //     },
-  //     order: [["timeCreate", "DESC"]],
-  //     include: {
-  //       model: User, //Get sender data
-  //       as: "sender",
-  //       attribute: [
-  //         ["id", "senderId"],
-  //         ["name", "senderName"],
-  //         ["imageUri", "senderImageUri"],
-  //       ],
-  //     },
-  //     limit: number,
-  //     offset: startIndex,
-  //   });
-  //   return { messages, count };
-  // }
+    return rs === messageIds.length;
+  }
 
   static async deleteMessageInRoom(roomId) {
     const rs = await Message.destroy({
@@ -239,8 +194,16 @@ class Message extends Model {
     return rs;
   }
 
-  static async deleteMessageById(messageId, TypeMessage) {
-    // TODO: delete and remove some relation object (file, image)
+  static async deleteMessageById(messageIds) {
+    const rs = await Message.destroy({
+      where: {
+        id: {
+          [Op.in]: messageIds
+        }
+      }
+    });
+
+    return rs;
   }
 
   // static async getImages(startIndex, number, roomId) {

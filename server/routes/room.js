@@ -1,11 +1,10 @@
 import express from "express";
 import room from "../controllers/room.js";
 import { check, checkSchema } from "express-validator";
-import {checkInput} from "../utils/middleware/input_validate_service.js";
-import {checkToken} from "../utils/middleware/token_service.js";
-import MyMulter from '../utils/file/my_multer.js';
+import { checkInput } from "../utils/middleware/input_validate_service.js";
+import { checkToken } from "../utils/middleware/token_service.js";
+import MyMulter from "../utils/file/my_multer.js";
 import { ROOM_UPLOAD_DIR } from "../config/constant.js";
-
 
 const router = express.Router();
 const uploadRoomFile = MyMulter(ROOM_UPLOAD_DIR);
@@ -78,37 +77,45 @@ class RoomInputValidateBuilder {
       in: ["query"],
       trim: true,
     },
+    searchtype: {
+      in: ["query"],
+      isIn: {
+        options: [["all",'private','group']],
+        errorMessage: "Must be 'all', 'private' or 'group'",
+      },
+    },
   });
 
   static onFindRoom = checkSchema({
     otherUserId: {
-      in:['query'],
+      in: ["query"],
       isString: true,
       exists: {
         options: {
-          checkFalsy: true
-        }
+          checkFalsy: true,
+        },
       },
-      errorMessage: 'userId must be string and not empty',
-    }
+      errorMessage: "userId must be string and not empty",
+    },
   });
 
   static onCreateRoom = checkSchema({
     name: {
       in: ["body"],
       isString: true,
+      errorMessage: "Must be not null",
     },
     joinersId: {
       in: ["body"],
       custom: {
         options: (value) => {
-          const list = String(value).split(',');
+          const list = String(value).split(",");
           return list.length > 0;
         },
-        errorMessage: "At least one member in room"
+        errorMessage: "At least one member in room",
       },
       customSanitizer: {
-        options: (value) => String(value).split(','),
+        options: (value) => String(value).split(","),
       },
       exists: {
         options: {
@@ -117,13 +124,30 @@ class RoomInputValidateBuilder {
         errorMessage: "Must provide joinersId",
       },
     },
+    typeRoom: {
+      in: ["body"],
+      isIn: {
+        options: [["private", "group"]],
+        errorMessage: "Must be 'private' or 'group'",
+      },
+      optional: true,
+    },
   });
 
   static onChangeInfo = checkSchema({
     roomName: {
-      in: ['body'],
+      in: ["body"],
       isString: true,
-      errorMessage: 'Room name must be string',
+      optional: true,
+      errorMessage: "Room name must be string",
+    },
+    typeRoom: {
+      in: ["body"],
+      isIn: {
+        options: [["private", "group"]],
+        errorMessage: "Must be 'private' or 'group'",
+      },
+      optional: true,
     },
   });
 
@@ -138,7 +162,7 @@ class RoomInputValidateBuilder {
       //   errorMessage: "At least one member in room"
       // },
       customSanitizer: {
-        options: (value) => value.trim() ? String(value).split(',') : [],
+        options: (value) => (value.trim() ? String(value).split(",") : []),
       },
       exists: {
         options: {
@@ -157,7 +181,7 @@ class RoomInputValidateBuilder {
       //   errorMessage: "At least one member in room"
       // },
       customSanitizer: {
-        options: (value) => value.trim() ? String(value).split(',') : [],
+        options: (value) => (value.trim() ? String(value).split(",") : []),
       },
       exists: {
         options: {
@@ -165,8 +189,30 @@ class RoomInputValidateBuilder {
         },
         errorMessage: "Deleted user must provide id",
       },
-    }
-  })
+    },
+  });
+
+  static onDeleteRoom = checkSchema({
+    roomIds: {
+      in: ["body"],
+      custom: {
+        options: (value) => {
+          const list = String(value).trim().split(",");
+          return list.length > 0;
+        },
+        errorMessage: "At least one member in room",
+      },
+      customSanitizer: {
+        options: (value) => (value.trim() ? String(value).trim().split(",") : []),
+      },
+      exists: {
+        options: {
+          checkFalsy: true,
+        },
+        errorMessage: "Is required",
+      },
+    },
+  });
 }
 
 router.get(
@@ -178,16 +224,16 @@ router.get(
 );
 
 router.get(
-  '/find',
+  "/find",
   RoomInputValidateBuilder.onFindRoom,
   checkInput,
   checkToken,
   room.onFindRoomByUserId
-)
+);
 
 router.post(
   "/create",
-  uploadRoomFile.single('image'),
+  uploadRoomFile.single("image"),
   RoomInputValidateBuilder.onCreateRoom,
   checkInput,
   checkToken,
@@ -196,7 +242,7 @@ router.post(
 
 router.put(
   "/u/:roomId/info",
-  uploadRoomFile.single('image'),
+  uploadRoomFile.single("image"),
   RoomInputValidateBuilder.onChangeInfo,
   checkInput,
   checkToken,
@@ -204,14 +250,20 @@ router.put(
 );
 
 router.put(
-  '/u/:roomId/joiners',
+  "/u/:roomId/joiners",
   RoomInputValidateBuilder.onChangeJoiners,
   checkInput,
   checkToken,
-  room.onJoinersChange,
-)
+  room.onJoinersChange
+);
 
 // router.put("/u/avatar/:roomId", room.onUpdateAvatarRoom);
-router.delete("/d/:roomId", checkInput, checkToken, room.onDeleteRoom);
+router.delete(
+  "/delete",
+  RoomInputValidateBuilder.onDeleteRoom,
+  checkInput,
+  checkToken,
+  room.onDeleteRoom
+);
 
 export default router;

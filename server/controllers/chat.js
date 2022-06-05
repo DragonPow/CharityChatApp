@@ -1,6 +1,6 @@
 import { TypeMessage } from "../models/message.js";
 import MessageModel from "../models/message.js";
-import { NUMBER_MESSAGE_PER_LOAD } from "../config/constant.js";
+import { ERROR_CODE, NUMBER_MESSAGE_PER_LOAD } from "../config/constant.js";
 import { deleteFiles } from "../utils/file/file_service.js";
 import {
   badRequestResponse,
@@ -16,7 +16,6 @@ import UserRoomModel from "../models/user_room.js";
 
 export default {
   onGetRoomMessages: async (req, res, next) => {
-    try {
     const {
       roomId,
       startIndex,
@@ -26,23 +25,26 @@ export default {
       searchby,
       searchvalue,
     } = req.query;
-
     const userId = req.userId;
 
-    // If is admin, next
-    if (userId !== config.adminId) {
-      // Check joiner is in room
-      const isJoinerRoom = await UserRoomModel.CheckIsJoinerOfRoom(userId, roomId);
-      if (!isJoinerRoom) {
-        return unAuthorizedResponse(res, 'Must be joiner of the room');
+    try {
+      // If is admin, next
+      if (userId !== config.adminId) {
+        // Check joiner is in room
+        const isJoinerRoom = await UserRoomModel.CheckIsJoinerOfRoom(
+          userId,
+          roomId
+        );
+        if (!isJoinerRoom) {
+          return unAuthorizedResponse(res, "Must be joiner of the room");
+        }
+        // const joinerInRoom = await UserModel.getJoinersInRoom([roomId]);
+        // console.log('JOINERS IN ROOM:', joinerInRoom);
+        // // If is not joiner, can not access
+        // if (!joinerInRoom.some((joiner) => joiner.id === userId)) {
+        //   return unAuthorizedResponse(res);
+        // }
       }
-      // const joinerInRoom = await UserModel.getJoinersInRoom([roomId]);
-      // console.log('JOINERS IN ROOM:', joinerInRoom);
-      // // If is not joiner, can not access
-      // if (!joinerInRoom.some((joiner) => joiner.id === userId)) {
-      //   return unAuthorizedResponse(res);
-      // }
-    }
 
       // const { startIndex, number } = req.body;
       const messages = await MessageModel.getMessagesByRoomId(
@@ -62,7 +64,6 @@ export default {
   },
 
   onGetAllMessages: async (req, res, next) => {
-    try {
     const {
       startIndex,
       number,
@@ -73,10 +74,11 @@ export default {
     } = req.query;
 
     const userId = req.userId;
-    // If is admin, next
-    if (userId !== config.adminId) {
-      return unAuthorizedResponse(res, "Only admin can access this route");
-    }
+    try {
+      // If is admin, next
+      if (userId !== config.adminId) {
+        return unAuthorizedResponse(res, "Only admin can access this route");
+      }
 
       // const { startIndex, number } = req.body;
       const messages = await MessageModel.getAllMessages(
@@ -95,11 +97,11 @@ export default {
   },
 
   onCreateMessageByRoomId: async (req, res, next) => {
-    try {
     const { content, roomId } = req.body;
     const senderId = req.userId;
     const files = req.files;
 
+    try {
       let value;
       // Check content or file is nto empty
       if (content) {
@@ -116,10 +118,12 @@ export default {
       // Check room exists
       const roomsCheck = await RoomModel.getRoomsById([roomId]);
       if (!roomsCheck || roomsCheck.length !== 1) {
-        return badRequestResponse(res, {code: 'ROOM_NOT_EXISTS', error: 'Room is not exists'});
-      }
-      else {
-        if (!roomsCheck[0].joiners.some(user => user.id === senderId)) {
+        return badRequestResponse(res, {
+          code: "ROOM_NOT_EXISTS",
+          error: "Room is not exists",
+        });
+      } else {
+        if (!roomsCheck[0].joiners.some((user) => user.id === senderId)) {
           return unAuthorizedResponse(res);
         }
       }
@@ -139,7 +143,7 @@ export default {
         message: newMessage,
       });
     } catch (error) {
-      console.log('ERROR', error);
+      console.log("ERROR", error);
       // Delete all file in request
       if (files) {
         deleteFiles(files.map((file) => TranferFileMulterToString(file))).catch(
@@ -157,17 +161,17 @@ export default {
   },
 
   onCreateMessageByUserId: async (req, res, next) => {
-    try {
     const { content, usersId } = req.body;
     const senderId = req.userId;
     const files = req.files;
 
-    const isExists = await UserModel.checkExists([...usersId, senderId]);
-    if (!isExists)
-      return badRequestResponse(res, {
-        errorCode: "USER_NOT_FOUND",
-        error: "The user is not exists",
-      });
+    try {
+      const isExists = await UserModel.checkExists([...usersId, senderId]);
+      if (!isExists)
+        return badRequestResponse(res, {
+          errorCode: "USER_NOT_FOUND",
+          error: "The user is not exists",
+        });
 
       let value;
       // Check content or file is nto empty
@@ -219,42 +223,50 @@ export default {
   },
 
   onDeleteMessage: async (req, res, next) => {
-    try {
-    const { messageId, roomId } = req.body;
+    const { messageIds } = req.body;
+    const userId = req.userId;
 
-      if (messageId) {
-        await MessageModel.deleteMessageById(messageId, TypeMessage.key);
-      } else {
-        await MessageModel.deleteMessageInRoom(roomId);
+    try {
+      // If is admin, next
+      if (userId !== config.adminId) {
+        const isSender = await MessageModel.checkIsSender(messageIds);
+        if (!isSender) {
+          return badRequestResponse(res, {
+            error: ERROR_CODE.ACCESS_DENIED,
+            description: "Must be sender to delete message",
+          });
+        }
       }
 
-      return successResponse(res, { description: "Message delete success" });
+      const messages = await MessageModel.getMessageByIdsAndType(messageIds);
+      const setRoomIds = new Set(messages.map((i) => i.roomId));
+      const previousFile = messages
+        .filter((i) => ["image", "file", "video"].includes(i.typeContent))
+        .map((i) => i.content);
+
+      console.log("File previous delete", previousFile);
+
+      // Delete message
+      const number = await MessageModel.deleteMessageById(messageIds);
+
+      // Set last message in room
+      setRoomIds.forEach((roomId) => RoomModel.resetLastMessage(roomId));
+
+      // Delete file and image
+      deleteFiles(previousFile, true).catch((error) =>
+        console.log("Cannot delete files " + previousFile, error)
+      );
+
+      return successResponse(res, {
+        success: true,
+        description: "Message delete success",
+      });
     } catch (error) {
-      return failResponse(res, { error, description: "Message cannot delete" });
+      console.log(error);
+      return failResponse(res, {
+        error: error.message ?? error,
+        description: "Message cannot delete",
+      });
     }
   },
-  // onGetImages: async (req, res, next) => {
-  //   // const { startIndex, number } = req.body;
-  //   const { roomId, startIndex, number } = req.query;
-
-  //   try {
-  //     const images = await MessageModel.getImages(startIndex, number, roomId);
-
-  //     return successResponse(res, images);
-  //   } catch (error) {
-  //     return failResponse(res, error);
-  //   }
-  // },
-  // onGetFile: async (req, res, next) => {
-  //   // const { startIndex, number } = req.body;
-  //   const { roomId, startIndex, number } = req.query;
-
-  //   try {
-  //     const files = await MessageModel.getFiles(startIndex, number, roomId);
-
-  //     return successResponse(res, files);
-  //   } catch (error) {
-  //     return failResponse(res, error);
-  //   }
-  // },
 };

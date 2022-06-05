@@ -7,8 +7,6 @@ class UserRoom extends Model {
     const transaction = await sequelize.transaction();
 
     try {
-      console.log(roomId + removeIds);
-
       const added = (await UserRoom.bulkCreate(
         addIds.map((i) => {
           return { userId: i, roomId: roomId };
@@ -36,6 +34,12 @@ class UserRoom extends Model {
     }
   }
 
+  /**
+   * Check if user Id is the joiner of the room
+   * @param {string} joinerId 
+   * @param {string} roomId 
+   * @returns 
+   */
   static async CheckIsJoinerOfRoom(joinerId, roomId) {
     const count = await UserRoom.count({
       where: {

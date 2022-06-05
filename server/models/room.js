@@ -5,11 +5,19 @@ import UserRoom from "./user_room.js";
 import User from "./user.js";
 import config from "../config/index.js";
 import { GetDataFromSequelizeObject } from "../config/helper.js";
+import { deleteFiles } from "../utils/file/file_service.js";
 
+const TypeRoom = DataTypes.ENUM(["group", "private"]);
 class Room extends Model {
-  static async checkExists(roomId) {
-    const rs = await Room.findByPk(roomId, { attributes: ["id"] });
-    return rs !== null;
+  static async checkExists(roomIds) {
+    const rs = await Room.count({
+      where: {
+        id: {
+          [Op.in]: roomIds,
+        },
+      },
+    });
+    return rs === roomIds.length;
   }
   static async getRoomsByPaging(
     startIndex,
@@ -18,7 +26,8 @@ class Room extends Model {
     orderby,
     orderdirection,
     searchby,
-    searchvalue
+    searchvalue,
+    searchtype
   ) {
     let searchOrderby;
     switch (orderby) {
@@ -34,10 +43,29 @@ class Room extends Model {
       default:
         break;
     }
+
+    let searchTypeRoom;
+    switch (searchtype) {
+      case "all":
+        searchTypeRoom = ["private", "group"];
+        break;
+      case "private":
+        searchTypeRoom = ["private"];
+        break;
+      case "group":
+        searchTypeRoom = ["group"];
+        break;
+      default:
+        break;
+    }
+
     const userRooms = await Room.findAll({
       where: {
         name: {
           [Op.substring]: searchvalue,
+        },
+        typeRoom: {
+          [Op.in]: searchTypeRoom,
         },
       },
       include: [
@@ -70,8 +98,8 @@ class Room extends Model {
 
   /**
    * Get rooms by ids
-   * @param {Array} roomsId
-   * @returns rooms with last message include
+   * @param {string[]} roomsId
+   * @returns {Room[]} rooms with last message include
    */
   static async getRoomsById(roomsId) {
     const rooms = await Room.findAll({
@@ -159,14 +187,24 @@ class Room extends Model {
    * @param {string} name name of the room
    * @param {string} avatarUri avatar of the room, directory to server location, it can be null
    * @param {string[]} joinersId list joiners of the room
+   * @param {'group'|'private'} typeRoom type of the room
    */
-  static async createRoom(name, avatarUri = null, joinersId) {
+  static async createRoom(
+    name,
+    avatarUri = null,
+    joinersId,
+    typeRoom = undefined
+  ) {
     const transaction = await sequelize.transaction();
+    if (!typeRoom) {
+      typeRoom = joinersId.length === 2 ? "private" : "group";
+    }
     try {
       const room = await Room.create(
         {
           name: name,
           avatarId: avatarUri,
+          typeRoom: typeRoom,
         },
         {
           transaction: transaction,
@@ -227,25 +265,79 @@ class Room extends Model {
     return room;
   }
 
-  static async deleteById(roomId) {
+  /**
+   *
+   * @param {string[]} roomIds
+   * @returns
+   */
+  static async deleteByIds(roomIds) {
+    // Auto delete all message in room
     const rs = await Room.destroy({
       where: {
-        id: roomId,
+        id: {
+          [Op.in]: roomIds,
+        },
       },
     });
-    //TODO: Should or Not delete messages in this room here?
     return rs;
   }
 
-  static async updateRoom(roomId, roomName, imageUrl) {
+  /**
+   * Update information of the room
+   * @param {string} roomId
+   * @param {string} roomName
+   * @param {string} imageUrl
+   * @param {'private'|'group'} typeRoom
+   * @returns
+   */
+  static async updateRoom(roomId, roomName, imageUrl, typeRoom = undefined) {
     const room = await Room.findByPk(roomId, {
-      attributes: ["id", "name", "avatarId"],
+      // attributes: ["id", "name", "avatarId"],
     });
+    const previousImageUrl = room.avatarId;
 
     roomName && room.set("name", roomName);
     imageUrl && room.set("avatarId", imageUrl);
+    typeRoom && room.set("typeRoom", typeRoom);
 
-    return room.save();
+    return room.save().then((rs) => {
+      deleteFiles([previousImageUrl]).catch((error) =>
+        console.log(
+          `Delete image of room ${room.id} fail, name: ${previousImageUrl}`,
+          error
+        )
+      );
+      return rs;
+    });
+  }
+
+  static async resetLastMessage(roomId) {
+    // Find last message
+    const lastMessages = await Message.getMessagesByRoomId(
+      roomId,
+      0,
+      1,
+      "createTime",
+      "desc",
+      "all",
+      ""
+    );
+
+    const newLastMessageId = lastMessages.length ? lastMessages[0].id : null;
+
+    const { affectedCount } = await Room.update(
+      {
+        lastMessageId: newLastMessageId,
+      },
+      {
+        where: {
+          id: roomId,
+        },
+      }
+    );
+
+    console.log(`New last message of room ${roomId} is: ${newLastMessageId}`);
+    return affectedCount === 1;
   }
 
   static async checkAndSetLastMessage(roomId, message) {
@@ -294,6 +386,11 @@ Room.init(
     avatarId: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    typeRoom: {
+      type: TypeRoom,
+      allowNull: false,
+      defaultValue: "private",
     },
   },
   { sequelize, modelName: "Room" }

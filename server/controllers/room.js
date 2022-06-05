@@ -16,7 +16,6 @@ import { ERROR_CODE } from "../config/constant.js";
 
 export default {
   onGetRoomsByPaging: async (req, res, next) => {
-    try {
     const {
       userId,
       orderby,
@@ -25,7 +24,9 @@ export default {
       number,
       searchby,
       searchvalue,
+      searchtype,
     } = req.query;
+    try {
       // get room
       const rooms = await RoomModel.getRoomsByPaging(
         startIndex,
@@ -34,7 +35,8 @@ export default {
         orderby,
         orderdirection,
         searchby,
-        searchvalue
+        searchvalue,
+        searchtype
       );
 
       // get user of room
@@ -55,9 +57,10 @@ export default {
   },
 
   onFindRoomByUserId: async (req, res, next) => {
-    try {
     const { otherUserId } = req.query;
     const userId = req.userId;
+
+    try {
       const isUsersExists = await UserModel.checkExists([userId, otherUserId]);
 
       if (!isUsersExists) {
@@ -80,13 +83,28 @@ export default {
   },
 
   onCreateRoom: async (req, res, next) => {
-    try {
-    const { name, joinersId } = req.body;
+    const { name, joinersId, typeRoom } = req.body;
     const userId = req.userId;
-    const avatarUri = req.file?.path ?? null;
+    const image = req.file;
+
+    try {
+      console.log(image);
+      if (image && !IsImageFile(image.filename)) {
+        return badRequestResponse(res, {
+          error: ERROR_CODE.FILE,
+          message: "File must be image",
+        });
+      }
+
+      const avatarUri = image ? TranferFileMulterToString(image) : undefined;
       const joiners =
         userId === config.adminId ? joinersId : [...joinersId, userId]; // If creator is admin, don't add
-      const newRoom = await RoomModel.createRoom(name, avatarUri, joiners);
+      const newRoom = await RoomModel.createRoom(
+        name,
+        avatarUri,
+        joiners,
+        typeRoom
+      );
 
       if (!newRoom) {
         return successResponse(res, { success: false });
@@ -95,6 +113,14 @@ export default {
       return successResponse(res, { success: true, room: newRoom });
     } catch (error) {
       console.log(error);
+
+      // Delete image
+      if (image) {
+        deleteFiles([TranferFileMulterToString(image)]).catch((error) =>
+          console.log("Cannot delete image")
+        );
+      }
+
       return failResponse(res, {
         error: error.message,
         description: "Cannot create room",
@@ -103,47 +129,89 @@ export default {
   },
 
   onDeleteRoom: async (req, res, next) => {
-    try {
-    const { roomId } = req.body;
+    const { roomIds } = req.body;
     const userId = req.userId;
 
-      const success = await Model.callTransaction(async () => {
-        //Delete all message in room
-        await MessageModel.deleteMessageInRoom(roomId);
-        //Delete room
-        await UserRoomModel.deleteByRoomId(roomId);
-      });
+    try {
+      {
+        // Check room exists
+        const roomExists = await RoomModel.checkExists(roomIds);
+        if (!roomExists) {
+          return badRequestResponse(res, {
+            code: ERROR_CODE.ROOM_NOT_EXISTS,
+            description: "Room is not exists",
+          });
+        }
+      }
+
+      // If is admin, next
+      if (userId !== config.adminId) {
+        // Check user is joiner of room
+        console.log(roomIds);
+        const tasks = await Promise.all(
+          roomIds.map((roomId) =>
+            UserRoomModel.CheckIsJoinerOfRoom(userId, roomId)
+          )
+        );
+        const isJoiner = tasks.every((isJoiner) => isJoiner);
+
+        if (!isJoiner) {
+          return badRequestResponse(res, {
+            code: ERROR_CODE.ACCESS_DENIED,
+            description: "User must be in the joiner of room to delete",
+          });
+        }
+      }
+
+      // Find image Urls
+      const rooms = await RoomModel.getRoomsById(roomIds);
+      const imageUrls = rooms
+        .map((room) => room.avatarId)
+        .filter((image) => image !== null);
+
+      //Delete rooms
+      await RoomModel.deleteByIds(roomIds);
+      //Delete image in rooms
+      deleteFiles(imageUrls).catch((error) =>
+        console.log("Cannot delete files: ", imageUrls)
+      );
 
       return successResponse(res, {
-        description: `Room ${roomId} delete success`,
+        success: true,
+        description: `Delete success`,
       });
     } catch (error) {
-      //TODO: trace back transaction
+      console.log(error);
       return failResponse(res, {
-        error,
-        description: `Room ${roomId} cannot delete`,
+        error: error.message ?? error,
+        description: `Cannot delete rooms: ${roomIds}`,
       });
     }
   },
   onChangeInfo: async (req, res, next) => {
-    try {
     const { roomId } = req.params;
-    const { roomName } = req.body;
+    const { roomName, typeRoom } = req.body;
     const image = req.file;
 
-    // Check file is image
-    if (image && !IsImageFile(image.filename)) {
-      return badRequestResponse(res, {
-        code: ERROR_CODE,
-        error: "Must be image file",
-      });
-    }
+    try {
+      // Check file is image
+      if (image && !IsImageFile(image.filename)) {
+        return badRequestResponse(res, {
+          code: ERROR_CODE,
+          error: "Must be image file",
+        });
+      }
 
       // Get string url
       const imageUrl = image ? TranferFileMulterToString(image) : undefined;
 
       // Update
-      const room = await RoomModel.updateRoom(roomId, roomName, imageUrl);
+      const room = await RoomModel.updateRoom(
+        roomId,
+        roomName,
+        imageUrl,
+        typeRoom
+      );
 
       return successResponse(res, {
         success: true,
@@ -155,7 +223,7 @@ export default {
 
       // Delete image
       if (image) {
-        deleteFiles(TranferFileMulterToString(image)).catch((error) =>
+        deleteFiles([TranferFileMulterToString(image)]).catch((error) =>
           console.log("DELETE_FILE_FAIL", error)
         );
       }
@@ -168,31 +236,31 @@ export default {
   },
 
   onJoinersChange: async (req, res, next) => {
-    try {
     const { roomId } = req.params;
     const { addedJoiners, deletedJoiners } = req.body;
 
-    // Check user added is exists
-    if (addedJoiners && addedJoiners.length) {
-      const userExists = await UserModel.checkExists(addedJoiners);
-      if (!userExists) {
-        return badRequestResponse(res, {
-          code: ERROR_CODE.USER_NOT_EXISTS,
-          error: "User added not exists",
-        });
+    try {
+      // Check user added is exists
+      if (addedJoiners && addedJoiners.length) {
+        const userExists = await UserModel.checkExists(addedJoiners);
+        if (!userExists) {
+          return badRequestResponse(res, {
+            code: ERROR_CODE.USER_NOT_EXISTS,
+            error: "User added not exists",
+          });
+        }
       }
-    }
 
-    // Check user added is exists
-    if (deletedJoiners && deletedJoiners.length) {
-      const userExists = await UserModel.checkExists(deletedJoiners);
-      if (!userExists) {
-        return badRequestResponse(res, {
-          code: ERROR_CODE.USER_NOT_EXISTS,
-          error: "User deleted not exists",
-        });
+      // Check user added is exists
+      if (deletedJoiners && deletedJoiners.length) {
+        const userExists = await UserModel.checkExists(deletedJoiners);
+        if (!userExists) {
+          return badRequestResponse(res, {
+            code: ERROR_CODE.USER_NOT_EXISTS,
+            error: "User deleted not exists",
+          });
+        }
       }
-    }
 
       await UserRoomModel.changeJoiners(roomId, addedJoiners, deletedJoiners);
       return successResponse(res, {

@@ -233,6 +233,27 @@ class ChatInputValidateBuilder {
       // },
     },
   });
+  static onDeleteMessage = checkSchema({
+    messageIds: {
+      in: ["body"],
+      custom: {
+        options: (value) => {
+          const list = String(value).trim().split(",");
+          return list.length > 0;
+        },
+        errorMessage: "At least one id to delete",
+      },
+      customSanitizer: {
+        options: (value) => String(value).trim().split(","),
+      },
+      exists: {
+        options: {
+          checkFalsy: true,
+        },
+        errorMessage: "Must provide id",
+      },
+    },
+  });
 }
 
 // Route
@@ -306,6 +327,12 @@ router.post(
   chat.onUpdateMessage
 );
 
-router.delete("/:messageId", chat.onDeleteMessage);
+router.delete(
+  "/delete",
+  ChatInputValidateBuilder.onDeleteMessage,
+  checkInput,
+  checkToken,
+  chat.onDeleteMessage
+);
 
 export default router;

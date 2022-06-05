@@ -97,7 +97,7 @@ export default {
 
       // Delete image
       if (image) {
-        deleteFiles(TranferFileMulterToString(image)).catch((error) =>
+        deleteFiles([TranferFileMulterToString(image)]).catch((error) =>
           console.log("DELETE_FILE_FAIL", error)
         );
       }
