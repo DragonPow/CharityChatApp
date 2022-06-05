@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:chat_app/domain/entities/user_message_entity.dart';
 import 'package:chat_app/domain/entities/user_active_entity.dart';
 import 'package:chat_app/domain/entities/base_user_entity.dart';
 import 'package:chat_app/domain/repositories/user_repository.dart';
+import 'package:chat_app/helper/constant.dart';
+import 'package:http/http.dart' as http;
 
 import '../../helper/network/network_info.dart';
 import '../datasources/local/local_datasource.dart';
@@ -25,9 +29,34 @@ class UserRepositoryImp extends IUserRepository {
   }
 
   @override
-  Future<List<UserActiveEntity>> getActiveUsers(int startIndex, int number) {
-    // TODO: implement getActiveUsers
-    throw UnimplementedError();
+  Future<List<UserActiveEntity>> getActiveUsers(
+      int startIndex, int number) async {
+    final _queryPrameters = {
+      "startIndex": startIndex.toString(),
+      "number": number.toString(),
+      "orderby": "name",
+      "orderdirection": "desc",
+      "searchby": "name",
+      "searchvalue": null
+    };
+    final _uri = Uri.http(serverUrl, "/users/select", _queryPrameters);
+    print(_uri);
+    try {
+      final _response = await http.get(_uri, headers: {"token": 'ADMIN_TOKEN'});
+      if (_response.statusCode == 200) {
+        final _jsonResponse =
+            json.decode(_response.body)["users"] as List<dynamic>;
+        List<UserActiveEntity> _listActiveUsers = _jsonResponse
+            .map((_userActive) => UserActiveEntity.fromJson(_userActive))
+            .toList();
+        return _listActiveUsers;
+      } else {
+        throw _response;
+      }
+    } catch (e) {
+      print("Error load active user: " + e.toString());
+      rethrow;
+    }
   }
 
   @override

@@ -11,4 +11,8 @@ class UserActiveEntity extends BaseUserEntity {
           id: id,
           name: name,
         );
+  factory UserActiveEntity.fromJson(Map<String, dynamic> json) => UserActiveEntity(
+    id: json["id"], 
+    name: json['name'], 
+    avatarUri: json["imageUri"] ?? "");
 }

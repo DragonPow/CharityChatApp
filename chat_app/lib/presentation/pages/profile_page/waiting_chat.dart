@@ -2,6 +2,7 @@ import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
 import 'package:chat_app/dataexample/active_user.dart';
 import 'package:chat_app/dataexample/shortchat.dart';
+import 'package:chat_app/domain/entities/room_overview_entity.dart';
 import 'package:chat_app/presentation/pages/chat_page/chatpage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -37,12 +38,7 @@ class WaitingChat extends StatelessWidget {
                 itemCount: 5,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
-                  return ShortChat(
-                      imgUrl: shortChats[shortChats.length - index - 1]['img'],
-                      name: shortChats[shortChats.length - index - 1]['name'],
-                      shortchat: shortChats[shortChats.length - index - 1]['shortchat'],
-                      time: shortChats[shortChats.length - index -  1]['time'],
-                      number: shortChats[shortChats.length - index - 1]['number']);
+                  return ShortChat( roomOverview:  RoomOverviewEntity(id: "1", name: "Nhực", lastMessage: null, avatarUrl: null),);
                 }),
           ]),
         ),

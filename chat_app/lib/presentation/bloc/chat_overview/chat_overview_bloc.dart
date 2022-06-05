@@ -12,13 +12,13 @@ part 'chat_overview_state.dart';
 class ChatOverviewBloc extends Bloc<ChatOverviewEvent, ChatOverviewState> {
   final IRoomRepository _roomRepository;
   ChatOverviewBloc(this._roomRepository) : super(ChatOverviewInitial()) {
-    on<ChatOverviewEvent>(_mapChatOverViewEventToState);
+    on<ChatOverviewLoad>(_mapChatOverViewEventToState);
   }
 
-  FutureOr<void> _mapChatOverViewEventToState (ChatOverviewEvent event, Emitter<ChatOverviewState> emit) async{
+  FutureOr<void> _mapChatOverViewEventToState (ChatOverviewLoad event, Emitter<ChatOverviewState> emit) async{
       emit(ChatOverviewLoading());
       try{
-        List<RoomOverviewEntity> listRoomOverview = await _roomRepository.getRoomOverviews(2, 0, 10);
+        List<RoomOverviewEntity> listRoomOverview = await _roomRepository.getRoomOverviews(event.userId , event.startIndex, event.number, event.searchtype);
         emit(ChatOverviewLoadSuccess(listRoomOverview: listRoomOverview));
       }
       catch(e){

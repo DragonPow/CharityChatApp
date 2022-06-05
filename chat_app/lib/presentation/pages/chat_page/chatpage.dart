@@ -2,6 +2,10 @@ import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
 import 'package:chat_app/dataexample/active_user.dart';
 import 'package:chat_app/dataexample/shortchat.dart';
+import 'package:chat_app/domain/entities/room_overview_entity.dart';
+import 'package:chat_app/helper/helper.dart';
+import 'package:chat_app/presentation/bloc/active_user/active_user_bloc.dart';
+import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
 import 'package:chat_app/presentation/components/avataruser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,11 +26,18 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   late TabController _tabController;
+  var _chatOverviewsBloc;
+  var _activeUsersBloc;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _chatOverviewsBloc = BlocProvider.of<ChatOverviewBloc>(context);
+    _chatOverviewsBloc.add(const ChatOverviewLoad(
+        number: 10, searchtype: "private", startIndex: 0, userId: '2'));
+    _activeUsersBloc = BlocProvider.of<ActiveUserBloc>(context);
+    _activeUsersBloc.add(const ActiveUserLoadEvent(number: 10, startIndex: 0));
   }
 
   @override
@@ -49,6 +60,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                       image: AssetImage("assets/images/style.png"),
                       fit: BoxFit.fill)),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
                     height: 40,
@@ -74,19 +87,39 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                     height: 10,
                   ),
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                              children: List.generate(
-                                  actives.length,
-                                  (index) => AvatarUser(
-                                      radius: 50,
-                                      imageUrl: actives[index]['img'],
-                                      name: actives[index]['name']))),
-                        ),
+                      BlocBuilder<ActiveUserBloc, ActiveUserState>(
+                        builder: (context, state) {
+                          if (state is ActiveUserLoadSuccess) {
+                            return Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: List.generate(
+                                        state.listUserActive.length,
+                                        (index) => AvatarUser(
+                                              radius: 50,
+                                              imageUrl: state
+                                                  .listUserActive[index]
+                                                  .avatarUri,
+                                              name: state
+                                                  .listUserActive[index].name,
+                                              id: state
+                                                  .listUserActive[index].id,
+                                            ))),
+                              ),
+                            );
+                          } else {
+                            return Container();
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -116,25 +149,43 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                 Tab(text: "Chat"),
                 Tab(text: "Nhóm chat "),
               ],
-              onTap: (index) {},
+              onTap: (index) {
+                index == 0
+                    ? _chatOverviewsBloc.add(const ChatOverviewLoad(
+                        number: 10,
+                        searchtype: "private",
+                        startIndex: 0,
+                        userId: "2"))
+                    : _chatOverviewsBloc.add(const ChatOverviewLoad(
+                        number: 10,
+                        searchtype: "group",
+                        startIndex: 0,
+                        userId: "2"));
+              },
             ),
           ),
         ];
       },
       body: SingleChildScrollView(
-        child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: shortChats.length,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (BuildContext context, int index) {
-              return ShortChat(
-                  imgUrl: shortChats[shortChats.length - index - 1]['img'],
-                  name: shortChats[shortChats.length - index - 1]['name'],
-                  shortchat: shortChats[shortChats.length - index - 1]
-                      ['shortchat'],
-                  time: shortChats[shortChats.length - index - 1]['time'],
-                  number: shortChats[shortChats.length - index - 1]['number']);
-            }),
+        child: BlocBuilder<ChatOverviewBloc, ChatOverviewState>(
+          builder: (context, state) {
+            if (state is ChatOverviewLoadSuccess) {
+              return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: state.listRoomOverview.length,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (BuildContext context, int index) {
+                    return ShortChat( roomOverview: state.listRoomOverview[index],);
+                  });
+            } else {
+              if (state is ChatOverviewLoadFail) {
+                return const Text("Load chat fail");
+              } else {
+                return const Text("Loading");
+              }
+            }
+          },
+        ),
         // SkeletonloaderChat()
       ),
     );
@@ -221,18 +272,10 @@ class SkeletonloaderChat extends StatelessWidget {
 }
 
 class ShortChat extends StatelessWidget {
-  final String name;
-  final String imgUrl;
-  final String shortchat;
-  final String time;
-  final int number;
+  final RoomOverviewEntity roomOverview;
   const ShortChat(
       {Key? key,
-      required this.imgUrl,
-      required this.name,
-      required this.shortchat,
-      required this.time,
-      required this.number})
+      required this.roomOverview})
       : super(key: key);
 
   @override
@@ -243,7 +286,7 @@ class ShortChat extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
           child: Row(
             children: <Widget>[
-              AvatarCicle(imgUrl: imgUrl, radius: 45),
+              AvatarCicle(imgUrl: roomOverview.avatarUrl ?? "", radius: 45),
               SizedBox(
                 width: 5.w,
               ),
@@ -258,9 +301,9 @@ class ShortChat extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(name, style: kText13BoldBlack),
+                        Text(roomOverview.name, style: kText13BoldBlack),
                         Text(
-                          time,
+                          roomOverview.lastMessage != null ? parseDatetimeToTime(roomOverview.lastMessage!.timeCreate): "",
                           style: kText11RegularHintText,
                         )
                       ],
@@ -272,7 +315,7 @@ class ShortChat extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          shortchat,
+                          roomOverview.lastMessage == null? "": roomOverview.lastMessage!.content,
                           style: kText11RegularHintText,
                         ),
                         Container(
@@ -283,7 +326,7 @@ class ShortChat extends StatelessWidget {
                           child: Align(
                               alignment: Alignment.center,
                               child: Text(
-                                number.toString(),
+                                "10", //TODO: Remove it
                                 style: kText11RegularWhite,
                               )),
                         )
@@ -306,9 +349,10 @@ class ShortChat extends StatelessWidget {
       onTap: () => {
         Navigator.of(context).push(
           MaterialPageRoute(
-              builder: (_) => BlocProvider.value(
-                    value: BlocProvider.of<ChatDetailBloc>(context),
-                    child: const ChatRoom(),
+              builder: (context) => BlocProvider(
+                    create: (context) => ChatDetailBloc(chatRepository: sl()),
+                    child: ChatRoom( 
+                      roomOverview: roomOverview,),
                   )),
         )
       },

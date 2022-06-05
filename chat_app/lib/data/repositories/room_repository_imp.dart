@@ -74,27 +74,29 @@ class RoomRepositoryImp implements IRoomRepository {
 
   @override
   Future<List<RoomOverviewEntity>> getRoomOverviews(
-      int userId, int startIndex, int number) async {
+      String userId, int startIndex, int number, String searchtype) async {
     final queryParameters = {
       'userId': userId.toString(),
       'startIndex': startIndex.toString(),
       'number': number.toString(),
-      'orderby': 'createTime',
+      'orderby': 'timeCreate',
       'orderdirection': 'desc',
       'searchby': 'name',
-      'searchvalue': "Phòng"
+      'searchvalue': null,
+      'searchtype': searchtype
     };
     final _uri = Uri.http(serverUrl, "/rooms/select", queryParameters);
     print(_uri);
-    final response = await http.get(_uri, headers: {"token": 'ADMIN_TOKEN'});
+    final response = await http.get(_uri, headers: {"token": 'EXAMPLE_TOKEN'});
     if (response.statusCode == 200) {
       final jsonRes = json.decode(response.body)["rooms"] as List<dynamic>;
+      print(json);
       final listRoomOverviews =
           jsonRes.map((x) => RoomOverviewEntity.fromJson(x)).toList();
       return listRoomOverviews;
     } else {
-    print("Error load list OverviewRooms: ");
-    throw response;
+      print("Error load list OverviewRooms: ");
+      throw response;
     }
   }
 }

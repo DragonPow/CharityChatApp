@@ -7,11 +7,13 @@ class AvatarUser extends StatefulWidget {
   final double radius;
   final String imageUrl;
   final String name;
+  final String id;
   const AvatarUser(
       {Key? key,
       required this.radius,
       required this.imageUrl,
-      required this.name})
+      required this.name, 
+      required this.id})
       : super(key: key);
 
   @override
@@ -21,26 +23,29 @@ class AvatarUser extends StatefulWidget {
 class _AvatarUserState extends State<AvatarUser> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-           AvatarCicle(imgUrl: widget.imageUrl, radius: 50),
-            SizedBox(
-            width: 60.h,
-            height: 60,
-            child: Text(
-            widget.name,
-            style: kText10RegularBlack,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-            textAlign: TextAlign.center,
-          )
-          )
-          
-        ],
+    return InkWell(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+             AvatarCicle(imgUrl: widget.imageUrl, radius: 50),
+             const SizedBox(height: 3),
+              SizedBox(
+              width: 58.h,
+              height: 58,
+              child: Text(
+              widget.name,
+              style: kText10RegularBlack,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+            )
+            )
+            
+          ],
+        ),
       ),
     );
   }

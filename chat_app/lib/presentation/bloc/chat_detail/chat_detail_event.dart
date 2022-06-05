@@ -13,3 +13,6 @@ class ChatDetailLoadMessage extends ChatDetailEvent{
   final int number;
   const ChatDetailLoadMessage({Key? key, required this.number, required this.roomId, required this.startIndex});
 }
+
+class ChatDetailSendMessage extends ChatDetailEvent{
+}
