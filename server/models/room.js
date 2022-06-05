@@ -74,6 +74,11 @@ class Room extends Model {
           as: "lastMessage",
           // attributes: [["createTime", "lastMessageTime"]],
           attributes: { exclude: ["roomId"] },
+          include: {
+            model: User,
+            as: 'sender',
+            attributes: ['id','name','email','imageUri', 'gender']
+          }
         },
         {
           model: User,

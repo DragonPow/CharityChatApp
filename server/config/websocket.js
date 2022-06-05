@@ -56,10 +56,6 @@ class WebSocket {
     });
   }
 
-  login(token) {
-
-  }
-
   addUser(value) {
     if (value && !this.activeUsers.some((i) => i.userId === value.userId)) {
       this.activeUsers.push(value);
