@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:chat_app/data/datasources/local/local_datasource.dart';
 import 'package:chat_app/data/datasources/remote/remote_datasource.dart';
 import 'package:chat_app/helper/constant.dart';
-import 'package:chat_app/helper/helper.dart';
 import 'package:chat_app/helper/network/network_info.dart';
 import 'package:http/http.dart' as http;
 import 'package:tuple/tuple.dart';

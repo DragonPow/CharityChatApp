@@ -1,4 +1,5 @@
 import 'package:chat_app/domain/entities/room_entity.dart';
+import 'package:chat_app/domain/entities/room_overview_entity.dart';
 import 'package:chat_app/domain/repositories/room_repository.dart';
 
 class RoomReposityImp extends IRoomRepository{
@@ -47,6 +48,12 @@ class RoomReposityImp extends IRoomRepository{
   @override
   Future<bool> removeUser(String roomId, String userId) {
     // TODO: implement removeUser
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<RoomOverviewEntity>> getRoomOverviews(int userId, int startIndex, int number) {
+    // TODO: implement getRoomOverviews
     throw UnimplementedError();
   }
   

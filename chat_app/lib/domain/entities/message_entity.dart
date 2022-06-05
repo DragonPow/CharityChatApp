@@ -16,8 +16,16 @@ class MessageEntity implements Comparable<MessageEntity> {
     required this.timeCreate,
   });
 
-  factory MessageEntity.sending({required String content, required MessageChatType type, required UserMessageEntity creator}) {
-    return MessageEntity(id: '', content: content, type: type, creator: creator, timeCreate: DateTime.now());
+  factory MessageEntity.sending(
+      {required String content,
+      required MessageChatType type,
+      required UserMessageEntity creator}) {
+    return MessageEntity(
+        id: '',
+        content: content,
+        type: type,
+        creator: creator,
+        timeCreate: DateTime.now());
   }
 
   factory MessageEntity.fromJson(Map<String, dynamic> json) => MessageEntity(
@@ -25,11 +33,9 @@ class MessageEntity implements Comparable<MessageEntity> {
       timeCreate: DateTime.parse(json['createTime'] as String),
       content: json['content'] as String,
       creator: UserMessageEntity.fromJson(json['sender']),
-      type: MessageChatType.text //json['typeContent'] ?? ; //as MessageChatType,
-    );
-  
-
-  
+      type:
+          MessageChatType.text //json['typeContent'] ?? ; //as MessageChatType,
+      );
 
   @override
   bool operator ==(Object other) {

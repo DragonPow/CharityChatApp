@@ -1,3 +1,5 @@
+import 'package:chat_app/domain/entities/room_overview_entity.dart';
+
 import '../entities/message_entity.dart';
 import '../entities/room_entity.dart';
 
@@ -13,4 +15,7 @@ abstract class IRoomRepository {
   
   Future<bool> addUser(String roomId, String userId);
   Future<bool> removeUser(String roomId, String userId);
+
+  Future<List<RoomOverviewEntity>> getRoomOverviews(int userId , int startIndex, int number);
+
 }
