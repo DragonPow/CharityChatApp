@@ -34,36 +34,39 @@ class WebSocket {
         console.log('Login with token: ' + token);
         try {
           const { id } = parseTokenToObject(token);
-          // const id = '2'; // mock data
-          this.addUser({ sessionId: client.id, userId: id });
+          if (id) {
+            client.join(id);
+            this.addUserToActive({ sessionId: client.id, userId: id });
+          }
         } catch (error) {
-          console.log('Cannot found token: ' + token);
+          console.error('Cannot found token: ' + token);
+          console.error('Error: ', error);
         }
       });
   
-      client.on("logout", () => {
+      client.on("logout", (token) => {
         console.log('User is logout, session id: ' + client.id);
         const sessionId = client.id;
-        this.removeUser(sessionId);
+        this.removeUserFromActive(sessionId);
       });
   
       // Define when user is disconnect with server
       client.on("disconnect", () => {
         console.log("User is disconnected, session id: " + client.id);
         const sessionId = client.id;
-        this.removeUser(sessionId);
+        this.removeUserFromActive(sessionId);
       });
     });
   }
 
-  addUser(value) {
+  addUserToActive(value) {
     if (value && !this.activeUsers.some((i) => i.userId === value.userId)) {
       this.activeUsers.push(value);
-      console.log('new active user: ' + value)
+      console.log('new active user: ' + JSON.stringify(value))
     }
   }
 
-  removeUser(sessionId) {
+  removeUserFromActive(sessionId) {
     if (sessionId) {
       let userId = this.activeUsers.find((i) => i.sessionId === sessionId)?.userId;
       if (userId) {

@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'package:chat_app/data/datasources/local/local_datasource.dart';
+import 'package:chat_app/data/repositories/authenticate_repository_imp.dart';
+import 'package:chat_app/domain/repositories/authenticate_repository.dart';
 import 'package:chat_app/presentation/bloc/chat_detail/chat_detail_bloc.dart';
+import 'package:chat_app/utils/local_storage.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:chat_app/data/datasources/remote/remote_datasource.dart';
@@ -26,6 +29,7 @@ Future<void> init() async {
   // socket
   // sl.registerSingleton<IO.Socket>(IO.io('http://localhost:3000'));
   sl.registerSingleton<SocketService>(SocketService());
+  sl.registerSingleton<LocalStorageService>(LocalStorageService());
 
   // datasource
   sl.registerSingleton(http.Client());
@@ -37,6 +41,7 @@ Future<void> init() async {
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInforImp(connectionChecker: sl()));
 
   // repository
+  sl.registerLazySingleton<IAuthenticateRepository>(()=>AuthenticateRepositoryImp());
   sl.registerLazySingleton<IRoomRepository>(() => RoomRepositoryImp(
         localDataSource: sl(),
         networkInfo: sl(),

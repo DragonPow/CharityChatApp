@@ -1,0 +1,49 @@
+{
+    "users": [
+        {
+            "id": "2",
+            "name": "Huỳnh Thị Minh Nhực",
+            "email": "huynhthiminhnhuc@gmail.com",
+            "password": "123456",
+            "phone": "0348771034",
+            "timeCreate": "2022-01-20T15:00:19.000Z",
+            "imageUri": null,
+            "birthday": null,
+            "gender": 1,
+            "address": null,
+            "description": "test description 2",
+            "numberEvent": 0,
+            "numberFollower": 0
+        },
+        {
+            "id": "3",
+            "name": "Nguyễn Phạm Duy Bằng",
+            "email": "nguyenbang@gmail.com",
+            "password": "123456",
+            "phone": "0123456789",
+            "timeCreate": "2021-12-21T02:19:05.000Z",
+            "imageUri": null,
+            "birthday": null,
+            "gender": 1,
+            "address": null,
+            "description": "test description 3",
+            "numberEvent": 0,
+            "numberFollower": 0
+        },
+        {
+            "id": "1",
+            "name": "Vũ Ngọc Thạch",
+            "email": "vungocthach1112@gmail.com",
+            "password": "123456",
+            "phone": "0382259845",
+            "timeCreate": "2021-12-18T13:17:17.000Z",
+            "imageUri": null,
+            "birthday": null,
+            "gender": 1,
+            "address": null,
+            "description": "test description 1",
+            "numberEvent": 0,
+            "numberFollower": 0
+        }
+    ]
+}

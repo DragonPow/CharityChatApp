@@ -1,5 +1,5 @@
 import UserModel from "../models/user.js";
-import { failResponse, successResponse } from "./index.js";
+import { badRequestResponse, failResponse, successResponse } from "./index.js";
 import jwt from "jsonwebtoken";
 import config from "../config/index.js";
 import { buildToken } from "../utils/middleware/token_service.js";
@@ -7,32 +7,34 @@ import { MyWebSocket } from "../config/websocket.js";
 
 export default {
   onLogin: async (req, res) => {
+    const { username, password } = req.query;
     try {
-      const { userName, password } = req.body;
       const user = await UserModel.findByUserNameAndPassword(
-        userName,
+        username,
         password
       );
 
       // check username and pass wrong
       if (!user) {
-        return failResponse(res, {
-          message: "Username or password is incorrect",
+        return badRequestResponse(res, {
+          code: 'USER_NAME_OR_PASS_WRONG',
+          error: "Username or password is incorrect",
         });
       }
 
       // create jwt
-      var token = buildToken({id: userId});
+      var token = buildToken({id: user.id});
 
-      return successResponse(res, { status: true, user: user, token: token });
+      return successResponse(res, { success: true, user: user, token: token });
     } catch (error) {
-      return failResponse(res, error);
+      console.log(error);
+      return failResponse(res, {error: error.message ?? error, description: 'Login fail'});
     }
   },
 
   onLogout: async (req, res) => {
+    const userId = req.userId;
     try {
-      const { userName } = req.query;
       await UserModel.logOut(userName);
 
       return res.status(200).json({ super: true });

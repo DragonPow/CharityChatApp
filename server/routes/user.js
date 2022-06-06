@@ -208,6 +208,14 @@ router.get(
 );
 
 router.get(
+  "/friend",
+  UserInputValidateBuilder.getUser,
+  checkInput,
+  checkToken,
+  user.onGetFriends
+);
+
+router.get(
   "/active",
   UserInputValidateBuilder.getActiveUser,
   checkInput,

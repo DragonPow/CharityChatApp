@@ -1,5 +1,8 @@
-import sequelize from '../config/mysql.js';
+import { Model } from "sequelize";
+import sequelize from "../config/mysql.js";
 
-const Friend = sequelize.define("Friend");
+class Friend extends Model {}
+
+Friend.init({}, { sequelize: sequelize, modelName: "Friend" });
 
 export default Friend;

@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:chat_app/configs/colorconfig.dart';
+import 'package:chat_app/domain/repositories/authenticate_repository.dart';
 import 'package:chat_app/helper/network/socket_service.dart';
 import 'package:chat_app/presentation/bloc/chat_detail/chat_detail_bloc.dart';
 import 'package:chat_app/presentation/rootapp.dart';
 import 'package:chat_app/utils/account.dart';
+import 'package:chat_app/utils/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,14 +17,21 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // HttpOverrides.global = MyHttpOverrides();
   await di.init();
+  sl<SocketService>().connect();
+  await testLogin(); // test login
   runApp(const MyApp());
+}
+
+Future<void> testLogin() async {
+  final storage = sl<LocalStorageService>();
+  final mockData = await storage.getMockUserData(0);
+  await sl<IAuthenticateRepository>().logIn(mockData['email'], mockData['password']);
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    sl<SocketService>().connect();
     return ScreenUtilInit(
         designSize: const Size(360, 780),
         minTextAdapt: true,

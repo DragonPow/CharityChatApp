@@ -47,8 +47,12 @@ class SocketService {
     socket.disconnect();
   }
 
-  emitLogin(String token) {
+  void emitLogin(String token) {
     socket.emit('login', token);
+  }
+
+  void emit(String nameEvent, [dynamic data]) {
+    socket.emit(nameEvent, data);
   }
 
   void addEventListener(String nameEvent, Function(dynamic) callback) {
