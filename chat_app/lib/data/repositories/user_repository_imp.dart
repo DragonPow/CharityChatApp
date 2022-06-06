@@ -70,4 +70,27 @@ class UserRepositoryImp extends IUserRepository {
     // TODO: implement getUsersInRoom
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<UserActiveEntity>> getUserFriends(
+      int starIndex, int number) async {
+    final _queryPrameters = {
+      "startIndex": starIndex.toString(),
+      "number": number.toString(),
+      "orderby": "timeCreate",
+      "orderdirection": "desc", 
+      "searchby": "name",
+      "searchvalue": null
+    };
+    final _uri = Uri.http(serverUrl, "users/friend", _queryPrameters);
+    final _response = await http.get(_uri, headers: {"token": "EXAMPLE_TOKEN"});
+    if (_response.statusCode == 200) {
+      final _resJson = json.decode(_response.body)["users"] as List<dynamic>;
+      List<UserActiveEntity> _listfriend =
+          _resJson.map((friend) => UserActiveEntity.fromJson(friend)).toList();
+      return _listfriend;
+    } else {
+      throw _response;
+    }
+  }
 }

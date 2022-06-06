@@ -70,7 +70,7 @@ class _SearchResult extends State<SearchResult>{
                         shrinkWrap: true,
                         itemCount: actives.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return SortInforComponent(imgUrl: actives[index]['img'], name: actives[index]['name']);
+                          return SortInforComponent(id: "", imgUrl: actives[index]['img'], name: actives[index]['name']);
                         }),
                   ],
                 ),

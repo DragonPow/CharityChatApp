@@ -1,3 +1,4 @@
+import 'package:chat_app/domain/entities/user_active_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -6,14 +7,12 @@ import '../../../../../configs/fontconfig.dart';
 import '../../../../components/avatarcicle.dart';
 
 class NonMember extends StatefulWidget {
-  final String name;
-  final String imgurl;
-  const NonMember ({Key? key, required this.imgurl, required this.name}):super(key: key);
+  final UserActiveEntity nonmember;
+  final Function onTap;
+  const NonMember ({Key? key, required this.nonmember,required this.onTap}):super(key: key);
 
   @override
   State<NonMember> createState() => _NonMember();
-
-  
 }
 
 class _NonMember extends State<NonMember>{
@@ -27,12 +26,12 @@ class _NonMember extends State<NonMember>{
                   children: [
                     Row(
                       children: [
-                         AvatarCicle(imgUrl:widget.imgurl, radius: 44),
+                         AvatarCicle(imgUrl:widget.nonmember.avatarUri, radius: 44),
                         SizedBox(width: 5.w,),
-                        Text(widget.name, style:  ktext17RegularBlack,),
+                        Text(widget.nonmember.name, style:  ktext17RegularBlack,),
                       ],
                     ),
-                    TextButton(onPressed: () => {}, child: Text("Mời", style: kText17SemiboldMain,))
+                    TextButton(onPressed: () => {widget.onTap()}, child: Text("Mời", style: kText17SemiboldMain,))
                   ],
               ),
               Padding(
