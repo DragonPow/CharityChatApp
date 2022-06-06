@@ -13,7 +13,7 @@ class AuthenticateRepositoryImp extends IAuthenticateRepository {
   final socketService = sl<SocketService>();
 
   @override
-  Future<void> logIn(String userName, String password) async {
+  Future<String?> logIn(String userName, String password) async {
     final queryParams = {
       'username': userName,
       'password': password,
@@ -34,10 +34,11 @@ class AuthenticateRepositoryImp extends IAuthenticateRepository {
       Account.setInstanceByCopy(newAccount);
       localService.setAccount(newAccount);
       localService.setToken(token);
+      return token;
     } else {
       final jsonRes = json.decode(response.body) as Map<String, dynamic>;
       if (jsonRes['code'] == 'USER_NAME_OR_PASS_WRONG') {
-        throw jsonRes['code'];
+        return null;
       }
       throw Exception(['Login fail', jsonRes]);
     }

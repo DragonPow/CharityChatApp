@@ -18,7 +18,7 @@ class SocketService {
   final socket = IO.io(socketUrl, <String, dynamic>{
     'transports': ['websocket'],
     'autoConnect': true,
-});
+  });
 
   SocketService() {
     // socket.connect();
@@ -55,7 +55,10 @@ class SocketService {
     socket.emit(nameEvent, data);
   }
 
-  void addEventListener(String nameEvent, Function(dynamic) callback) {
+  void addEventListener(String nameEvent, dynamic Function(dynamic) callback) {
     socket.on(nameEvent, callback);
   }
+
+  void addEventReconnect(dynamic Function(dynamic) callback) =>
+      socket.onReconnect(callback);
 }

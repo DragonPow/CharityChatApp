@@ -15,7 +15,7 @@ const config = {
         port: 3306,
     },
     jwt: {
-        expireTime: 24, //24 hours
+        expireTime: '24h', //24 hours
         secretCode: 'SECRETE',
         tokenAdmin: 'ADMIN_TOKEN',
         tokenExample: 'EXAMPLE_TOKEN',
