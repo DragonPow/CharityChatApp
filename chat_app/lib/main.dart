@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/helper/network/socket_service.dart';
 import 'package:chat_app/presentation/bloc/chat_detail/chat_detail_bloc.dart';
@@ -11,6 +13,7 @@ import 'dependencies_injection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // HttpOverrides.global = MyHttpOverrides();
   await di.init();
   runApp(const MyApp());
 }

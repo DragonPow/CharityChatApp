@@ -1,4 +1,4 @@
-import { Server } from "socket.io";
+import Server from 'socket.io'
 import http from "http";
 import UserModel from "../models/user.js";
 import config from "../config/index.js";
