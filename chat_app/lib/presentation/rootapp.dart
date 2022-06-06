@@ -13,6 +13,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../dependencies_injection.dart';
 import 'bloc/active_user/active_user_bloc.dart';
+import 'bloc/new_message/new_message_bloc.dart';
 
 class RootApp extends StatefulWidget {
   const RootApp({Key? key}) : super(key: key);
@@ -104,9 +105,13 @@ class _RootAppState extends State<RootApp> {
             child: const ChatPage(),
           )
         : currentPage == 1
-            ? const NewChatPage()
+            ? BlocProvider(
+                create: (context) => NewMessageBloc(sl()),
+                child: const NewChatPage(),
+              )
             : const ProfilePage();
   }
+
   FancyBottomNavigation getBottomTabBar() {
     return FancyBottomNavigation(
       tabs: [

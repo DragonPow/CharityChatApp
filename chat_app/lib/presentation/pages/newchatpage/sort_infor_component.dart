@@ -8,7 +8,8 @@ import '../../components/avatarcicle.dart';
 class SortInforComponent extends StatefulWidget {
   final String name;
   final String imgUrl;
-  const SortInforComponent({Key? key, required this.imgUrl, required this.name}) : super(key: key);
+  final String id;
+  const SortInforComponent({Key? key, required this.imgUrl, required this.name, required this.id}) : super(key: key);
   @override
   State<SortInforComponent> createState() => _SortInforComponent();
 }

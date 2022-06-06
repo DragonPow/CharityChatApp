@@ -1,3 +1,4 @@
+import 'package:chat_app/domain/entities/user_active_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -5,9 +6,9 @@ import '../../../../../configs/colorconfig.dart';
 import '../../../../components/avataruser.dart';
 
 class Member extends StatefulWidget {
-  final String name;
-  final String imgUrl;
-  const Member({Key? key, required this.imgUrl, required this.name})
+  final UserActiveEntity member;
+  final  Function onTap;
+  const Member({Key? key, required this.member, required this.onTap})
       : super(key: key);
 
   @override
@@ -22,10 +23,10 @@ class _Member extends State<Member> {
       children: <Widget>[
         SizedBox(
             child: AvatarUser(
-          imageUrl: widget.imgUrl,
-          name: widget.name,
+          imageUrl: widget.member.avatarUri,
+          name: widget.member.name,
           radius: 40.w,
-          id: '',
+          id: widget.member.id,
         )),
         Positioned(
             top: 0,
@@ -40,10 +41,9 @@ class _Member extends State<Member> {
                   color: cwColorGreyNoteText,
                 ),
                 child: Center(
-                  child: Icon(
-                    Icons.close,
-                    color: cwColorWhite,
-                    size: 10.w,
+                  child: IconButton(
+                    onPressed: () => widget.onTap() ,
+                    icon:  Icon(Icons.close,  size: 10.w, color:cwColorWhite ,),
                   ),
                 ),
               ),

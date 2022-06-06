@@ -1,6 +1,7 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
 import 'package:chat_app/dataexample/active_user.dart';
+import 'package:chat_app/domain/entities/user_active_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,12 +18,7 @@ class GroupName extends StatefulWidget {
 }
 
 class _GroupName extends State<GroupName> {
-  List<Member> members = [
-    const Member(
-        imgUrl:
-            "https://images.unsplash.com/photo-1496440737103-cd596325d314?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8Z2lybHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-        name: "Nguyễn Thị Vân Anh")
-  ];
+  List<Member> members = [];
   
 
   void _handleImageSelection() async {
@@ -105,9 +101,7 @@ class _GroupName extends State<GroupName> {
             child: Wrap(
               children: List.generate(
                 6,
-                (index) => Member(
-                    imgUrl: actives[actives.length - index - 1]['img'],
-                    name: actives[actives.length - index - 1]['name']),
+                (index) => Member(member:  UserActiveEntity(id: "0", name: "name", avatarUri: "avatarUri"), onTap: () => {},),
               ),
             ),
           )

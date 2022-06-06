@@ -20,4 +20,5 @@ class ChatDetailSendTextMessage extends ChatDetailEvent{
     const ChatDetailSendTextMessage({Key?key, required this.content, required this.roomId});
 }
 class ChatDetailSendFileMessage extends ChatDetailEvent{
+  
 }
