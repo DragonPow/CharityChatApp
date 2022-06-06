@@ -15,8 +15,33 @@ export default {
       searchvalue,
     } = req.query;
     try {
-      console.log("test");
       const users = await UserModel.getUserByPaging(
+        orderby,
+        orderdirection,
+        startIndex,
+        number,
+        searchby,
+        searchvalue
+      );
+      return successResponse(res, { users: users });
+    } catch (error) {
+      return failResponse(res, { error: error.message });
+    }
+  },
+
+  onGetFriends: async (req, res) => {
+    const {
+      orderby,
+      orderdirection,
+      startIndex,
+      number,
+      searchby,
+      searchvalue,
+    } = req.query;
+    const userId = req.userId;
+    try {
+      const users = await UserModel.getFriends(
+        userId,
         orderby,
         orderdirection,
         startIndex,
@@ -38,7 +63,7 @@ export default {
       // const usersActiveId = ["2", "3", "4"]; // mock data
       const usersActiveId = MyWebSocket.getActiveUsers();
       console.log("active user: ", usersActiveId);
-      const users = await UserModel.getFriendByIds(
+      const users = await UserModel.FindFriendInUserIds(
         userId,
         usersActiveId,
         startIndex,

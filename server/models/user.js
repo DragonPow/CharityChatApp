@@ -23,7 +23,7 @@ class User extends Model {
    * @param {string} mainUserId userId to find friends
    * @returns List user is friend and in online of mainUserId
    */
-  static async getFriendByIds(
+  static async FindFriendInUserIds(
     mainUserId,
     ids,
     startIndex,
@@ -115,6 +115,53 @@ class User extends Model {
     return GetDataFromSequelizeObject(users);
   }
 
+  static async getFriends(
+    userId,
+    orderby,
+    orderdirection,
+    startIndex,
+    number,
+    searchby,
+    searchvalue
+  ) {
+    let searchOrderby;
+    switch (orderby) {
+      case "name":
+        searchOrderby = ["name"];
+        break;
+      case "timeCreate":
+        searchOrderby = ["timeCreate"];
+        break;
+      default:
+        break;
+    }
+
+    const friendRelation = await Friend.findAll({
+      where: { [Op.or]: [{ id1: userId}, {id2: userId }] },
+      attributes: ['id1','id2']
+    });
+
+    const friendIds = friendRelation.map(relation => relation.id1 === userId ? relation.id2 : relation.id1);
+    console.log('FRIEND OF ' + userId, friendIds);
+
+    const users = await User.findAll({
+      where: {
+        id: {
+          [Op.in]: friendIds,
+        },
+        // name: {
+        //   [Op.substring]: searchvalue,
+        // },
+      },
+      attributes: { exclude: ["lastMessageId"] },
+      offset: startIndex,
+      limit: number,
+      order: [[...searchOrderby, orderdirection]],
+    });
+
+    return GetDataFromSequelizeObject(users);
+  }
+
   static async checkExists(usersId) {
     const userNumber = await User.count({
       where: {
@@ -163,7 +210,7 @@ class User extends Model {
   static async findByUserNameAndPassword(username, password) {
     const user = await User.findOne({
       where: {
-        username: username,
+        email: username,
         password: password,
       },
     });
