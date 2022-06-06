@@ -33,15 +33,14 @@ class ChatRoom extends StatefulWidget {
 
 class _ChatRoomState extends State<ChatRoom> {
   List<types.Message> _messages = [];
-  final _user = const types.User(id: '00'); // id of current user
+  final _user = const types.User(id: '2'); // id of current user
   var _chatDetailBloc;
 
   @override
   void initState() {
     super.initState();
     _chatDetailBloc = BlocProvider.of<ChatDetailBloc>(context);
-    _chatDetailBloc.add(
-        ChatDetailLoadMessage(number: 10, roomId: widget.roomOverview.id, startIndex: 0));
+    _chatDetailBloc.add(ChatDetailLoadMessage(number: 10, roomId: widget.roomOverview.id, startIndex: 0));
 
     //_loadMessages();
   }
@@ -231,7 +230,11 @@ class _ChatRoomState extends State<ChatRoom> {
                   ));
               }
               else{
-                return const Text("Load failer");
+                if (state is ChatDetailLoadFail) {
+                  return const Text("Load failer");
+                } else {
+                  return const Text("Loading");
+                }
               }
             },
           ),

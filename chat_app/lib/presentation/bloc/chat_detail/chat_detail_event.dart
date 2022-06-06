@@ -14,5 +14,10 @@ class ChatDetailLoadMessage extends ChatDetailEvent{
   const ChatDetailLoadMessage({Key? key, required this.number, required this.roomId, required this.startIndex});
 }
 
-class ChatDetailSendMessage extends ChatDetailEvent{
+class ChatDetailSendTextMessage extends ChatDetailEvent{
+    final String content;
+    final String roomId;
+    const ChatDetailSendTextMessage({Key?key, required this.content, required this.roomId});
+}
+class ChatDetailSendFileMessage extends ChatDetailEvent{
 }
