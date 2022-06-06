@@ -17,3 +17,6 @@ class ChatDetailLoadSuccess extends ChatDetailState {
   final List<MessageEntity> listMessage;
   const ChatDetailLoadSuccess({Key? key, required this.listMessage});
 }
+class ChatDetailTypingMessage extends ChatDetailState {}
+class ChatDetailSendMessageFaild extends ChatDetailState {}
+class ChatDetailSendMessageSuccess extends ChatDetailState {}

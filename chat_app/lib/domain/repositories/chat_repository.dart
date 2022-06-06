@@ -9,7 +9,7 @@ abstract class IChatRepository {
   Future<List> getImages(String roomId, int startIndex, int number);
   Future<List> getFiles(String roomId, int startIndex, int number);
 
-  Future<void> sendMessage(MessageEntity message);
+  Future<void> sendMessage(String content, String roomId);
   Future<void> sendImages(List<MessageEntity> message);
   Future<void> sendFile(MessageEntity message);
 

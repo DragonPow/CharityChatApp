@@ -11,24 +11,37 @@ import '../../../domain/repositories/chat_repository.dart';
 part 'chat_detail_event.dart';
 part 'chat_detail_state.dart';
 
-
 class ChatDetailBloc extends Bloc<ChatDetailEvent, ChatDetailState> {
   final IChatRepository chatRepository;
   ChatDetailBloc({required this.chatRepository}) : super(ChatDetailInitial()) {
-    on<ChatDetailLoadMessage>(mapChatDetailLoadToState);
+    on<ChatDetailLoadMessage>(_mapChatDetailLoadToState);
+    on<ChatDetailSendTextMessage>(_mapChatDetailSendTextMessageToState);
   }
 
-FutureOr<void> mapChatDetailLoadToState(ChatDetailLoadMessage event, Emitter<ChatDetailState> emit) async{
-  emit(ChatDetailLoading());
-  try{
-    List<MessageEntity> listMessage = await chatRepository.getMessages(event.roomId, event.startIndex, event.number);
+  FutureOr<void> _mapChatDetailLoadToState(
+      ChatDetailLoadMessage event, Emitter<ChatDetailState> emit) async {
+    emit(ChatDetailLoading());
+    try {
+      List<MessageEntity> listMessage = await chatRepository.getMessages(
+          event.roomId, event.startIndex, event.number);
 
-    emit(ChatDetailLoadSuccess(listMessage: listMessage));
-    print(messages);
+      emit(ChatDetailLoadSuccess(listMessage: listMessage));
+      print(messages);
+    } catch (e) {
+      emit(ChatDetailLoadFail());
+      print("Error when load detail message:" + e.toString());
+    }
   }
-  catch (e) {
-    emit(ChatDetailLoadFail());
-    print("Error when load detail message:" + e.toString());
+
+  FutureOr<void> _mapChatDetailSendTextMessageToState(
+      ChatDetailSendTextMessage event, Emitter<ChatDetailState> emit) async {
+    emit(ChatDetailTypingMessage());
+    try {
+      await chatRepository.sendMessage(event.content, event.roomId);
+      emit(ChatDetailSendMessageSuccess());
+    } catch (e) {
+      emit(ChatDetailSendMessageFaild());
+      print("Sent message failed" + e.toString());
+    }
   }
-}
 }
