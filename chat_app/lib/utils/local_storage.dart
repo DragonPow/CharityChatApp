@@ -5,6 +5,9 @@ import 'package:chat_app/helper/constant.dart';
 import 'package:chat_app/utils/account.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
+import '../dependencies_injection.dart';
+import '../helper/network/socket_service.dart';
+
 class StorageTypeEnum {
   static get username => 'username';
   static get password => 'password';
@@ -13,6 +16,7 @@ class StorageTypeEnum {
 }
 
 class LocalStorageService {
+    final socket = sl<SocketService>();
   final _storage = Localstore.instance.collection('app');
 
   Future<Map<String, dynamic>> _getDoc(String docName) async {
@@ -49,21 +53,38 @@ class LocalStorageService {
   }
 
   Future<void> setAccount(Account? account) async {
-    await _storage.doc(StorageTypeEnum.account).set({StorageTypeEnum.account: account});
+    await _storage
+        .doc(StorageTypeEnum.account)
+        .set({StorageTypeEnum.account: account});
     print('Account is set:' + json.encode(account));
     return;
   }
 
   Future<void> setToken(String? token) async {
-    await _storage.doc(StorageTypeEnum.token).set({StorageTypeEnum.token: token});
+    await _storage
+        .doc(StorageTypeEnum.token)
+        .set({StorageTypeEnum.token: token});
+    if (token != null) {
+      socket.addEventReconnect((_) => socket.emit('online', token));
+    }
+    else {
+      socket.removeEventListener('online');
+    }
     print('Token is set:' + token.toString());
     return;
   }
 
   Future<void> setUsernameAndPass(String? username, String? password) async {
-    await _storage.doc(StorageTypeEnum.username).set({StorageTypeEnum.username: username});
-    await _storage.doc(StorageTypeEnum.password).set({StorageTypeEnum.password: password});
-    print('Username and password is set:' + username.toString() + ' ' + password.toString());
+    await _storage
+        .doc(StorageTypeEnum.username)
+        .set({StorageTypeEnum.username: username});
+    await _storage
+        .doc(StorageTypeEnum.password)
+        .set({StorageTypeEnum.password: password});
+    print('Username and password is set:' +
+        username.toString() +
+        ' ' +
+        password.toString());
     return;
   }
 

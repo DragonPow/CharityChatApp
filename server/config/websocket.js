@@ -43,6 +43,20 @@ class WebSocket {
           console.error('Error: ', error);
         }
       });
+
+      client.on('online', (token) => {
+        console.log('Online with token: ' + token);
+        try {
+          const { id } = parseTokenToObject(token);
+          if (id) {
+            client.join(id);
+            this.addUserToActive({ sessionId: client.id, userId: id });
+          }
+        } catch (error) {
+          console.error('Cannot found token: ' + token);
+          console.error('Error: ', error);
+        }
+      });
   
       client.on("logout", (token) => {
         console.log('User is logout, session id: ' + client.id);

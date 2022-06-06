@@ -61,4 +61,7 @@ class SocketService {
 
   void addEventReconnect(dynamic Function(dynamic) callback) =>
       socket.onReconnect(callback);
+  void removeEventListener(String nameEvent) {
+    socket.off(nameEvent);
+  }
 }
