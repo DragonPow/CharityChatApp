@@ -1,3 +1,4 @@
+import 'package:chat_app/domain/entities/user_message_entity.dart';
 class Account {
   String id;
   String name;
@@ -5,6 +6,9 @@ class Account {
 
   static Account? _instance;
   static Account? get instance => _instance;
+  static UserMessageEntity? getUserEntity() {
+    return instance != null ? UserMessageEntity(id: instance!.id, name: instance!.name, avatarUri: instance!.imageUri) : null;
+  }
   static void setInstanceByCopy(Account? account) {
     _instance = account != null ? Account._(id: account.id, name: account.name, imageUri: account.imageUri) : null;
   }

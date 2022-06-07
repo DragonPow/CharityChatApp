@@ -19,7 +19,7 @@ app.set("port", port);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(logger);
+// app.use(logger);
 
 // show image and other file in 'public' directory
 app.use("/public", express.static("public"));

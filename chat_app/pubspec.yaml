@@ -32,6 +32,8 @@ dependencies:
   flutter_bloc: ^8.0.1
   localstorage: ^4.0.0+1
   localstore: ^1.2.3
+  bloc_concurrency: ^0.2.0
+  stream_transform: ^2.0.0
 
 dev_dependencies:
   build_runner: ^2.1.8

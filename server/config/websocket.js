@@ -7,7 +7,8 @@ import { parseTokenToObject } from "../utils/middleware/token_service.js";
 const port_socket = config.server.port_socket;
 
 async function getRoom(roomId) {
-  let joiners = await UserModel.getJoinersInRoom(roomId);
+  let joiners = await UserModel.getJoinersInRoom([roomId]);
+  console.log(`Joiner of room ${roomId}: `, joiners);
   return joiners.map((user) => user.id);
 }
 
@@ -106,23 +107,24 @@ class NotifySocket {
   }
 
   MessageSent(roomId, message) {
-    this.io.on(getRoom(roomId)).emit(SocketEvent.messageSent, message);
+    console.log(roomId, message);
+    this.io.to(getRoom(roomId)).emit(SocketEvent.messageSent, message);
   }
 
   RoomUpdate(room) {
-    this.io.on(getRoom(room.id)).emit(SocketEvent.roomUpdate, room);
+    this.io.to(getRoom(room.id)).emit(SocketEvent.roomUpdate, room);
   }
 
   ReadMessage(roomId, userId, messageId) {
-    this.io.on(getRoom(roomId)).emit(SocketEvent.messageRead, userId, messageId);
+    this.io.to(getRoom(roomId)).emit(SocketEvent.messageRead, userId, messageId);
   }
 
   OutRoom(roomId, usersId) {
-    this.io.on(getRoom(roomId)).emit(SocketEvent.outRoom, usersId);
+    this.io.to(getRoom(roomId)).emit(SocketEvent.outRoom, usersId);
   }
 
   JoinRoom(roomId, usersId) {
-    this.io.on(getRoom(roomId)).emit(SocketEvent.joinRoom, usersId);
+    this.io.to(getRoom(roomId)).emit(SocketEvent.joinRoom, usersId);
   }
 }
 

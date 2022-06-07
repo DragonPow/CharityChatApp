@@ -40,7 +40,7 @@ class _ChatRoomState extends State<ChatRoom> {
   void initState() {
     super.initState();
     _chatDetailBloc = BlocProvider.of<ChatDetailBloc>(context);
-    _chatDetailBloc.add(ChatDetailLoadMessage(number: 10, roomId: widget.roomOverview.id, startIndex: 0));
+    _chatDetailBloc.add(ChatDetailLoad(number: 10, roomId: widget.roomOverview.id, startIndex: 0));
 
     //_loadMessages();
   }
@@ -199,11 +199,11 @@ class _ChatRoomState extends State<ChatRoom> {
           bottom: false,
           child: BlocBuilder<ChatDetailBloc, ChatDetailState>(
             builder: (context, state) {
-              if (state is ChatDetailLoadSuccess){
+              if (state is ChatDetailState){
                   return Chat(
                   showUserAvatars: true,
                   showUserNames: true,
-                  messages: parsedEntityMessageToMessages(state.listMessage),
+                  messages: parsedEntityMessageToMessages(state.listSortedMessage),
                   onAttachmentPressed: _handleAtachmentPressed,
                   onMessageTap: _handleMessageTap,
                   //onPreviewDataFetched: _handlePreviewDataFetched,
@@ -230,11 +230,7 @@ class _ChatRoomState extends State<ChatRoom> {
                   ));
               }
               else{
-                if (state is ChatDetailLoadFail) {
-                  return const Text("Load failer");
-                } else {
-                  return const Text("Loading");
-                }
+                return Text('Load fail');
               }
             },
           ),

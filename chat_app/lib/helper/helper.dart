@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:chat_app/domain/entities/message_entity.dart';
+import 'package:chat_app/helper/constant.dart';
 import 'package:chat_app/helper/enum.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -8,55 +10,81 @@ Map<String, dynamic> parsedJsonToMap(String response) {
   return parsed;
 }
 
+String getNameOfFile(File file) {
+  return file.path.split('/').last;
+}
+
+String getTypeOfFile(File file) {
+  final extension = file.path.split('.').last;
+  if (['jpg', 'png', 'jpeg', 'gif', 'tiff'].contains(extension)) {
+    return 'image';
+  }
+  return 'file';
+}
+
+String parseToServerUri(String uri) {
+  return 'http://' + serverUrl + '/' + uri;
+}
+
 List<types.Message> parsedEntityMessageToMessages(
     List<MessageEntity> messages) {
   return messages.map((message) {
+    final author = types.User(
+        id: message.creator.id,
+        imageUrl: message.creator.avatarUri,
+        firstName: message.creator.name);
     switch (message.type) {
       case MessageChatType.text:
         return types.TextMessage(
-            author: types.User(
-                id: message.creator.id,
-                imageUrl: message.creator.avatarUri,
-                firstName: message.creator.name),
-            id: message.id,
-            type: types.MessageType.text,
-            text: message.content);
+          author: author,
+          id: message.id,
+          type: types.MessageType.text,
+          text: message.getName,
+        );
       case MessageChatType.file:
         return types.FileMessage(
-          author: types.User(
-              id: message.creator.id,
-              imageUrl: message.creator.avatarUri,
-              firstName: message.creator.name),
+          author: author,
           id: message.id,
           type: types.MessageType.file,
-          size: 59645,
-          name: "file",
-          uri: "",
+          size: message.value['size'],
+          name: message.getName,
+          uri: message.getUri,
         );
       case MessageChatType.image:
-        return types.ImageMessage(
-          author: types.User(
-              id: message.creator.id,
-              imageUrl: message.creator.avatarUri,
-              firstName: message.creator.name),
-          id: message.id,
-          type: types.MessageType.image,
-          size: 59645,
-          name: "img",
-          uri: "",
-        );
+        {
+          final isLocal = message.value is File;
+          if (!isLocal) {
+            final partialImage = types.PartialImage(
+              size: message.value['size'] ?? 0,
+              name: message.getName,
+              uri: message.getUri,
+            );
+            return types.ImageMessage.fromPartial(
+                author: author, id: message.id, partialImage: partialImage);
+          }
+          return types.ImageMessage(
+            author: author,
+            id: message.id,
+            type: types.MessageType.image,
+            size: (message.value as File).lengthSync(),
+            name: message.getName,
+            uri: message.getUri,
+          );
+        }
       default:
         return types.UnsupportedMessage(
-          author: types.User(
-              id: message.creator.id,
-              imageUrl: message.creator.avatarUri,
-              firstName: message.creator.name),
+          author: author,
           id: message.id,
         );
     }
   }).toList();
 }
 
-String parseDatetimeToTime(DateTime date){
-  return (date.hour == 12? 12 : date.hour % 12 ).toString() + ":" + (date.minute > 9 ? date.minute.toString() : "0" + date.minute.toString()) + (date.hour % 12 == 0 || date.hour == 12 ? " am" : " pm");
+String parseDatetimeToTime(DateTime date) {
+  return (date.hour == 12 ? 12 : date.hour % 12).toString() +
+      ":" +
+      (date.minute > 9
+          ? date.minute.toString()
+          : "0" + date.minute.toString()) +
+      (date.hour % 12 == 0 || date.hour == 12 ? " am" : " pm");
 }

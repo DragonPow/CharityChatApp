@@ -12,7 +12,7 @@ MessageModel _$MessageModelFromJson(Map<String, dynamic> json) => MessageModel(
       roomId: json['roomId'] as String,
       createTime: DateTime.parse(json['createTime'] as String),
       content: json['content'] as String,
-      type: $enumDecode(_$MessageTypeEnumMap, json['type']),
+      type: $enumDecode(_$MessageChatTypeEnumMap, json['type']),
     );
 
 Map<String, dynamic> _$MessageModelToJson(MessageModel instance) =>
@@ -22,12 +22,12 @@ Map<String, dynamic> _$MessageModelToJson(MessageModel instance) =>
       'roomId': instance.roomId,
       'createTime': instance.createTime.toIso8601String(),
       'content': instance.content,
-      'type': _$MessageTypeEnumMap[instance.type],
+      'type': _$MessageChatTypeEnumMap[instance.type],
     };
 
-const _$MessageTypeEnumMap = {
+const _$MessageChatTypeEnumMap = {
   MessageChatType.text: 'text',
   MessageChatType.image: 'image',
-  MessageChatType.video: 'video',
   MessageChatType.file: 'file',
+  MessageChatType.system: 'system',
 };

@@ -25,4 +25,14 @@ const deleteFiles = (filesUri, continueWhenError = false) => {
   });
 };
 
-export { deleteFiles };
+const getFileInfo = (fileUri) => {
+  const file = fs.statSync(fileUri);
+  if (file.isFile) {
+    return file;
+  }
+  else {
+    console.log('It is not a file');
+    throw Error(`${fileUri} is not found`);
+  }
+}
+export { deleteFiles, getFileInfo };

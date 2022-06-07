@@ -1,22 +1,30 @@
 part of 'chat_detail_bloc.dart';
 
-abstract class ChatDetailState extends Equatable {
-  const ChatDetailState();
+class ChatDetailState extends Equatable {
+  ChatDetailState({
+    Key? key,
+    required List<MessageEntity> listMessage,
+    required this.isLoading,
+    this.isLoadFull = false,
+    this.error,
+  }) : _listMessage = {for (var i in listMessage) i.id: i};
+
+  ChatDetailState.initial()
+      : this(
+          listMessage: const [],
+          isLoading: false,
+          isLoadFull: false,
+          error: null,
+        );
+
+  final Map<String, MessageEntity> _listMessage;
+  final bool isLoading;
+  final bool isLoadFull;
+  final Object? error;
+
+  late final List<MessageEntity> listSortedMessage = _listMessage.values.toList()
+    ..sort((a, b) => a.timeCreate.compareTo(b.timeCreate));
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [_listMessage, isLoading, isLoadFull, error];
 }
-
-class ChatDetailInitial extends ChatDetailState {}
-
-class ChatDetailLoading extends ChatDetailState {}
-
-class ChatDetailLoadFail extends ChatDetailState {}
-
-class ChatDetailLoadSuccess extends ChatDetailState {
-  final List<MessageEntity> listMessage;
-  const ChatDetailLoadSuccess({Key? key, required this.listMessage});
-}
-class ChatDetailTypingMessage extends ChatDetailState {}
-class ChatDetailSendMessageFaild extends ChatDetailState {}
-class ChatDetailSendMessageSuccess extends ChatDetailState {}

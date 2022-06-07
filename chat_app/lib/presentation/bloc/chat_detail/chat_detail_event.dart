@@ -2,23 +2,35 @@ part of 'chat_detail_bloc.dart';
 
 abstract class ChatDetailEvent extends Equatable {
   const ChatDetailEvent();
-
-  @override
-  List<Object> get props => [];
 }
 
-class ChatDetailLoadMessage extends ChatDetailEvent{
+class ChatDetailLoad extends ChatDetailEvent {
+  const ChatDetailLoad({
+    required this.number,
+    required this.roomId,
+    required this.startIndex,
+  });
+
   final String roomId;
   final int startIndex;
   final int number;
-  const ChatDetailLoadMessage({Key? key, required this.number, required this.roomId, required this.startIndex});
+
+  @override
+  List<Object> get props => [roomId, startIndex, number];
 }
 
-class ChatDetailSendTextMessage extends ChatDetailEvent{
-    final String content;
-    final String roomId;
-    const ChatDetailSendTextMessage({Key?key, required this.content, required this.roomId});
-}
-class ChatDetailSendFileMessage extends ChatDetailEvent{
-  
+class ChatDetailSend extends ChatDetailEvent {
+  const ChatDetailSend({
+    Key? key,
+    required this.content,
+    required this.roomId,
+    required this.file,
+  });
+
+  final String? content;
+  final String roomId;
+  final File? file;
+
+  @override
+  List<Object?> get props => [roomId, content, file];
 }

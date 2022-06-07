@@ -103,19 +103,15 @@ export default {
     const files = req.files;
 
     try {
-      let value;
-      // Check content or file is nto empty
-      if (content) {
-        value = content;
-      } else if (files && files.length) {
-        value = files;
-      } else {
+      // Check content or file is not empty
+      if (!content && (!files || files.length == 0)) {
         return badRequestResponse(res, {
-          errorCode: "CONTENT_OR_FILE_NOT_EMPTY",
+          errorCode: "CONTENT_NOT_EMPTY",
           error: "One of the Content and Files must not empty",
         });
       }
 
+      
       // Check room exists
       const roomsCheck = await RoomModel.getRoomsById([roomId]);
       if (!roomsCheck || roomsCheck.length !== 1) {
@@ -129,11 +125,19 @@ export default {
         }
       }
 
+      const typeContent = content
+        ? "text"
+        : IsImageFile(files[0].filename)
+        ? "image"
+        : "file";
+      const value = typeContent == "text" ? content : files;
+
       // Create message
       const newMessage = await MessageModel.createMessage(
         value,
         roomId,
-        senderId
+        senderId,
+        typeContent
       );
 
       // Set last message for room model
@@ -178,18 +182,20 @@ export default {
           error: "The user is not exists",
         });
 
-      let value;
-      // Check content or file is nto empty
-      if (content) {
-        value = content;
-      } else if (files && files.length) {
-        value = files;
-      } else {
+      // Check content or file is not empty
+      if (!content && (!files || files.length == 0)) {
         return badRequestResponse(res, {
           errorCode: "CONTENT_NOT_EMPTY",
           error: "One of the Content and Files must not empty",
         });
       }
+
+      const typeContent = content
+        ? "text"
+        : IsImageFile(files[0].filename)
+        ? "image"
+        : "file";
+      const value = typeContent == "text" ? content : files;
 
       // Find or create new room by usersId
       const room = await RoomModel.findOrCreateRoom([...usersId, senderId]);
@@ -198,7 +204,8 @@ export default {
       const newMessage = await MessageModel.createMessage(
         value,
         room.id,
-        senderId
+        senderId,
+        typeContent
       );
 
       // Set last message for room model

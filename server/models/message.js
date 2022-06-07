@@ -1,37 +1,41 @@
 import { DataTypes, Model, Op } from "sequelize";
 import {
+  GetDataFromSequelizeObject,
   IsImageFile,
   TranferFileMulterToString,
 } from "../config/helper.js";
 import sequelize from "../config/mysql.js";
 import User from "./user.js";
+import {getFileInfo} from '../utils/file/file_service.js';
 
 const TypeMessage = DataTypes.ENUM("text", "image", "file", "video", "system");
 
 class Message extends Model {
   /**
    * When message is send to database
-   * @param {String} content content of message
-   * @param {TypeMessage} typeContent type of message
+   * @param {String | any[]} value content of message
    * @param {String} roomId
    * @param {String} sender
+   * @param {'image' | 'text' | 'file' | 'system'} typeContent
    * @returns new message
    */
-  static async createMessage(value, roomId, senderId) {
-    const typeContent = Array.isArray(value)
-      ? IsImageFile(value[0].filename)
-        ? "image"
-        : "file"
-      : "text";
-    const content = Array.isArray(value)
-      ? value.map((file) => TranferFileMulterToString(file)).join(", ")
-      : value; // if is list file, join with ','
+  static async createMessage(value, roomId, senderId, typeContent) {
+    console.log('Value of new message', value);
+
+    const isNotText = typeContent != 'text';
+
+    const content = isNotText
+      ? value.map((i) => TranferFileMulterToString(i)).join(", ") // if is list file, join with ','
+      : value; 
+
+    const fileArg = isNotText ? getFileInfo(TranferFileMulterToString(value[0])) : undefined;
 
     const message = await Message.create({
       content: content,
       typeContent: typeContent,
       senderId,
       roomId,
+      args: isNotText ? JSON.stringify({nameFile: value[0].originalname, size: fileArg.size}) : null,
     });
     return message;
   }
@@ -107,7 +111,7 @@ class Message extends Model {
       }
     });
 
-    return messages;
+    return GetDataFromSequelizeObject(messages);
   }
 
   static async getAllMessages(
@@ -267,6 +271,10 @@ Message.init(
       allowNull: false,
       defaultValue: "text",
     },
+    args: {
+      type: DataTypes.STRING(1000),
+      allowNull: true,
+    }
   },
   {
     sequelize,

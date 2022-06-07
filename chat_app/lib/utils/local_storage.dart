@@ -88,6 +88,7 @@ class LocalStorageService {
     return;
   }
 
+  // Mock data
   Future<String> getJson(String fileAssets) {
     return rootBundle.loadString(fileAssets);
   }

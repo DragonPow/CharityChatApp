@@ -315,7 +315,7 @@ class ShortChat extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          roomOverview.lastMessage == null? "": roomOverview.lastMessage!.content,
+                          roomOverview.lastMessage == null? "" : roomOverview.lastMessage!.getName,
                           style: kText11RegularHintText,
                         ),
                         Container(

@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io' as io;
 
 import 'package:chat_app/data/datasources/local/local_datasource.dart';
 import 'package:chat_app/data/datasources/remote/remote_datasource.dart';
+import 'package:chat_app/dependencies_injection.dart';
 import 'package:chat_app/helper/constant.dart';
 import 'package:chat_app/helper/network/network_info.dart';
+import 'package:chat_app/utils/local_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:tuple/tuple.dart';
 
@@ -76,9 +79,10 @@ class ChatRepositoryImp implements IChatRepository {
       'searchby': 'all',
       'searchvalue': null
     };
+    final token = await sl<LocalStorageService>().getToken();
     final uri = Uri.http(serverUrl, "/messages/select", queryParameters);
     print(uri);
-    final response = await http.get(uri, headers: {'token': 'ADMIN_TOKEN'});
+    final response = await http.get(uri, headers: {'token': token!});
     if (response.statusCode == 200) {
       final jsonRes = json.decode(response.body)['messages'] as List<dynamic>;
       final listMessage =
@@ -92,33 +96,34 @@ class ChatRepositoryImp implements IChatRepository {
   }
 
   @override
-  Future<void> sendFile(MessageEntity message) {
-    // TODO: implement sendFile
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> sendImages(List<MessageEntity> message) {
-    // TODO: implement sendImages
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> sendMessage(String content, String roomId) async {
+  Future<bool> sendMessage(
+      String? content, String roomId, io.File? file) async {
     final _uri = Uri.http(serverUrl, "/messages/send/byRoomId");
-    var _messageToJson = <String, dynamic>{};
-    _messageToJson['content'] = content;
-    _messageToJson['roomId'] = roomId;
-    try {
-      final _response = await http.post(_uri, body: _messageToJson);
-      if (_response.statusCode == 200) {
-        print("Success send message");
-      } else {
-        print("Failed send message");
-        print(_response);
+    final request = http.MultipartRequest('POST', _uri);
+
+    request.fields['roomId'] = roomId;
+    if (content != null) {
+      request.fields['content'] = content;
+    } else if (file != null) {
+      // Function get multipart file
+      getMultipart(io.File file) {
+        return http.MultipartFile.fromBytes('files', file.readAsBytesSync());
       }
-    } catch (e) {
-      print("Error send message: " + e.toString());
+
+      request.files.add(getMultipart(file));
+    } else {
+      throw Exception('File or content must contain');
+    }
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      response.stream.transform(utf8.decoder).listen((event) {
+        print('Send message error: ' + event);
+      });
+      return false;
     }
   }
 }

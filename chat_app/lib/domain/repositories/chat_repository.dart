@@ -1,3 +1,6 @@
+
+import 'dart:io';
+
 import 'package:chat_app/domain/entities/room_entity.dart';
 import 'package:tuple/tuple.dart';
 
@@ -9,9 +12,7 @@ abstract class IChatRepository {
   Future<List> getImages(String roomId, int startIndex, int number);
   Future<List> getFiles(String roomId, int startIndex, int number);
 
-  Future<void> sendMessage(String content, String roomId);
-  Future<void> sendImages(List<MessageEntity> message);
-  Future<void> sendFile(MessageEntity message);
+  Future<bool> sendMessage(String? content, String roomId, File? files);
 
   Future<Tuple2<List<MessageEntity>, int>> findMessagesByContent(
       String roomId, String textMatch);
