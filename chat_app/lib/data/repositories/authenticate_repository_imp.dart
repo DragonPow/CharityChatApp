@@ -40,7 +40,7 @@ class AuthenticateRepositoryImp extends IAuthenticateRepository {
       if (jsonRes['code'] == 'USER_NAME_OR_PASS_WRONG') {
         return null;
       }
-      throw Exception(['Login fail', jsonRes]);
+      // throw Exception(['Login fail', jsonRes]);
     }
   }
 

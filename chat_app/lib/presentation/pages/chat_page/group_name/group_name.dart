@@ -1,25 +1,45 @@
+import 'dart:io';
+
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
-import 'package:chat_app/dataexample/active_user.dart';
 import 'package:chat_app/domain/entities/user_active_entity.dart';
+import 'package:chat_app/presentation/bloc/make_name_group/make_name_group_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
+import '../../../../domain/entities/room_entity.dart';
 import '../add_people/component/member.dart';
 
 class GroupName extends StatefulWidget {
-  const GroupName({Key? key}) : super(key: key);
+  final List<UserActiveEntity> listMember;
+  const GroupName({Key? key, required this.listMember}) : super(key: key);
 
   @override
   State<GroupName> createState() => _GroupName();
 }
 
 class _GroupName extends State<GroupName> {
-  List<Member> members = [];
-  
+  var members;
+  var avatar;
+  var _makeNameGroupBloc;
+  var _nameTextController;
+
+  @override
+  void initState() {
+    super.initState();
+    _makeNameGroupBloc = BlocProvider.of<MakeNameGroupBloc>(context);
+    members = widget.listMember;
+    _nameTextController = TextEditingController();
+  }
+
+  @override 
+  void dispose(){
+    super.dispose();
+    _nameTextController.dispose();
+  }
 
   void _handleImageSelection() async {
     final result = await ImagePicker().pickImage(
@@ -27,12 +47,13 @@ class _GroupName extends State<GroupName> {
       maxWidth: 1440,
       source: ImageSource.gallery,
     );
+    if (result == null) return;
 
-    if (result != null) {
-      final bytes = await result.readAsBytes();
-      final image = await decodeImageFromList(bytes);
-      // change avatar group
-    }
+    final bytes = await result.readAsBytes();
+    final image = await decodeImageFromList(bytes);
+    avatar = File(result.path);
+    // change avatar group
+    _makeNameGroupBloc.add(MakeNameGroupChoiceAvatar(avatar: File(result.path)));
   }
 
   @override
@@ -46,9 +67,26 @@ class _GroupName extends State<GroupName> {
           ),
           Stack(
             children: [
-              const CircleAvatar(
-                backgroundImage: AssetImage("assets/images/avatar.png"),
-                radius: 100,
+              BlocConsumer<MakeNameGroupBloc, MakeNameGroupState>(
+                listenWhen: (context, state) {
+                  return state is MakeNameGroupChoiceAvatarSuccess ||
+                      state is MakeNameGroupInitial;
+                },
+                listener: (context, state) {},
+                builder: (context, state) {
+                  if (state is MakeNameGroupChoiceAvatarSuccess) {
+                    avatar = state.avatar;
+                    return CircleAvatar(
+                      backgroundImage: FileImage(File(state.avatar.path)) ,
+                      radius: 100,
+                    );
+                  } else {
+                    return const CircleAvatar(
+                      backgroundImage: AssetImage("assets/images/avatar.png"),
+                      radius: 100,
+                    );
+                  }
+                },
               ),
               Positioned(
                   bottom: 10,
@@ -79,6 +117,7 @@ class _GroupName extends State<GroupName> {
             child: TextFormField(
               style: ktext17RegularBlack,
               textAlign: TextAlign.center,
+              controller: _nameTextController,
               decoration: InputDecoration(
                   border: const UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey),
@@ -96,14 +135,51 @@ class _GroupName extends State<GroupName> {
           SizedBox(
             height: 20.h,
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4.w),
-            child: Wrap(
-              children: List.generate(
-                6,
-                (index) => Member(member:  UserActiveEntity(id: "0", name: "name", avatarUri: "avatarUri"), onTap: () => {},),
-              ),
-            ),
+          BlocConsumer<MakeNameGroupBloc, MakeNameGroupState>(
+            listenWhen: (context, state) {
+              return state is MakeNameGroupRemoveMemSuccess ||
+                  state is MakeNameGroupInitial;
+            },
+            listener: (context, state) {
+              // TODO: implement listener
+            },
+            builder: (context, state) {
+              if (state is MakeNameGroupRemoveMemSuccess) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.w),
+                  child: Wrap(
+                    children: List.generate(
+                      state.listMember.length,
+                      (index) => Member(
+                        member: members[index],
+                        onTap: () => {
+                          _makeNameGroupBloc.add(MakeNameGroupRemoveMem(
+                              listMember: state.listMember,
+                              removedMember: state.listMember[index]))
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              } else {
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.w),
+                  child: Wrap(
+                    children: List.generate(
+                      members.length,
+                      (index) => Member(
+                        member: members[index],
+                        onTap: () => {
+                          _makeNameGroupBloc.add(MakeNameGroupRemoveMem(
+                              listMember: members,
+                              removedMember: members[index]))
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              }
+            },
           )
         ]),
       ),
@@ -120,7 +196,16 @@ class _GroupName extends State<GroupName> {
       elevation: 0,
       actions: [
         TextButton(
-            onPressed: () => {},
+            onPressed: () => {
+                  _makeNameGroupBloc.add(MakeNameGroupCreate(
+                      avatar: avatar,
+                      room: RoomEntity(
+                          messages: [],
+                          name: _nameTextController.text,
+                          users: members,
+                          typeRoom: members.length > 1 ? 'group' : "private",
+                          id: '')))
+                },
             child: Text(
               "Tạo",
               style: kText17SemiboldMain,

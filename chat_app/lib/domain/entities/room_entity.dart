@@ -5,6 +5,7 @@ import 'base_user_entity.dart';
 class RoomEntity implements Comparable<RoomEntity>{
   final String id;
   final String name;
+  final String typeRoom;
   final List<BaseUserEntity> users;
   final List<MessageEntity> messages;
 
@@ -15,6 +16,7 @@ class RoomEntity implements Comparable<RoomEntity>{
     required this.name,
     required this.users,
     required this.messages,
+    required this.typeRoom
   });
 
   @override

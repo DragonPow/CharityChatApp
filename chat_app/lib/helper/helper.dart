@@ -5,6 +5,8 @@ import 'package:chat_app/helper/constant.dart';
 import 'package:chat_app/helper/enum.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
+import '../domain/entities/base_user_entity.dart';
+
 Map<String, dynamic> parsedJsonToMap(String response) {
   final parsed = json.decode(response).cast<Map<String, dynamic>>();
   return parsed;
@@ -97,4 +99,8 @@ String parseDatetimeToTime(DateTime date) {
           ? date.minute.toString()
           : "0" + date.minute.toString()) +
       (date.hour % 12 == 0 || date.hour == 12 ? " am" : " pm");
+}
+
+String getListIdFromListUser(List<BaseUserEntity> users){
+  return users.map((e) => e.id).join(',');
 }

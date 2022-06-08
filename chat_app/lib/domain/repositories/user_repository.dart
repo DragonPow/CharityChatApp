@@ -8,5 +8,5 @@ abstract class IUserRepository {
     Future<List<BaseUserEntity>> findUsersByName(String textMatch);
     Future<BaseUserEntity> getUserById(String userId);
     Future<List<UserMessageEntity>> getUsersInRoom(String roomId);
-    Future<List<UserActiveEntity>> getUserFriends(int starIndex, int number);
+    Future<List<UserActiveEntity>> getUserFriends(int starIndex, int number, String? searchValue);
 }

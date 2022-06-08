@@ -22,7 +22,7 @@ class AddMemberBloc extends Bloc<AddMemberEvent, AddMemberState> {
     emit(AddMemberLoading());
     try {
       List<UserActiveEntity> listFriend =
-          await _iUserRepository.getUserFriends(0, 10);
+          await _iUserRepository.getUserFriends(0, 10, null);
 
       emit(AddMemberLoadSuccess(friendUsers: listFriend, members: []));
       // emit(AddMemberInitial());

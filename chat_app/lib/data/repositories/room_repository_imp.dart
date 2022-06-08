@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:chat_app/domain/entities/room_entity.dart';
 import 'package:chat_app/domain/entities/room_overview_entity.dart';
 import 'package:chat_app/domain/repositories/room_repository.dart';
 import 'package:chat_app/helper/constant.dart';
+import 'package:chat_app/helper/helper.dart';
 import 'package:chat_app/utils/local_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -19,6 +21,7 @@ class RoomRepositoryImp implements IRoomRepository {
 
   static const _roomUrl = serverUrl + "/rooms";
   static const _roomSelectUrl = RoomRepositoryImp._roomUrl + "/select";
+  static const _roomCreatUrl = RoomRepositoryImp._roomUrl + "/create";
 
   RoomRepositoryImp({
     required this.remoteDataSource,
@@ -45,7 +48,37 @@ class RoomRepositoryImp implements IRoomRepository {
   }
 
   @override
-  Future<bool> create(RoomEntity room) {
+  Future<bool> create(RoomEntity room, File? avatar) async {
+    try {
+      final _token = await sl<LocalStorageService>().getToken();
+      if (_token != null) {
+        final _uri = Uri.http(serverUrl, "/rooms/create",);
+        final _request = http.MultipartRequest("POST", _uri);
+        _request.headers.addAll({'token': _token});
+
+        _request.fields["name"] = room.name;
+        _request.fields["joinersId"] = getListIdFromListUser(room.users);
+        _request.fields["typeRoom"] = room.typeRoom;
+        if (avatar != null) {
+          _request.files.add(
+              http.MultipartFile.fromBytes('image', avatar.readAsBytesSync()));
+        }
+        final _response = await _request.send();
+
+        if (_response.statusCode == 200) {
+          return true;
+        } else {
+          _response.stream.transform(utf8.decoder).listen((event) {
+            print('Create Chat Room error: ' + event);
+          });
+          return false;
+        }
+      }
+      else{
+        print("User must register");
+      }
+    } catch (e) {}
+
     // TODO: implement create
     throw UnimplementedError();
   }

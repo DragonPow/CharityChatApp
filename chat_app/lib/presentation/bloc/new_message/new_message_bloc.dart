@@ -18,7 +18,7 @@ class NewMessageBloc extends Bloc<NewMessageEvent, NewMessageState> {
   FutureOr<void> _mapNewMessageEventToSTate (NewMessageLoad event, Emitter<NewMessageState> emit ) async{
     emit(NewMessageLoading());
     try{
-      List<UserActiveEntity> listFriend = await _iUserRepository.getUserFriends(0, 10);
+      List<UserActiveEntity> listFriend = await _iUserRepository.getUserFriends(0, 10, null);
       emit(NewMessageLoadSuccess(friendUsers: listFriend));
     }
     catch(e){

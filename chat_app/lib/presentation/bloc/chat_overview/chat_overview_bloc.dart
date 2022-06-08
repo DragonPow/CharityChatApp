@@ -22,6 +22,7 @@ class ChatOverviewBloc extends Bloc<ChatOverviewEvent, ChatOverviewState> {
         emit(ChatOverviewLoadSuccess(listRoomOverview: listRoomOverview));
       }
       catch(e){
+        print("Error load OverviewChat " + e.toString());
         emit(ChatOverviewLoadFail());
       }
   }

@@ -4,7 +4,6 @@ import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart
 import 'package:chat_app/presentation/pages/chat_page/chatpage.dart';
 import 'package:chat_app/presentation/pages/profile_page/profile_page.dart';
 import 'package:chat_app/presentation/pages/newchatpage/new_chat_page.dart';
-import 'package:chat_app/presentation/pages/newchatpage/sort_infor_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

@@ -42,8 +42,9 @@ class _Member extends State<Member> {
                 ),
                 child: Center(
                   child: IconButton(
+                    padding: const EdgeInsets.all(0),
                     onPressed: () => widget.onTap() ,
-                    icon:  Icon(Icons.close,  size: 10.w, color:cwColorWhite ,),
+                    icon:  Icon(Icons.close,  size: 12.w, color:cwColorWhite ,),
                   ),
                 ),
               ),

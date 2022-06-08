@@ -1,4 +1,5 @@
 import 'package:chat_app/configs/colorconfig.dart';
+import 'package:chat_app/domain/entities/user_active_entity.dart';
 import 'package:chat_app/presentation/bloc/add_member/add_member_bloc.dart';
 import 'package:chat_app/presentation/pages/chat_page/group_name/group_name.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../configs/fontconfig.dart';
+import '../../../../dependencies_injection.dart';
+import '../../../bloc/make_name_group/make_name_group_bloc.dart';
 import 'component/member.dart';
 import 'component/non_member.dart';
 
@@ -18,8 +21,8 @@ class AddPeople extends StatefulWidget {
 
 class _AddPeople extends State<AddPeople> {
   var _addMemberBloc;
-  var _listMember;
-  var _listFriend;
+  List<UserActiveEntity> _listMember = [];
+  List<UserActiveEntity> _listFriend = [];
   @override
   void initState() {
     super.initState();
@@ -35,6 +38,7 @@ class _AddPeople extends State<AddPeople> {
         body: BlocBuilder<AddMemberBloc, AddMemberState>(
             builder: (context, state) {
           if (state is AddMemberLoadSuccess) {
+            _listMember = state.members;
             return NestedScrollView(
                 floatHeaderSlivers: true,
                 headerSliverBuilder: (context, value) {
@@ -43,10 +47,12 @@ class _AddPeople extends State<AddPeople> {
                       pinned: true,
                       stretch: true,
                       floating: false,
-                      toolbarHeight: state.members.isEmpty? 80.h: 160.h,
+                      toolbarHeight: state.members.isEmpty ? 80.h : 160.h,
                       automaticallyImplyLeading: false,
                       backgroundColor: cwColorBackground,
                       title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
                             height: 60.h,
@@ -71,10 +77,17 @@ class _AddPeople extends State<AddPeople> {
                           ),
                           state.members.isNotEmpty
                               ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
                                       child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.max,
                                         children: List.generate(
                                           state.members.length,
                                           (index) => Member(
@@ -82,9 +95,11 @@ class _AddPeople extends State<AddPeople> {
                                             onTap: () => {
                                               _addMemberBloc.add(
                                                   AddMemberRemove(
-                                                      listMember: state.members,
-                                                      member: state.members[index],
-                                                      listFriend: state.friendUsers))
+                                                      listMember:  state.members,
+                                                      member:
+                                                          state.members[index],
+                                                      listFriend:
+                                                          state.friendUsers))
                                             },
                                           ),
                                         ),
@@ -100,39 +115,45 @@ class _AddPeople extends State<AddPeople> {
                     ),
                   ];
                 },
-                body:  SingleChildScrollView(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20.w),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                height: 10.h,
-                              ),
-                              ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: state.friendUsers.length,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return NonMember(
-                                      nonmember: state.friendUsers[index],
-                                      onTap: () {
-                                        _addMemberBloc.add(AddMemberAdd(
-                                            listMember: state.members,
-                                            member: state.friendUsers[index],
-                                            listFriend: state.friendUsers));
-                                      },
-                                    );
-                                  }),
-                            ],
-                          ),
+                body: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 20.h,
                         ),
-                      ));
-          } else { 
+                        Text(
+                          "Gợi ý",
+                          style: kText13RegularNote,
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: state.friendUsers.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (BuildContext context, int index) {
+                              return NonMember(
+                                nonmember: state.friendUsers[index],
+                                onTap: () {
+                                  _addMemberBloc.add(AddMemberAdd(
+                                      listMember: state.members,
+                                      member: state.friendUsers[index],
+                                      listFriend: state.friendUsers));
+                                },
+                              );
+                            }),
+                      ],
+                    ),
+                  ),
+                ));
+          } else {
             return state is AddMemberLoadFail
-                        ?  const Text("Load fail")
-                        : const Text("Loading");
+                ? const Text("Load fail")
+                : const Text("Loading");
           }
         }));
   }
@@ -154,7 +175,13 @@ class _AddPeople extends State<AddPeople> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const GroupName()),
+              MaterialPageRoute(
+                  builder: (context) => BlocProvider(
+                        create: (context) => MakeNameGroupBloc(sl()),
+                        child: GroupName(
+                          listMember: [..._listMember],
+                        ),
+                      )),
             );
           },
         )

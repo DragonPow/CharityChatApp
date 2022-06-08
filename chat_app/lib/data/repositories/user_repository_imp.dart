@@ -7,7 +7,9 @@ import 'package:chat_app/domain/repositories/user_repository.dart';
 import 'package:chat_app/helper/constant.dart';
 import 'package:http/http.dart' as http;
 
+import '../../dependencies_injection.dart';
 import '../../helper/network/network_info.dart';
+import '../../utils/local_storage.dart';
 import '../datasources/local/local_datasource.dart';
 import '../datasources/remote/remote_datasource.dart';
 
@@ -73,24 +75,30 @@ class UserRepositoryImp extends IUserRepository {
 
   @override
   Future<List<UserActiveEntity>> getUserFriends(
-      int starIndex, int number) async {
+      int starIndex, int number, String? searchValue) async {
     final _queryPrameters = {
       "startIndex": starIndex.toString(),
       "number": number.toString(),
       "orderby": "timeCreate",
-      "orderdirection": "desc", 
+      "orderdirection": "desc",
       "searchby": "name",
-      "searchvalue": null
+      "searchvalue": searchValue
     };
     final _uri = Uri.http(serverUrl, "users/friend", _queryPrameters);
-    final _response = await http.get(_uri, headers: {"token": "EXAMPLE_TOKEN"});
-    if (_response.statusCode == 200) {
-      final _resJson = json.decode(_response.body)["users"] as List<dynamic>;
-      List<UserActiveEntity> _listfriend =
-          _resJson.map((friend) => UserActiveEntity.fromJson(friend)).toList();
-      return _listfriend;
+    final _token = await sl<LocalStorageService>().getToken();
+    if (_token != null) {
+      final _response = await http.get(_uri, headers: {"token": _token});
+      if (_response.statusCode == 200) {
+        final _resJson = json.decode(_response.body)["users"] as List<dynamic>;
+        List<UserActiveEntity> _listfriend = _resJson
+            .map((friend) => UserActiveEntity.fromJson(friend))
+            .toList();
+        return _listfriend;
+      } else {
+        throw _response;
+      }
     } else {
-      throw _response;
+        throw "UNAUTHENTICATION";
     }
   }
 }
