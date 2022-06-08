@@ -37,6 +37,7 @@ export default {
           roomId
         );
         if (!isJoinerRoom) {
+          console.log("Get room message fail, userId is:", userId);
           return unAuthorizedResponse(res, "Must be joiner of the room");
         }
         // const joinerInRoom = await UserModel.getJoinersInRoom([roomId]);
@@ -100,6 +101,7 @@ export default {
   onCreateMessageByRoomId: async (req, res, next) => {
     const { content, roomId } = req.body;
     const senderId = req.userId;
+    const privateCode = req.headers.privateCode;
     const files = req.files;
 
     try {
@@ -111,7 +113,6 @@ export default {
         });
       }
 
-      
       // Check room exists
       const roomsCheck = await RoomModel.getRoomsById([roomId]);
       if (!roomsCheck || roomsCheck.length !== 1) {
@@ -144,7 +145,7 @@ export default {
       RoomModel.checkAndSetLastMessage(roomId, newMessage);
 
       MessageModel.getMessageByIds([newMessage.id]).then((messages) =>
-        MyNotifySocket.MessageSent(roomId, messages[0])
+        MyNotifySocket.MessageSent(roomId, messages)
       );
 
       return successResponse(res, {
@@ -172,6 +173,7 @@ export default {
   onCreateMessageByUserId: async (req, res, next) => {
     const { content, usersId } = req.body;
     const senderId = req.userId;
+    const privateCode = req.headers.privateCode;
     const files = req.files;
 
     try {
@@ -212,7 +214,7 @@ export default {
       RoomModel.checkAndSetLastMessage(room.id, newMessage);
 
       MessageModel.getMessageByIds([newMessage.id]).then((messages) =>
-        MyNotifySocket.MessageSent(room.id, messages[0])
+        MyNotifySocket.MessageSent(room.id, messages)
       );
 
       return successResponse(res, {

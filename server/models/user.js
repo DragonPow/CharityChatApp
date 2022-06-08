@@ -149,9 +149,9 @@ class User extends Model {
         id: {
           [Op.in]: friendIds,
         },
-        // name: {
-        //   [Op.substring]: searchvalue,
-        // },
+        name: {
+          [Op.substring]: searchvalue,
+        },
       },
       attributes: { exclude: ["lastMessageId"] },
       offset: startIndex,

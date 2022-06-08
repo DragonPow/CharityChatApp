@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
 
 import 'package:chat_app/domain/entities/user_active_entity.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/custom_chatroom_theme.dart';
@@ -32,27 +34,21 @@ class ChatRoom extends StatefulWidget {
 }
 
 class _ChatRoomState extends State<ChatRoom> {
-  List<types.Message> _messages = [];
   final _user = const types.User(id: '2'); // id of current user
-  var _chatDetailBloc;
+  late final ChatDetailBloc _chatDetailBloc;
 
   @override
   void initState() {
     super.initState();
+    log('init state chat room two view');
     _chatDetailBloc = BlocProvider.of<ChatDetailBloc>(context);
-    _chatDetailBloc.add(ChatDetailLoad(number: 10, roomId: widget.roomOverview.id, startIndex: 0));
+    _chatDetailBloc.add(ChatDetailLoadInit(roomId: widget.roomOverview.id));
+  }
 
-    //_loadMessages();
-  }
- @override
+  @override
   void dispose() {
-  //  _chatDetailBloc.dispose();
+    _chatDetailBloc.dispose();
     super.dispose();
-  }
-  void _addMessage(types.Message message) {
-    setState(() {
-      _messages.insert(0, message);
-    });
   }
 
   void _handleAtachmentPressed() {
@@ -119,7 +115,11 @@ class _ChatRoomState extends State<ChatRoom> {
         uri: result.files.single.path!,
       );
 
-      _addMessage(message);
+      _chatDetailBloc.add(ChatDetailSend(
+        content: null,
+        roomId: widget.roomOverview.id,
+        file: File(result.files.single.path!),
+      ));
     }
   }
 
@@ -145,7 +145,11 @@ class _ChatRoomState extends State<ChatRoom> {
         width: image.width.toDouble(),
       );
 
-      _addMessage(message);
+      _chatDetailBloc.add(ChatDetailSend(
+        content: null,
+        roomId: widget.roomOverview.id,
+        file: File(result.path),
+      ));
     }
   }
 
@@ -155,19 +159,19 @@ class _ChatRoomState extends State<ChatRoom> {
     }
   }
 
-  void _handlePreviewDataFetched(
-    types.TextMessage message,
-    types.PreviewData previewData,
-  ) {
-    final index = _messages.indexWhere((element) => element.id == message.id);
-    final updatedMessage = _messages[index].copyWith(previewData: previewData);
+  // void _handlePreviewDataFetched(
+  //   types.TextMessage message,
+  //   types.PreviewData previewData,
+  // ) {
+  //   final index = _messages.indexWhere((element) => element.id == message.id);
+  //   final updatedMessage = _messages[index].copyWith(previewData: previewData);
 
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      setState(() {
-        _messages[index] = updatedMessage;
-      });
-    });
-  }
+  //   WidgetsBinding.instance?.addPostFrameCallback((_) {
+  //     setState(() {
+  //       _messages[index] = updatedMessage;
+  //     });
+  //   });
+  // }
 
   void _handleSendPressed(types.PartialText message) {
     final textMessage = types.TextMessage(
@@ -177,19 +181,20 @@ class _ChatRoomState extends State<ChatRoom> {
       text: message.text,
     );
 
-    _addMessage(textMessage);
+    _chatDetailBloc.add(ChatDetailSend(
+        content: message.text, roomId: widget.roomOverview.id, file: null));
   }
 
-  void _loadMessages() async {
-    final response = await rootBundle.loadString('assets/messages.json');
-    final messages = (jsonDecode(response) as List)
-        .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
-        .toList();
+  // void _loadMessages() async {
+  //   final response = await rootBundle.loadString('assets/messages.json');
+  //   final messages = (jsonDecode(response) as List)
+  //       .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
+  //       .toList();
 
-    setState(() {
-      _messages = messages;
-    });
-  }
+  //   setState(() {
+  //     _messages = messages;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -199,128 +204,130 @@ class _ChatRoomState extends State<ChatRoom> {
           bottom: false,
           child: BlocBuilder<ChatDetailBloc, ChatDetailState>(
             builder: (context, state) {
-              if (state is ChatDetailState){
-                  return Chat(
-                  showUserAvatars: true,
-                  showUserNames: true,
-                  messages: parsedEntityMessageToMessages(state.listSortedMessage),
-                  onAttachmentPressed: _handleAtachmentPressed,
-                  onMessageTap: _handleMessageTap,
-                  //onPreviewDataFetched: _handlePreviewDataFetched,
-                  onSendPressed: _handleSendPressed,
-                  user: _user,
-                  theme: CustomChatroomTheme,
-                  emptyState: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        FontAwesomeIcons.commentDots,
-                        color: cwColorGreyNoteText,
-                        size: 160,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        "Oh, hãy bắt đầu cuộc trò chuyện nào!",
-                        style: kText15RegularGreyNotetext,
-                      )
-                    ],
-                  ));
-              }
-              else{
+              if (state is ChatDetailState) {
+                return Chat(
+                    showUserAvatars: true,
+                    showUserNames: true,
+                    messages:
+                        parsedEntityMessageToMessages(state.listSortedMessage),
+                    onAttachmentPressed: _handleAtachmentPressed,
+                    onMessageTap: _handleMessageTap,
+                    //onPreviewDataFetched: _handlePreviewDataFetched,
+                    onSendPressed: _handleSendPressed,
+                    user: _user,
+                    theme: CustomChatroomTheme,
+                    emptyState: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          FontAwesomeIcons.commentDots,
+                          color: cwColorGreyNoteText,
+                          size: 160,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          "Oh, hãy bắt đầu cuộc trò chuyện nào!",
+                          style: kText15RegularGreyNotetext,
+                        )
+                      ],
+                    ));
+              } else {
                 return Text('Load fail');
               }
             },
           ),
         ));
   }
+
   AppBar getAppBar() {
-  return AppBar(
-      iconTheme: const IconThemeData(color: cwColorBlackIcon),
-      backgroundColor: cwColorBackground,
-      elevation: 0,
-      centerTitle: false,
-      toolbarHeight: 100.h,
-      titleSpacing: 0,
-      title: Row(
-        children: [
-          CircleAvatar(
-            radius: 22.w,
-            backgroundImage: widget.roomOverview.avatarUrl == null ?  const AssetImage("assets/images/defauldavatar.png") as ImageProvider: NetworkImage(widget.roomOverview.avatarUrl!)),
-          SizedBox(
-            width: 5.w,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.roomOverview.name,
-                style: kText15MediumBlack,
-              ),
-              Text(
-                "online",
-                style: kText13RegularNote,
-              )
-            ],
-          )
-        ],
-      ),
-      actions: [
-        IconButton(
-          padding: const EdgeInsets.all(0),
-          icon: Icon(
-            Icons.phone,
-            size: 25.w,
-            color: cwColorMain,
-          ),
-          onPressed: () {},
+    return AppBar(
+        iconTheme: const IconThemeData(color: cwColorBlackIcon),
+        backgroundColor: cwColorBackground,
+        elevation: 0,
+        centerTitle: false,
+        toolbarHeight: 100.h,
+        titleSpacing: 0,
+        title: Row(
+          children: [
+            CircleAvatar(
+                radius: 22.w,
+                backgroundImage: widget.roomOverview.avatarUrl == null
+                    ? const AssetImage("assets/images/defauldavatar.png")
+                        as ImageProvider
+                    : NetworkImage(widget.roomOverview.avatarUrl!)),
+            SizedBox(
+              width: 5.w,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.roomOverview.name,
+                  style: kText15MediumBlack,
+                ),
+                Text(
+                  "online",
+                  style: kText13RegularNote,
+                )
+              ],
+            )
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: IconButton(
-              padding: const EdgeInsets.all(0),
-              icon: Icon(
-                FontAwesomeIcons.video,
-                size: 25.w,
-                color: cwColorMain,
-              ),
-              onPressed: () {}),
-        ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(0, 0, 0, 10.h),
-          child: PopupMenuButton(
+        actions: [
+          IconButton(
             padding: const EdgeInsets.all(0),
             icon: Icon(
-              FontAwesomeIcons.ellipsisV,
+              Icons.phone,
+              size: 25.w,
               color: cwColorMain,
-              size: 20.w,
             ),
-            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-              PopupMenuItem(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const OptionChatRoom()),
-                    );
-                  },
-                  child: const ListTile(
-                    title: Text('Tùy chọn'),
+            onPressed: () {},
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 5),
+            child: IconButton(
+                padding: const EdgeInsets.all(0),
+                icon: Icon(
+                  FontAwesomeIcons.video,
+                  size: 25.w,
+                  color: cwColorMain,
+                ),
+                onPressed: () {}),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 10.h),
+            child: PopupMenuButton(
+              padding: const EdgeInsets.all(0),
+              icon: Icon(
+                FontAwesomeIcons.ellipsisV,
+                color: cwColorMain,
+                size: 20.w,
+              ),
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                PopupMenuItem(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const OptionChatRoom()),
+                      );
+                    },
+                    child: const ListTile(
+                      title: Text('Tùy chọn'),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ]);
+        ]);
+  }
 }
-
-}
-
 
 class SkeletonloaderChatRoom extends StatelessWidget {
   const SkeletonloaderChatRoom({

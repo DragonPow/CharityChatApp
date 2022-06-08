@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -14,54 +15,70 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
+class StreamSocket {
+  final _socketRes = StreamController();
+  void Function(dynamic) get addResponse => _socketRes.sink.add;
+  void dispose() {
+    _socketRes.close();
+  }
+}
+
 class SocketService {
-  final socket = IO.io(socketUrl, <String, dynamic>{
+  final _socket = IO.io(socketUrl, <String, dynamic>{
     'transports': ['websocket'],
     'autoConnect': true,
+    'connect_timeout': 120,
   });
+  // final _streamSocket = StreamSocket();
+  // StreamSocket get stream => _streamSocket;
+
+  dispose() {
+    // _streamSocket.dispose();
+  }
 
   SocketService() {
     // socket.connect();
     print('Socket is created');
-    socket.onConnect((data) {
+    _socket.onConnect((data) {
       print('Socket connected');
     });
-    socket.onDisconnect((data) {
+    _socket.onDisconnect((data) {
       print('Socket disconnected');
     });
-    socket.onConnectError((data) {
+    _socket.onConnectError((data) {
       print('Connect error');
       print(data);
     });
-    socket.onError((data) {
+    _socket.onError((data) {
       print('Is error');
       print(data);
     });
+    _socket.on('messageSent', (data) => log('message sent'));
   }
 
   connect() {
-    socket.connect();
+    _socket.connect();
   }
 
   disconnect() {
-    socket.disconnect();
+    _socket.disconnect();
   }
 
   void emitLogin(String token) {
-    socket.emit('login', token);
+    _socket.emit('login', token);
   }
 
   void emit(String nameEvent, [dynamic data]) {
-    socket.emit(nameEvent, data);
+    _socket.emit(nameEvent, data);
   }
 
   void addEventListener(String nameEvent, dynamic Function(dynamic) callback) {
-    socket.on(nameEvent, callback);
+    _socket.on(nameEvent, callback);
   }
 
   void addEventReconnect(dynamic Function(dynamic) callback) =>
-      socket.onReconnect(callback);
-  void removeEventListener(String nameEvent) {
-    socket.off(nameEvent);
+      _socket.onReconnect(callback);
+  void removeEventListener(String nameEvent, [dynamic Function(dynamic)? handler]) {
+    _socket.off(nameEvent, handler);
   }
 }

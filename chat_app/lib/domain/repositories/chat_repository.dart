@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:chat_app/domain/entities/room_entity.dart';
@@ -12,7 +13,8 @@ abstract class IChatRepository {
   Future<List> getImages(String roomId, int startIndex, int number);
   Future<List> getFiles(String roomId, int startIndex, int number);
 
-  Future<bool> sendMessage(String? content, String roomId, File? files);
+  Future<Map<String,dynamic>> sendMessage(String? content, String roomId, File? files);
+  StreamController<List<MessageEntity>> getStreamNewMessage();
 
   Future<Tuple2<List<MessageEntity>, int>> findMessagesByContent(
       String roomId, String textMatch);

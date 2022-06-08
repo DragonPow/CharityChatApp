@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io' as io;
@@ -10,6 +11,7 @@ import 'package:chat_app/helper/network/network_info.dart';
 import 'package:chat_app/utils/local_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:tuple/tuple.dart';
+import '../../helper/network/socket_service.dart';
 
 import 'package:chat_app/domain/entities/message_entity.dart';
 
@@ -68,6 +70,32 @@ class ChatRepositoryImp implements IChatRepository {
   }
 
   @override
+  StreamController<List<MessageEntity>> getStreamNewMessage() {
+    final socket = sl<SocketService>();
+    final streamController = StreamController<List<MessageEntity>>();
+
+    addMessageFunction(dynamic data) {
+      final messagesJson = (data as List)[0] as List;
+      final messages = messagesJson.map((message) {
+        return MessageEntity.fromJson(message as Map<String, dynamic>);
+      }).toList();
+      streamController.sink.add(messages);
+    }
+
+    const eventAddMessageName = 'messageSent';
+
+    log('get Stream new message');
+
+    socket.addEventListener(eventAddMessageName, addMessageFunction);
+    streamController.onCancel = () {
+      log('remove event emit addMessage');
+      socket.removeEventListener(eventAddMessageName, addMessageFunction);
+    };
+
+    return streamController;
+  }
+
+  @override
   Future<List<MessageEntity>> getMessages(
       String roomId, int startIndex, int number) async {
     final queryParameters = {
@@ -79,27 +107,37 @@ class ChatRepositoryImp implements IChatRepository {
       'searchby': 'all',
       'searchvalue': null
     };
-    final token = await sl<LocalStorageService>().getToken();
+    String token = await getToken();
+
     final uri = Uri.http(serverUrl, "/messages/select", queryParameters);
-    print(uri);
-    final response = await http.get(uri, headers: {'token': token!});
+    print(uri.path);
+    final response = await http.get(uri, headers: {'token': token});
     if (response.statusCode == 200) {
       final jsonRes = json.decode(response.body)['messages'] as List<dynamic>;
       final listMessage =
           jsonRes.map((x) => MessageEntity.fromJson(x)).toList();
-      log(response.body);
+      print(jsonDecode(response.body) as Map<String, dynamic>);
       return listMessage;
     } else {
-      print("Error fetch data");
+      print("Load message error");
+      log(response.body);
       throw response;
     }
   }
 
+  Future<String> getToken() async {
+    final token = await sl<LocalStorageService>().getToken();
+    if (token == null) throw Exception('Token required');
+    return token;
+  }
+
   @override
-  Future<bool> sendMessage(
+  Future<Map<String, dynamic>> sendMessage(
       String? content, String roomId, io.File? file) async {
+    final token = await getToken();
     final _uri = Uri.http(serverUrl, "/messages/send/byRoomId");
     final request = http.MultipartRequest('POST', _uri);
+    request.headers.addAll({'token': token});
 
     request.fields['roomId'] = roomId;
     if (content != null) {
@@ -115,15 +153,16 @@ class ChatRepositoryImp implements IChatRepository {
       throw Exception('File or content must contain');
     }
 
-    final response = await request.send();
+    final responseStream = await request.send();
 
-    if (response.statusCode == 200) {
-      return true;
+    if (responseStream.statusCode == 200) {
+      final response = await http.Response.fromStream(responseStream);
+      return jsonDecode(response.body);
     } else {
-      response.stream.transform(utf8.decoder).listen((event) {
-        print('Send message error: ' + event);
-      });
-      return false;
+      responseStream.stream
+          .transform(utf8.decoder)
+          .listen((event) => print('Send message error: ' + event));
+      throw Exception('Send message fail');
     }
   }
 }

@@ -26,10 +26,14 @@ void main() async {
 Future<void> testLogin() async {
   final storage = sl<LocalStorageService>();
   final socket = sl<SocketService>();
-
-  final mockData = await storage.getMockUserData(0);
+  try {    
+  final mockData = await storage.getMockUserData(1);
   final token = await sl<IAuthenticateRepository>()
       .logIn(mockData['email'], mockData['password']);
+  } catch (e) {
+    print(e);
+  }
+
 }
 
 class MyApp extends StatelessWidget {

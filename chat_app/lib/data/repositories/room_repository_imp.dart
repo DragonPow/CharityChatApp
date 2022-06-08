@@ -4,8 +4,10 @@ import 'package:chat_app/domain/entities/room_entity.dart';
 import 'package:chat_app/domain/entities/room_overview_entity.dart';
 import 'package:chat_app/domain/repositories/room_repository.dart';
 import 'package:chat_app/helper/constant.dart';
+import 'package:chat_app/utils/local_storage.dart';
 import 'package:http/http.dart' as http;
 
+import '../../dependencies_injection.dart';
 import '../../helper/network/network_info.dart';
 import '../datasources/local/local_datasource.dart';
 import '../datasources/remote/remote_datasource.dart';
@@ -85,9 +87,12 @@ class RoomRepositoryImp implements IRoomRepository {
       'searchvalue': null,
       'searchtype': searchtype
     };
+    final token = await sl<LocalStorageService>().getToken();
+    if (token == null) throw Exception('Token required');
+    
     final _uri = Uri.http(serverUrl, "/rooms/select", queryParameters);
     print(_uri);
-    final response = await http.get(_uri, headers: {"token": 'EXAMPLE_TOKEN'});
+    final response = await http.get(_uri, headers: {"token": token});
     if (response.statusCode == 200) {
       final jsonRes = json.decode(response.body)["rooms"] as List<dynamic>;
       print(json);

@@ -108,6 +108,11 @@ class Message extends Model {
         id: {
           [Op.in]: messageIds,
         }
+      },
+      include: {
+        model: User,
+        as: 'sender',
+        attributes: ['id','name','imageUri']
       }
     });
 

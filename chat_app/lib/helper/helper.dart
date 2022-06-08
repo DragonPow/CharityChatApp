@@ -33,6 +33,12 @@ List<types.Message> parsedEntityMessageToMessages(
         id: message.creator.id,
         imageUrl: message.creator.avatarUri,
         firstName: message.creator.name);
+    final status = message.state == MessageState.sending
+        ? types.Status.sending
+        : message.state == MessageState.error
+            ? types.Status.error
+            : types.Status.delivered;
+
     switch (message.type) {
       case MessageChatType.text:
         return types.TextMessage(
@@ -40,6 +46,8 @@ List<types.Message> parsedEntityMessageToMessages(
           id: message.id,
           type: types.MessageType.text,
           text: message.getName,
+          showStatus: true,
+          status: status,
         );
       case MessageChatType.file:
         return types.FileMessage(
@@ -49,24 +57,26 @@ List<types.Message> parsedEntityMessageToMessages(
           size: message.value['size'],
           name: message.getName,
           uri: message.getUri,
+          showStatus: true,
+          status: status,
         );
       case MessageChatType.image:
         {
           final isLocal = message.value is File;
-          if (!isLocal) {
-            final partialImage = types.PartialImage(
-              size: message.value['size'] ?? 0,
-              name: message.getName,
-              uri: message.getUri,
-            );
-            return types.ImageMessage.fromPartial(
-                author: author, id: message.id, partialImage: partialImage);
-          }
+          // if (!isLocal) {
+          //   final partialImage = types.PartialImage(
+          //     size: message.value['size'] ?? 0,
+          //     name: message.getName,
+          //     uri: message.getUri,
+          //   );
+          //   return types.ImageMessage.fromPartial(
+          //       author: author, id: message.id, partialImage: partialImage);
+          // }
           return types.ImageMessage(
             author: author,
             id: message.id,
             type: types.MessageType.image,
-            size: (message.value as File).lengthSync(),
+            size: isLocal ? (message.value as File).lengthSync() : message.value['size'] ?? 0,
             name: message.getName,
             uri: message.getUri,
           );

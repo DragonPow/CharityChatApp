@@ -23,7 +23,7 @@ class ChatDetailState extends Equatable {
   final Object? error;
 
   late final List<MessageEntity> listSortedMessage = _listMessage.values.toList()
-    ..sort((a, b) => a.timeCreate.compareTo(b.timeCreate));
+    ..sort((a, b) => a.timeCreate.compareTo(b.timeCreate) * -1);
 
   @override
   List<Object?> get props => [_listMessage, isLoading, isLoadFull, error];
