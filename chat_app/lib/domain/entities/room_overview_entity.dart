@@ -5,19 +5,22 @@ class RoomOverviewEntity implements Comparable<RoomOverviewEntity>{
   final String name;
   final String? avatarUrl;
   final MessageEntity? lastMessage;
+  final String type;
 
   RoomOverviewEntity({
     required this.id,
     required this.name,
     required this.lastMessage,
-    required this.avatarUrl
+    required this.avatarUrl,
+    required this.type,
   });
 
   factory RoomOverviewEntity.fromJson(Map<String, dynamic> json) => RoomOverviewEntity(
     id: json["id"] as String, 
     name: json["name"] as String, 
     lastMessage: json["lastMessage"] != null? MessageEntity.fromJson(json["lastMessage"]) : null, 
-    avatarUrl: json["avatarId"]);
+    avatarUrl: json["avatarId"],
+    type: json['typeRoom']);
     
   @override
   bool operator == (Object other) {

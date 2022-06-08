@@ -38,7 +38,7 @@ class WaitingChat extends StatelessWidget {
                 itemCount: 5,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
-                  return ShortChat( roomOverview:  RoomOverviewEntity(id: "1", name: "Nhực", lastMessage: null, avatarUrl: null),);
+                  return ShortChat( roomOverview:  RoomOverviewEntity(id: "1", name: "Nhực", lastMessage: null, avatarUrl: null, type: 'private'),);
                 }),
           ]),
         ),

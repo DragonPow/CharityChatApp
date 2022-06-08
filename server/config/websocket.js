@@ -4,6 +4,7 @@ import http from "http";
 import UserModel from "../models/user.js";
 import config from "../config/index.js";
 import { parseTokenToObject } from "../utils/middleware/token_service.js";
+import RoomModel from '../models/room.js';
 
 const port_socket = config.server.port_socket;
 
@@ -162,8 +163,12 @@ class NotifySocket {
     this.websocket.emitToRoom(roomId, SocketEvent.messageSent, messages);
   }
 
-  RoomUpdate(room) {
-    this.websocket.emitToRoom(room.id, SocketEvent.roomUpdate, room);
+  RoomUpdate(roomIds) {
+    RoomModel.getRoomsById(roomIds).then(rooms => {
+      rooms.forEach(room => {
+        this.websocket.emitToRoom(room.id, SocketEvent.roomUpdate, room);
+      });
+    })
   }
 
   ReadMessage(roomId, userId, messageId) {

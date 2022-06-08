@@ -118,11 +118,9 @@ class RoomRepositoryImp implements IRoomRepository {
 
     const eventUpdateRoomName = 'roomUpdate';
     roomUpdateHandler(dynamic data) {
-      final roomsJson = (data as List)[0] as List;
-      final rooms = roomsJson.map((room) {
-        return RoomOverviewEntity.fromJson(room as Map<String, dynamic>);
-      }).toList();
-      controller.sink.add(rooms);
+      final roomsJson = (data as List);
+      final room = RoomOverviewEntity.fromJson(roomsJson[0] as Map<String, dynamic>);
+      controller.sink.add([room]);
     };
 
     socket.addEventListener(eventUpdateRoomName, roomUpdateHandler);

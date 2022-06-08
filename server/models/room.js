@@ -76,9 +76,9 @@ class Room extends Model {
           attributes: { exclude: ["roomId"] },
           include: {
             model: User,
-            as: 'sender',
-            attributes: ['id','name','email','imageUri', 'gender']
-          }
+            as: "sender",
+            attributes: ["id", "name", "email", "imageUri", "gender"],
+          },
         },
         {
           model: User,
@@ -117,6 +117,13 @@ class Room extends Model {
         {
           model: Message,
           as: "lastMessage",
+          include: [
+            {
+              model: User,
+              as: "sender",
+              attributes: ["id", "name", "imageUri"],
+            },
+          ],
         },
         {
           model: User,
@@ -362,7 +369,7 @@ class Room extends Model {
         lastMessageId: message.id,
       });
       const logResult = { roomId: room.id, messageId: message.id };
-      room
+      await room
         .save()
         .then((rs) => console.log("SET_LAST_MESSAGE_SUCCESS: ", logResult))
         .catch((error) =>

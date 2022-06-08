@@ -142,7 +142,9 @@ export default {
       );
 
       // Set last message for room model
-      RoomModel.checkAndSetLastMessage(roomId, newMessage);
+      RoomModel.checkAndSetLastMessage(roomId, newMessage).then(() => {
+        MyNotifySocket.RoomUpdate([roomId]);
+      });
 
       MessageModel.getMessageByIds([newMessage.id]).then((messages) =>
         MyNotifySocket.MessageSent(roomId, messages)
@@ -211,9 +213,10 @@ export default {
       );
 
       // Set last message for room model
-      RoomModel.checkAndSetLastMessage(room.id, newMessage);
-      
-      MyNotifySocket.RoomUpdate(room);
+      RoomModel.checkAndSetLastMessage(room.id, newMessage).then(() => {
+        MyNotifySocket.RoomUpdate([room.id]);
+      });
+
       MessageModel.getMessageByIds([newMessage.id]).then((messages) =>
         MyNotifySocket.MessageSent(room.id, messages)
       );

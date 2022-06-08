@@ -107,7 +107,7 @@ export default {
         typeRoom
       );
 
-      MyNotifySocket.RoomUpdate(newRoom);
+      MyNotifySocket.RoomUpdate([newRoom.id]);
 
       if (!newRoom) {
         return successResponse(res, { success: false });
@@ -216,9 +216,7 @@ export default {
         typeRoom
       );
 
-      RoomModel.getRoomsById([roomId]).then(rooms=>{
-        MyNotifySocket.RoomUpdate(rooms[0]);
-      });
+      MyNotifySocket.RoomUpdate([roomId]);
 
       return successResponse(res, {
         success: true,
@@ -271,9 +269,7 @@ export default {
 
       await UserRoomModel.changeJoiners(roomId, addedJoiners, deletedJoiners);
 
-      RoomModel.getRoomsById([roomId]).then(rooms=>{
-        MyNotifySocket.RoomUpdate(rooms[0]);
-      });
+      MyNotifySocket.RoomUpdate([roomId]);
 
       return successResponse(res, {
         success: true,

@@ -94,7 +94,7 @@ class ChatOverviewBloc extends Bloc<ChatOverviewEvent, ChatOverviewState> {
     ));
     _streamRoom = _roomRepository.getStreamRoom();
     _streamRoom.stream.listen((rooms) {
-      add(ChatOverviewUpdate(rooms: rooms));
+      add(ChatOverviewUpdate(rooms: rooms..retainWhere((room) => room.type == event.searchtype)));
     });
   }
 
