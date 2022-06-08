@@ -5,8 +5,8 @@ class ChatDetailState extends Equatable {
     Key? key,
     required List<MessageEntity> listMessage,
     required this.isLoading,
-    this.isLoadFull = false,
-    this.error,
+    required this.isLoadFull,
+    required this.error,
   }) : _listMessage = {for (var i in listMessage) i.id: i};
 
   ChatDetailState.initial()
@@ -22,7 +22,7 @@ class ChatDetailState extends Equatable {
   final bool isLoadFull;
   final Object? error;
 
-  late final List<MessageEntity> listSortedMessage = _listMessage.values.toList()
+  late final List<MessageEntity> listSortedMessage = [..._listMessage.values.toList()]
     ..sort((a, b) => a.timeCreate.compareTo(b.timeCreate) * -1);
 
   @override

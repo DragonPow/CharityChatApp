@@ -64,6 +64,8 @@ class ChatDetailBloc extends Bloc<ChatDetailEvent, ChatDetailState> {
     emit(ChatDetailState(
       listMessage: state.listSortedMessage,
       isLoading: true,
+      isLoadFull: false,
+      error: null,
     ));
   }
 
@@ -98,6 +100,7 @@ class ChatDetailBloc extends Bloc<ChatDetailEvent, ChatDetailState> {
         listMessage: _combineMessages(state.listSortedMessage, newMessages),
         isLoading: false,
         isLoadFull: isFull,
+        error: null,
       ));
     } catch (e) {
       print("Error when load detail message:");
@@ -119,7 +122,6 @@ class ChatDetailBloc extends Bloc<ChatDetailEvent, ChatDetailState> {
     final isFile = event.content == null;
     final type = isFile ? getTypeOfFile(event.file!) : 'text';
     final creator = Account.getUserEntity()!;
-    final indexAddNewMessage = 0;
 
     final newMessage = MessageEntity.send(
       value: isFile ? event.file : event.content,
@@ -133,6 +135,8 @@ class ChatDetailBloc extends Bloc<ChatDetailEvent, ChatDetailState> {
       emit(ChatDetailState(
         listMessage: newList,
         isLoading: true,
+        error: state.error,
+        isLoadFull: state.isLoadFull,
       ));
 
       final rs = await chatRepository.sendMessage(
@@ -155,6 +159,7 @@ class ChatDetailBloc extends Bloc<ChatDetailEvent, ChatDetailState> {
           ],
         ),
         isLoading: false,
+        error: state.error,
         isLoadFull: state.isLoadFull,
       ));
     } catch (e) {
@@ -194,6 +199,8 @@ class ChatDetailBloc extends Bloc<ChatDetailEvent, ChatDetailState> {
           state.listSortedMessage,
           event.newList),
       isLoading: state.isLoading,
+      error: state.error,
+      isLoadFull: state.isLoadFull,
     ));
   }
 }

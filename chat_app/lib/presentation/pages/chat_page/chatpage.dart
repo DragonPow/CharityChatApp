@@ -1,17 +1,16 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
-import 'package:chat_app/dataexample/active_user.dart';
-import 'package:chat_app/dataexample/shortchat.dart';
 import 'package:chat_app/domain/entities/room_overview_entity.dart';
 import 'package:chat_app/helper/helper.dart';
 import 'package:chat_app/presentation/bloc/active_user/active_user_bloc.dart';
-import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
+import 'package:chat_app/presentation/bloc/chat_overview/home_room_bloc.dart';
 import 'package:chat_app/presentation/components/avataruser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../dependencies_injection.dart';
 import '../../bloc/chat_detail/chat_detail_bloc.dart';
+import '../../bloc/chat_overview/chat_overview_bloc.dart';
 import '../../components/avatarcicle.dart';
 import 'package:skeleton_loader/skeleton_loader.dart';
 
@@ -26,17 +25,25 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   late TabController _tabController;
-  var _chatOverviewsBloc;
-  var _activeUsersBloc;
+  late HomeRoomBloc _homeRoomBloc;
+  late ActiveUserBloc _activeUsersBloc;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _chatOverviewsBloc = BlocProvider.of<ChatOverviewBloc>(context);
-    _chatOverviewsBloc.add(const ChatOverviewLoad(
-        number: 10, searchtype: "private", startIndex: 0, userId: '2'));
+    _homeRoomBloc = BlocProvider.of<HomeRoomBloc>(context);
     _activeUsersBloc = BlocProvider.of<ActiveUserBloc>(context);
+
+    _homeRoomBloc.add(
+      HomeBlocEvent(
+        tab: HomeRoomState.private,
+        blocEvent: ChatOverviewLoadInit(
+          number: 10,
+          searchtype: HomeRoomState.private.toShortString(),
+        ),
+      ),
+    );
     _activeUsersBloc.add(const ActiveUserLoadEvent(number: 10, startIndex: 0));
   }
 
@@ -150,17 +157,21 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                 Tab(text: "Nhóm chat "),
               ],
               onTap: (index) {
-                index == 0
-                    ? _chatOverviewsBloc.add(const ChatOverviewLoad(
+                HomeRoomState tabState = _getTabNameFromIndex(index);
+                final stateBLocTab = _homeRoomBloc.GetStateByTab(tabState);
+
+                if (stateBLocTab.listSortedRoom.isEmpty) {
+                  _homeRoomBloc.add(
+                    HomeBlocEvent(
+                      tab: tabState,
+                      blocEvent: ChatOverviewLoadInit(
                         number: 10,
-                        searchtype: "private",
-                        startIndex: 0,
-                        userId: "2"))
-                    : _chatOverviewsBloc.add(const ChatOverviewLoad(
-                        number: 10,
-                        searchtype: "group",
-                        startIndex: 0,
-                        userId: "2"));
+                        searchtype: tabState.toShortString(),
+                      ),
+                    ),
+                  );
+                }
+                  setState(() {});
               },
             ),
           ),
@@ -168,27 +179,31 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       },
       body: SingleChildScrollView(
         child: BlocBuilder<ChatOverviewBloc, ChatOverviewState>(
-          builder: (context, state) {
-            if (state is ChatOverviewLoadSuccess) {
-              return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: state.listRoomOverview.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (BuildContext context, int index) {
-                    return ShortChat( roomOverview: state.listRoomOverview[index],);
-                  });
-            } else {
-              if (state is ChatOverviewLoadFail) {
-                return const Text("Load chat fail");
+            bloc: _homeRoomBloc
+                .state[_getTabNameFromIndex(_tabController.index)]!,
+            builder: (context, state) {
+              if (state is ChatOverviewState) {
+                return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: state.listSortedRoom.length,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (BuildContext context, int index) {
+                      return ShortChat(
+                        roomOverview: state.listSortedRoom[index],
+                      );
+                    });
               } else {
-                return const Text("Loading");
+                return const Text("Load fail");
               }
-            }
-          },
-        ),
+            }),
         // SkeletonloaderChat()
       ),
     );
+  }
+
+  HomeRoomState _getTabNameFromIndex(int index) {
+    final tabState = index == 0 ? HomeRoomState.private : HomeRoomState.group;
+    return tabState;
   }
 }
 
@@ -273,10 +288,7 @@ class SkeletonloaderChat extends StatelessWidget {
 
 class ShortChat extends StatelessWidget {
   final RoomOverviewEntity roomOverview;
-  const ShortChat(
-      {Key? key,
-      required this.roomOverview})
-      : super(key: key);
+  const ShortChat({Key? key, required this.roomOverview}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +315,10 @@ class ShortChat extends StatelessWidget {
                       children: [
                         Text(roomOverview.name, style: kText13BoldBlack),
                         Text(
-                          roomOverview.lastMessage != null ? parseDatetimeToTime(roomOverview.lastMessage!.timeCreate): "",
+                          roomOverview.lastMessage != null
+                              ? parseDatetimeToTime(
+                                  roomOverview.lastMessage!.timeCreate)
+                              : "",
                           style: kText11RegularHintText,
                         )
                       ],
@@ -315,7 +330,9 @@ class ShortChat extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          roomOverview.lastMessage == null? "" : roomOverview.lastMessage!.getName,
+                          roomOverview.lastMessage == null
+                              ? ""
+                              : roomOverview.lastMessage!.getName,
                           style: kText11RegularHintText,
                         ),
                         Container(
@@ -351,8 +368,9 @@ class ShortChat extends StatelessWidget {
           MaterialPageRoute(
               builder: (context) => BlocProvider(
                     create: (context) => ChatDetailBloc(chatRepository: sl()),
-                    child: ChatRoom( 
-                      roomOverview: roomOverview,),
+                    child: ChatRoom(
+                      roomOverview: roomOverview,
+                    ),
                   )),
         )
       },

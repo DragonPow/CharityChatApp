@@ -1,6 +1,6 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
-import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
+import 'package:chat_app/presentation/bloc/chat_overview/home_room_bloc.dart';
 import 'package:chat_app/presentation/pages/chat_page/chatpage.dart';
 import 'package:chat_app/presentation/pages/profile_page/profile_page.dart';
 import 'package:chat_app/presentation/pages/newchatpage/new_chat_page.dart';
@@ -12,6 +12,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../dependencies_injection.dart';
 import 'bloc/active_user/active_user_bloc.dart';
+import 'bloc/chat_overview/chat_overview_bloc.dart';
 import 'bloc/new_message/new_message_bloc.dart';
 
 class RootApp extends StatefulWidget {
@@ -95,7 +96,12 @@ class _RootAppState extends State<RootApp> {
         ? MultiBlocProvider(
             providers: [
               BlocProvider(
-                create: (context) => ChatOverviewBloc(sl()),
+                create: (context) => HomeRoomBloc(
+                  Map.from({
+                    HomeRoomState.private: ChatOverviewBloc(sl()),
+                    HomeRoomState.group: ChatOverviewBloc(sl()),
+                  }),
+                ),
               ),
               BlocProvider(
                 create: (context) => ActiveUserBloc(sl()),

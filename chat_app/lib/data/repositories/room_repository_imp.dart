@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -6,6 +7,7 @@ import 'package:chat_app/domain/entities/room_overview_entity.dart';
 import 'package:chat_app/domain/repositories/room_repository.dart';
 import 'package:chat_app/helper/constant.dart';
 import 'package:chat_app/helper/helper.dart';
+import 'package:chat_app/helper/network/socket_service.dart';
 import 'package:chat_app/utils/local_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -52,7 +54,10 @@ class RoomRepositoryImp implements IRoomRepository {
     try {
       final _token = await sl<LocalStorageService>().getToken();
       if (_token != null) {
-        final _uri = Uri.http(serverUrl, "/rooms/create",);
+        final _uri = Uri.http(
+          serverUrl,
+          "/rooms/create",
+        );
         final _request = http.MultipartRequest("POST", _uri);
         _request.headers.addAll({'token': _token});
 
@@ -73,8 +78,7 @@ class RoomRepositoryImp implements IRoomRepository {
           });
           return false;
         }
-      }
-      else{
+      } else {
         print("User must register");
       }
     } catch (e) {}
@@ -108,6 +112,27 @@ class RoomRepositoryImp implements IRoomRepository {
   }
 
   @override
+  StreamController<List<RoomOverviewEntity>> getStreamRoom() {
+    final controller = StreamController<List<RoomOverviewEntity>>();
+    final socket = sl<SocketService>();
+
+    const eventUpdateRoomName = 'roomUpdate';
+    roomUpdateHandler(dynamic data) {
+      final roomsJson = (data as List)[0] as List;
+      final rooms = roomsJson.map((room) {
+        return RoomOverviewEntity.fromJson(room as Map<String, dynamic>);
+      }).toList();
+      controller.sink.add(rooms);
+    };
+
+    socket.addEventListener(eventUpdateRoomName, roomUpdateHandler);
+    controller.onCancel = () =>
+        socket.removeEventListener(eventUpdateRoomName, roomUpdateHandler);
+
+    return controller;
+  }
+
+  @override
   Future<List<RoomOverviewEntity>> getRoomOverviews(
       String userId, int startIndex, int number, String searchtype) async {
     final queryParameters = {
@@ -122,7 +147,7 @@ class RoomRepositoryImp implements IRoomRepository {
     };
     final token = await sl<LocalStorageService>().getToken();
     if (token == null) throw Exception('Token required');
-    
+
     final _uri = Uri.http(serverUrl, "/rooms/select", queryParameters);
     print(_uri);
     final response = await http.get(_uri, headers: {"token": token});

@@ -163,7 +163,7 @@ class NotifySocket {
   }
 
   RoomUpdate(room) {
-    this.websocket.emitToRoom(room, SocketEvent.roomUpdate, room);
+    this.websocket.emitToRoom(room.id, SocketEvent.roomUpdate, room);
   }
 
   ReadMessage(roomId, userId, messageId) {

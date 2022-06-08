@@ -212,7 +212,8 @@ export default {
 
       // Set last message for room model
       RoomModel.checkAndSetLastMessage(room.id, newMessage);
-
+      
+      MyNotifySocket.RoomUpdate(room);
       MessageModel.getMessageByIds([newMessage.id]).then((messages) =>
         MyNotifySocket.MessageSent(room.id, messages)
       );

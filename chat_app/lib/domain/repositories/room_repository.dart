@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:chat_app/domain/entities/room_overview_entity.dart';
@@ -7,6 +8,7 @@ import '../entities/room_entity.dart';
 abstract class IRoomRepository {
   Future<List<RoomEntity>> getRooms(int startIndex, int number);
   Future<List<RoomEntity>> findRoomsByName(String textMatch);
+  StreamController<List<RoomOverviewEntity>> getStreamRoom();
 
   Future<bool> create(RoomEntity room, File? avatar);
   Future<bool> delete(String roomId);

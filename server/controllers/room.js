@@ -107,6 +107,8 @@ export default {
         typeRoom
       );
 
+      MyNotifySocket.RoomUpdate(newRoom);
+
       if (!newRoom) {
         return successResponse(res, { success: false });
       }
