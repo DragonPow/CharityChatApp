@@ -12,7 +12,7 @@ abstract class IRoomRepository {
   Future<RoomOverviewEntity> findPrivateRoomsByUserId(BaseUserEntity otherUser);
   StreamController<List<RoomOverviewEntity>> getStreamRoom();
 
-  Future<bool> create(RoomEntity room, File? avatar);
+  Future<RoomOverviewEntity?> create(RoomEntity room, File? avatar);
   Future<bool> delete(String roomId);
   Future<bool> changeName(String roomId, String newName);
   Future<bool> changeAvatar(String roomId, String avatarData);

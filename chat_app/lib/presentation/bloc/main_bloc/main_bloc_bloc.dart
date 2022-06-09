@@ -22,30 +22,29 @@ class MainBlocBloc extends Bloc<MainBlocEvent, MainBlocState> {
   FutureOr<void> _mapMainBlocCheckToState(
       MainBlocCheck event, Emitter<MainBlocState> emit) async {
     final local = sl<LocalStorageService>();
-    final nametest = "test";
-    final passtest = "test";
     final json = await local.getUsernameAndPass();
     if (json["username"] == null || json["password"] == null) {
       emit(MainBlocNotYetLogin());
-    }
-    try {
-      // final login = await _iAuthenticateRepository.logIn(
-      //     json["username"]!, json["password"]!);
-      final login = await _iAuthenticateRepository.logIn(
-          nametest, passtest);
-      switch (login) {
-        case "200":
+    } else {
+      try {
+        final login = await _iAuthenticateRepository.logIn(
+            json["username"]!, json["password"]!);
+        // final login = await _iAuthenticateRepository.logIn(
+        //     nametest, passtest);
+        if(login != null){
           emit(MainBlocAlreadyLogin());
-          break;
-        default:
-          emit(MainBlocNotYetLogin());
+        }
+        else{
+            emit(MainBlocNotYetLogin());
+        }
+      } catch (e) {
+        print("ERROR CHECK USER ADREADY LOGIN?");
       }
-    } catch (e) {
-      print("ERROR CHECK USER ADREADY LOGIN?");
     }
   }
 
-  FutureOr<void> _mapMainBlocLoginToState(MainBlocLogin event, Emitter<MainBlocState> emit) async{
+  FutureOr<void> _mapMainBlocLoginToState(
+      MainBlocLogin event, Emitter<MainBlocState> emit) async {
     emit(MainBlocAlreadyLogin());
   }
 }

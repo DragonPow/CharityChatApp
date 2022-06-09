@@ -1,5 +1,7 @@
 import 'package:chat_app/domain/entities/message_entity.dart';
 
+import '../../helper/helper.dart';
+
 class RoomOverviewEntity implements Comparable<RoomOverviewEntity>{
   final String id;
   final String name;
@@ -19,7 +21,7 @@ class RoomOverviewEntity implements Comparable<RoomOverviewEntity>{
     id: json["id"] as String, 
     name: json["name"] as String, 
     lastMessage: json["lastMessage"] != null? MessageEntity.fromJson(json["lastMessage"]) : null, 
-    avatarUrl: json["avatarId"],
+    avatarUrl: json["avatarId"] != null ?parseToServerUri(json["avatarId"]): json["avatarId"],
     type: json['typeRoom']);
     
   @override
