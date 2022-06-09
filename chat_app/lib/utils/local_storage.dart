@@ -16,11 +16,11 @@ class StorageTypeEnum {
 }
 
 class LocalStorageService {
-    final socket = sl<SocketService>();
+  final socket = sl<SocketService>();
   final _storage = Localstore.instance.collection('app');
 
-  Future<Map<String, dynamic>?> _getDoc(String docName) {
-    return _storage.doc(docName).get();
+  Future<Map<String, dynamic>?> _getDoc(String docName) async {
+    return _storage.doc(docName).get().onError((error,s) => null);
   }
 
   Future<T?> getItem<T>(String key) async {
@@ -66,8 +66,7 @@ class LocalStorageService {
         .set({StorageTypeEnum.token: token});
     if (token != null) {
       socket.addEventReconnect((_) => socket.emit('online', token));
-    }
-    else {
+    } else {
       socket.removeEventListener('online');
     }
     print('Token is set:' + token.toString());
