@@ -10,8 +10,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../dependencies_injection.dart';
 import '../../../../domain/entities/room_entity.dart';
+import '../../../bloc/chat_detail/chat_detail_bloc.dart';
 import '../add_people/component/member.dart';
+import '../chat_room_two/chatroomtwo.dart';
 
 class GroupName extends StatefulWidget {
   final List<UserActiveEntity> listMember;
@@ -35,8 +38,8 @@ class _GroupName extends State<GroupName> {
     _nameTextController = TextEditingController();
   }
 
-  @override 
-  void dispose(){
+  @override
+  void dispose() {
     super.dispose();
     _nameTextController.dispose();
   }
@@ -53,7 +56,8 @@ class _GroupName extends State<GroupName> {
     final image = await decodeImageFromList(bytes);
     avatar = File(result.path);
     // change avatar group
-    _makeNameGroupBloc.add(MakeNameGroupChoiceAvatar(avatar: File(result.path)));
+    _makeNameGroupBloc
+        .add(MakeNameGroupChoiceAvatar(avatar: File(result.path)));
   }
 
   @override
@@ -77,7 +81,7 @@ class _GroupName extends State<GroupName> {
                   if (state is MakeNameGroupChoiceAvatarSuccess) {
                     avatar = state.avatar;
                     return CircleAvatar(
-                      backgroundImage: FileImage(File(state.avatar.path)) ,
+                      backgroundImage: FileImage(File(state.avatar.path)),
                       radius: 100,
                     );
                   } else {
@@ -141,7 +145,18 @@ class _GroupName extends State<GroupName> {
                   state is MakeNameGroupInitial;
             },
             listener: (context, state) {
-              // TODO: implement listener
+              if (state is MakeNameGroupCreateSuccess) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => BlocProvider(
+                            create: (context) =>
+                                ChatDetailBloc(chatRepository: sl()),
+                            child: ChatRoom(
+                              roomOverview: state.roomEntity,
+                            ),
+                          )),
+                );
+              }
             },
             builder: (context, state) {
               if (state is MakeNameGroupRemoveMemSuccess) {
@@ -196,16 +211,7 @@ class _GroupName extends State<GroupName> {
       elevation: 0,
       actions: [
         TextButton(
-            onPressed: () => {
-                  _makeNameGroupBloc.add(MakeNameGroupCreate(
-                      avatar: avatar,
-                      room: RoomEntity(
-                          messages: [],
-                          name: _nameTextController.text,
-                          users: members,
-                          typeRoom: members.length > 1 ? 'group' : "private",
-                          id: '')))
-                },
+            onPressed:() =>  onCreateButtonPress(),
             child: Text(
               "Tạo",
               style: kText17SemiboldMain,
@@ -218,5 +224,16 @@ class _GroupName extends State<GroupName> {
         ),
       ),
     );
+  }
+
+  void onCreateButtonPress() {
+    _makeNameGroupBloc.add(MakeNameGroupCreate(
+        avatar: avatar,
+        room: RoomEntity(
+            messages: [],
+            name: _nameTextController.text,
+            users: members,
+            typeRoom: members.length > 1 ? 'group' : "private",
+            id: '')));
   }
 }

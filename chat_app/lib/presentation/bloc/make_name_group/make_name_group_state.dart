@@ -17,6 +17,9 @@ class MakeNameGroupChoiceAvatarSuccess extends MakeNameGroupState{
 }
 
 class MakeNameGroupCreateLoading extends MakeNameGroupState {}
-class MakeNameGroupCreateSuccess extends MakeNameGroupState{}
+class MakeNameGroupCreateSuccess extends MakeNameGroupState{
+  final RoomOverviewEntity roomEntity;
+  const MakeNameGroupCreateSuccess({Key? key, required this.roomEntity});
+}
 class MakeNameGroupCreateFail extends MakeNameGroupState{}
 

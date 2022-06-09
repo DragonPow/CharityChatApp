@@ -51,7 +51,7 @@ class RoomRepositoryImp implements IRoomRepository {
   }
 
   @override
-  Future<bool> create(RoomEntity room, File? avatar) async {
+  Future<RoomOverviewEntity?> create(RoomEntity room, File? avatar) async {
     try {
       final _token = await sl<LocalStorageService>().getToken();
       if (_token != null) {
@@ -67,17 +67,19 @@ class RoomRepositoryImp implements IRoomRepository {
         _request.fields["typeRoom"] = room.typeRoom;
         if (avatar != null) {
           _request.files.add(
-              http.MultipartFile.fromBytes('image', avatar.readAsBytesSync()));
+             await http.MultipartFile.fromPath('image', avatar.path));
         }
         final _response = await _request.send();
 
         if (_response.statusCode == 200) {
-          return true;
+          final _room = await http.Response.fromStream(_response);
+          RoomOverviewEntity roomOverview = RoomOverviewEntity.fromJson(json.decode(_room.body)["room"]);
+          return roomOverview;
         } else {
           _response.stream.transform(utf8.decoder).listen((event) {
             print('Create Chat Room error: ' + event);
           });
-          return false;
+          return null;
         }
       } else {
         print("User must register");

@@ -8,6 +8,8 @@ import 'package:chat_app/domain/repositories/room_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../domain/entities/room_overview_entity.dart';
+
 part 'make_name_group_event.dart';
 part 'make_name_group_state.dart';
 
@@ -30,9 +32,9 @@ class MakeNameGroupBloc extends Bloc<MakeNameGroupEvent, MakeNameGroupState> {
       MakeNameGroupCreate event, Emitter<MakeNameGroupState> emit) async {
     emit(MakeNameGroupCreateLoading());
     try {
-      bool isCreate = await _iRoomRepository.create(event.room, event.avatar);
-      if (isCreate) {
-        emit(MakeNameGroupCreateSuccess());
+      RoomOverviewEntity? roomCreate = await _iRoomRepository.create(event.room, event.avatar);
+      if (roomCreate != null) {
+        emit(MakeNameGroupCreateSuccess(roomEntity: roomCreate));
         emit(MakeNameGroupInitial());
       } else {
         emit(MakeNameGroupCreateFail());

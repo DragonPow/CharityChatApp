@@ -33,9 +33,10 @@ class LocalStorageService {
   }
 
   Future<Map<String, String?>> getUsernameAndPass() async {
-    final json = await _getDoc(StorageTypeEnum.username);
-    final username = json?[StorageTypeEnum.username] as String?;
-    final password = json?[StorageTypeEnum.password] as String?;
+    final jsonName = await _getDoc(StorageTypeEnum.username);
+    final jsonPass = await _getDoc(StorageTypeEnum.password);
+    final username = jsonName?[StorageTypeEnum.username] as String?;
+    final password = jsonPass?[StorageTypeEnum.password] as String?;
 
     return {'username': username, 'password': password};
   }

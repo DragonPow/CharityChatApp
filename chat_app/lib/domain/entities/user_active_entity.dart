@@ -1,5 +1,7 @@
 import 'package:chat_app/domain/entities/base_user_entity.dart';
 
+import '../../helper/helper.dart';
+
 class UserActiveEntity extends BaseUserEntity {
   final String avatarUri;
 
@@ -14,5 +16,5 @@ class UserActiveEntity extends BaseUserEntity {
   factory UserActiveEntity.fromJson(Map<String, dynamic> json) => UserActiveEntity(
     id: json["id"], 
     name: json['name'], 
-    avatarUri: json["imageUri"] ?? "");
+    avatarUri: json["imageUri"] != null? parseToServerUri(json["imageUri"]) : "");
 }
