@@ -76,7 +76,9 @@ class _GroupName extends State<GroupName> {
                   return state is MakeNameGroupChoiceAvatarSuccess ||
                       state is MakeNameGroupInitial;
                 },
-                listener: (context, state) {},
+                listener: (context, state) {
+                  
+                },
                 builder: (context, state) {
                   if (state is MakeNameGroupChoiceAvatarSuccess) {
                     avatar = state.avatar;
@@ -142,7 +144,8 @@ class _GroupName extends State<GroupName> {
           BlocConsumer<MakeNameGroupBloc, MakeNameGroupState>(
             listenWhen: (context, state) {
               return state is MakeNameGroupRemoveMemSuccess ||
-                  state is MakeNameGroupInitial;
+                  state is MakeNameGroupInitial||
+                  state is MakeNameGroupCreateSuccess;
             },
             listener: (context, state) {
               if (state is MakeNameGroupCreateSuccess) {
