@@ -38,13 +38,13 @@ class UserRepositoryImp extends IUserRepository {
       "number": number.toString(),
       "orderby": "name",
       "orderdirection": "desc",
-      "searchby": "name",
-      "searchvalue": null
     };
-    final _uri = Uri.http(serverUrl, "/users/select", _queryPrameters);
+    final _uri = Uri.http(serverUrl, "/users/active", _queryPrameters);
     print(_uri);
     try {
-      final _response = await http.get(_uri, headers: {"token": 'ADMIN_TOKEN'});
+      final _token = await sl<LocalStorageService>().getToken();
+      if (_token == null) throw Exception("TOKEN BE REQUIRED");
+      final _response = await http.get(_uri, headers: {"token": _token});
       if (_response.statusCode == 200) {
         final _jsonResponse =
             json.decode(_response.body)["users"] as List<dynamic>;

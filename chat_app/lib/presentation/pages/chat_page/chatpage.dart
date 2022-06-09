@@ -98,92 +98,149 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       headerSliverBuilder: (context, value) {
         return [
           SliverToBoxAdapter(
-            child: Container(
-              height: 170,
-              decoration: const BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage("assets/images/style.png"),
-                      fit: BoxFit.fill)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  InkWell(
-                    child: SizedBox(
-                      height: 40,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Container(
-                          height: 40,
-                          child: TextField(
-                              enabled: false,
-                              maxLines: 1,
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.all(13),
-                                  hintText: "Tìm kiếm",
-                                  hintStyle: kText15RegularGreyNotetext,
-                                  prefixIcon: const Icon(Icons.search))),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: cwColorWhite),
-                        ),
-                      ),
-                    ),
-                    onTap: () => {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => BlocProvider(
-                                    create: (context) => SearchUserBloc(sl(), sl()),
-                                    child: const SearchNewGroup(
-                                      isCreateGroup: false,
-                                    ),
-                                  )))
-                    },
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Column(
+            child: BlocBuilder<ActiveUserBloc, ActiveUserState>(
+              builder: (context, state) {
+                if (state is ActiveUserLoadSuccess && state.listUserActive.isNotEmpty){
+                  return Container(
+                  height: 170,
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/images/style.png"),
+                          fit: BoxFit.fill)),
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      BlocBuilder<ActiveUserBloc, ActiveUserState>(
-                        builder: (context, state) {
-                          if (state is ActiveUserLoadSuccess) {
-                            return Padding(
-                              padding: const EdgeInsets.only(left: 10),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: List.generate(
-                                        state.listUserActive.length,
-                                        (index) => AvatarUser(
-                                              radius: 50,
-                                              imageUrl: state
-                                                  .listUserActive[index]
-                                                  .avatarUri,
-                                              name: state
-                                                  .listUserActive[index].name,
-                                              id: state
-                                                  .listUserActive[index].id,
-                                            ))),
-                              ),
-                            );
-                          } else {
-                            return Container();
-                          }
+                      InkWell(
+                        child: SizedBox(
+                          height: 40,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Container(
+                              height: 40,
+                              child: TextField(
+                                  enabled: false,
+                                  maxLines: 1,
+                                  decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: const EdgeInsets.all(13),
+                                      hintText: "Tìm kiếm",
+                                      hintStyle: kText15RegularGreyNotetext,
+                                      prefixIcon: const Icon(Icons.search))),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: cwColorWhite),
+                            ),
+                          ),
+                        ),
+                        onTap: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => BlocProvider(
+                                        create: (context) =>
+                                            SearchUserBloc(sl(), sl()),
+                                        child: const SearchNewGroup(
+                                          isCreateGroup: false,
+                                        ),
+                                      )))
                         },
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 10),
+                                        child: SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: List.generate(
+                                                  state.listUserActive.length,
+                                                  (index) => AvatarUser(
+                                                        radius: 50,
+                                                        imageUrl: state
+                                                            .listUserActive[
+                                                                index]
+                                                            .avatarUri,
+                                                        name: state
+                                                            .listUserActive[
+                                                                index]
+                                                            .name,
+                                                        id: state
+                                                            .listUserActive[
+                                                                index]
+                                                            .id,
+                                                      ))),
+                                        ),
+                                      )
+                             
+                           
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                );
+                }
+                return Container(
+                  height: 70.h,
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/images/style.png"),
+                          fit: BoxFit.fill)),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InkWell(
+                        child: SizedBox(
+                          height: 40,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Container(
+                              height: 40,
+                              child: TextField(
+                                  enabled: false,
+                                  maxLines: 1,
+                                  decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: const EdgeInsets.all(13),
+                                      hintText: "Tìm kiếm",
+                                      hintStyle: kText15RegularGreyNotetext,
+                                      prefixIcon: const Icon(Icons.search))),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: cwColorWhite),
+                            ),
+                          ),
+                        ),
+                        onTap: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => BlocProvider(
+                                        create: (context) =>
+                                            SearchUserBloc(sl(), sl()),
+                                        child: const SearchNewGroup(
+                                          isCreateGroup: false,
+                                        ),
+                                      )))
+                        },
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ), ],
+                  ),
+                );
+              },
             ),
           ),
           SliverAppBar(
@@ -245,31 +302,32 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           ));
 
           await Future.delayed(const Duration(seconds: 1, milliseconds: 500));
-        },child: BlocBuilder<ChatOverviewBloc, ChatOverviewState>(
-              bloc: _homeRoomBloc
-                  .state[_getTabNameFromIndex(_tabController.index)]!,
-              builder: (context, state) {
-                if (state is ChatOverviewState) {
-                  return ListView.builder(
-                      // shrinkWrap: true,
-                      itemCount: state.isLoading
-                          ? state.listSortedRoom.length + 1
-                          : state.listSortedRoom.length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (BuildContext context, int index) {
-                        return index < state.listSortedRoom.length
-                            ? ShortChat(
-                                roomOverview: state.listSortedRoom[index],
-                              )
-                            : const Text('loading');
-                      });
-                } else {
-                  return const Text("Load fail");
-                }
-              }),
-          // SkeletonloaderChat()
-       ),
- );
+        },
+        child: BlocBuilder<ChatOverviewBloc, ChatOverviewState>(
+            bloc: _homeRoomBloc
+                .state[_getTabNameFromIndex(_tabController.index)]!,
+            builder: (context, state) {
+              if (state is ChatOverviewState) {
+                return ListView.builder(
+                    // shrinkWrap: true,
+                    itemCount: state.isLoading
+                        ? state.listSortedRoom.length + 1
+                        : state.listSortedRoom.length,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (BuildContext context, int index) {
+                      return index < state.listSortedRoom.length
+                          ? ShortChat(
+                              roomOverview: state.listSortedRoom[index],
+                            )
+                          : const Text('loading');
+                    });
+              } else {
+                return const Text("Load fail");
+              }
+            }),
+        // SkeletonloaderChat()
+      ),
+    );
   }
 
   HomeRoomState _getTabNameFromIndex(int index) {
