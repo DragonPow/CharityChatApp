@@ -26,6 +26,7 @@ import '../../../../dependencies_injection.dart';
 import '../../../../domain/entities/room_overview_entity.dart';
 import '../../../../helper/helper.dart';
 import '../../../bloc/chat_detail/chat_detail_bloc.dart';
+import '../../calling_page/call_sample.dart';
 
 class ChatRoom extends StatefulWidget {
   final RoomOverviewEntity roomOverview;
@@ -47,7 +48,7 @@ class _ChatRoomState extends State<ChatRoom> {
     _scrollController = ScrollController();
     _chatDetailBloc = BlocProvider.of<ChatDetailBloc>(context);
     _chatDetailBloc.add(ChatDetailLoadInit(roomId: widget.roomOverview.id));
-    
+
     _scrollController.addListener(_fetchWhenScroll);
   }
 
@@ -59,25 +60,26 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   void _fetchWhenScroll() {
-      if (_scrollController.offset >=
-              _scrollController.position.maxScrollExtent &&
-          !_scrollController.position.outOfRange) {
-        log("reach the bottom");
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      log("reach the bottom");
 
-        if (!_chatDetailBloc.state.isLoading &&
-            !_chatDetailBloc.state.isLoadFull) {
-          _chatDetailBloc.add(ChatDetailLoad(
-            number: 10,
-            roomId: widget.roomOverview.id,
-            startIndex: _chatDetailBloc.state.listSortedMessage.length,
-          ));
-        }
+      if (!_chatDetailBloc.state.isLoading &&
+          !_chatDetailBloc.state.isLoadFull) {
+        _chatDetailBloc.add(ChatDetailLoad(
+          number: 10,
+          roomId: widget.roomOverview.id,
+          startIndex: _chatDetailBloc.state.listSortedMessage.length,
+        ));
       }
-      if (_scrollController.offset <=
-              _scrollController.position.minScrollExtent &&
-          !_scrollController.position.outOfRange) {
-        log("reach the top");
-  }}
+    }
+    if (_scrollController.offset <=
+            _scrollController.position.minScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      log("reach the top");
+    }
+  }
 
   void _handleAtachmentPressed() {
     showModalBottomSheet<void>(
@@ -234,7 +236,7 @@ class _ChatRoomState extends State<ChatRoom> {
             builder: (context, state) {
               if (state is ChatDetailState) {
                 return Chat(
-                  scrollController: _scrollController,
+                    scrollController: _scrollController,
                     showUserAvatars: true,
                     showUserNames: true,
                     messages:
@@ -325,7 +327,13 @@ class _ChatRoomState extends State<ChatRoom> {
                   size: 25.w,
                   color: cwColorMain,
                 ),
-                onPressed: () {}),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              CallSample()));
+                }),
           ),
           Padding(
             padding: EdgeInsets.fromLTRB(0, 0, 0, 10.h),

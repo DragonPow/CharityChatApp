@@ -64,6 +64,10 @@ class SocketService {
     _socket.disconnect();
   }
 
+  close() {
+    _socket.close();
+  }
+
   void emitLogin(String token) {
     _socket.emit('login', token);
   }
