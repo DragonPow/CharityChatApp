@@ -23,7 +23,7 @@ void main() async {
   sl<SocketService>().connect();
   //await testLogin(); // test login
   runApp(BlocProvider(
-    create: (context) => MainBlocBloc(sl()),
+    create: (context) => MainBlocBloc(sl())..add(MainBlocCheck()),
     child: const MyApp(),
   ));
 }
@@ -45,7 +45,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<MainBlocBloc>(context).add(MainBlocCheck());
     return ScreenUtilInit(
         designSize: const Size(360, 780),
         minTextAdapt: true,

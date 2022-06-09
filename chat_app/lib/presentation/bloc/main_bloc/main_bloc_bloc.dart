@@ -22,8 +22,8 @@ class MainBlocBloc extends Bloc<MainBlocEvent, MainBlocState> {
   FutureOr<void> _mapMainBlocCheckToState(
       MainBlocCheck event, Emitter<MainBlocState> emit) async {
     final local = sl<LocalStorageService>();
-    const String nametest = "test";
-    const String passtest = "test";
+    final nametest = "test";
+    final passtest = "test";
     final json = await local.getUsernameAndPass();
     if (json["username"] == null || json["password"] == null) {
       emit(MainBlocNotYetLogin());

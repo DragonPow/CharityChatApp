@@ -19,8 +19,8 @@ class LocalStorageService {
     final socket = sl<SocketService>();
   final _storage = Localstore.instance.collection('app');
 
-  Future<Map<String, dynamic>?> _getDoc(String docName) async {
-    return (await _storage.doc(docName).get());
+  Future<Map<String, dynamic>?> _getDoc(String docName) {
+    return _storage.doc(docName).get();
   }
 
   Future<T?> getItem<T>(String key) async {
