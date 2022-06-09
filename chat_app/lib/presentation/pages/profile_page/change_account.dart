@@ -1,73 +1,109 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
+import 'package:chat_app/helper/helper.dart';
+import 'package:chat_app/main.dart';
 import 'package:chat_app/presentation/components/avatarcicle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../dataexample/current_account.dart';
+import '../../../dependencies_injection.dart';
+import '../../../utils/account.dart';
+import '../../bloc/login/login_bloc.dart';
+import '../../bloc/main_bloc/main_bloc_bloc.dart';
 
 class ChangeAccount extends StatelessWidget {
-  const ChangeAccount({ Key? key }) : super(key: key);
+  const ChangeAccount({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: getAppBar(),
-      body: Column(
-        children: [
-          SizedBox(height: 10.h,),
+        appBar: getAppBar(),
+        body: Column(children: [
+          SizedBox(
+            height: 10.h,
+          ),
           ListTile(
-          leading: AvatarCicle(imgUrl:currentAccount[0]['img'], radius: 50, ),
-
-          title: Text(currentAccount[0]['name'], style: kText16BoldBlack,),
-
-          subtitle: Text("Đã  đăng nhập", style: kText13RegularNote,),
+            leading: AvatarCicle(
+              imgUrl: Account.instance!.imageUri != null
+                  ? parseToServerUri(Account.instance!.imageUri!)
+                  : "",
+              radius: 50,
+            ),
+            title: Text(
+              Account.instance!.name,
+              style: kText16BoldBlack,
+            ),
+            subtitle: Text(
+              "Đã  đăng nhập",
+              style: kText13RegularNote,
+            ),
           ),
-           ListTile(
-          leading:  const AvatarCicle(imgUrl: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=700&q=60", radius: 50, ),
+          //  ListTile(
+          // leading:  const AvatarCicle(imgUrl: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=700&q=60", radius: 50, ),
 
-          title: Text('Nguyễn Phạm Luân Lý ', style: kText16BoldBlack,),
+          // title: Text('Nguyễn Phạm Luân Lý ', style: kText16BoldBlack,),
 
-          subtitle: Text("Đã  đăng nhập hơn 3 ngày trước  ", style: kText13RegularNote,),
-          ),
+          // subtitle: Text("Đã  đăng nhập hơn 3 ngày trước  ", style: kText13RegularNote,),
+          // ),
           InkWell(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(width: 8.w,),
-                IconButton(icon: const Icon( Icons.add_circle, color: cwColorGreyNoteText, size: 50,), onPressed: () {  },),
-                SizedBox(width: 23.w,),
-                Padding(
-                  padding: const EdgeInsets.only(top: 18),
-
-                  child: Text('Thêm tài khoản  ', style: kText17BoldBlack,),
-
-                )
-            ],),
-            onTap: () => {},
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 12.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 8.w,
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.add_circle,
+                      color: cwColorGreyNoteText,
+                      size: 45,
+                    ),
+                    onPressed: () {},
+                  ),
+                  SizedBox(
+                    width: 30.w,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 18),
+                    child: Text(
+                      'Đổi tài khoản khác ',
+                      style: kText17BoldBlack,
+                    ),
+                  )
+                ],
+              ),
+            ),
+            onTap: () => {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => BlocProvider(
+                            create: (context) => MainBlocBloc(sl()),
+                            child: const MyApp(isChangeAccount: true),
+                          )))
+            },
           ),
-
         ]),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: ElevatedButton(
-        onPressed: () => {},
-        child: Text(
-          "Tạo tài khoản mới",
-          style: kText18RegularWhite,
-        ),
-        style: ElevatedButton.styleFrom(
-            alignment: Alignment.center,
-            primary: cwColorMain,
-            fixedSize: Size(MediaQuery.of(context).size.width, 60.h),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))),
-    ),
-      )
-
-    );
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: ElevatedButton(
+            onPressed: () => {},
+            child: Text(
+              "Tạo tài khoản mới",
+              style: kText18RegularWhite,
+            ),
+            style: ElevatedButton.styleFrom(
+                alignment: Alignment.center,
+                primary: cwColorMain,
+                fixedSize: Size(MediaQuery.of(context).size.width, 60.h),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30))),
+          ),
+        ));
   }
 
   AppBar getAppBar() {
@@ -77,7 +113,10 @@ class ChangeAccount extends StatelessWidget {
       iconTheme: const IconThemeData(color: cwColorBlackIcon),
       centerTitle: true,
       toolbarHeight: 70.h,
-      title: Text("Chuyển tài khoản ", style: kText20MediumBlack,),
+      title: Text(
+        "Chuyển tài khoản ",
+        style: kText20MediumBlack,
+      ),
     );
   }
 }

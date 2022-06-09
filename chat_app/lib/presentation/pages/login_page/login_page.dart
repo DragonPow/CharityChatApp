@@ -106,26 +106,6 @@ class _LoginPageState extends State<LoginPage> {
                   listener: (context, state) {
                     if (state is LoginSuccess) {
                       BlocProvider.of<MainBlocBloc>(context).add(MainBlocLogin());
-                      // Navigator.of(context).pushAndRemoveUntil(
-                      //     MaterialPageRoute(
-                      //         builder: (context) => MultiBlocProvider(
-                      //               providers: [
-                      //                 BlocProvider(
-                      //                   create: (context) =>
-                      //                       ChatOverviewBloc(sl()),
-                      //                 ),
-                      //                 BlocProvider(
-                      //                   create: (context) =>
-                      //                       ActiveUserBloc(sl()),
-                      //                 ),
-                      //                 BlocProvider(
-                      //                   create: (context) =>
-                      //                       NewMessageBloc(sl(), sl()),
-                      //                 ),
-                      //               ],
-                      //               child: const RootApp(),
-                      //             )),
-                      //     (route) => false);
                     } else {
                       if (state is LoginWrongPassOrEmail) {
                         showDialog<String>(
