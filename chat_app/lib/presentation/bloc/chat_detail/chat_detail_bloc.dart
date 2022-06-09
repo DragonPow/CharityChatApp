@@ -163,7 +163,8 @@ class ChatDetailBloc extends Bloc<ChatDetailEvent, ChatDetailState> {
         isLoadFull: state.isLoadFull,
       ));
     } catch (e) {
-      print("Sent message failed" + e.toString());
+      print("Sent message failed: ");
+      print(e);
       emit(ChatDetailState(
         listMessage: _combineMessages(
             newList, [newMessage.copyWith(state: MessageState.error)]),

@@ -16,10 +16,10 @@ abstract class IChatRepository {
   Future<Map<String,dynamic>> sendMessage(String? content, String roomId, File? files);
   StreamController<List<MessageEntity>> getStreamNewMessage();
 
-  Future<Tuple2<List<MessageEntity>, int>> findMessagesByContent(
-      String roomId, String textMatch);
+  Future<List<MessageEntity>> findMessagesByContent(
+      String roomId, String textMatch, int startIndex, int number);
 
-  Future<bool> create(MessageEntity message);
-  Future<bool> delete(String messageId);
-  Future<bool> deleteAll(String roomId);
+  // Future<bool> create(MessageEntity message);
+  // Future<bool> delete(String messageId);
+  // Future<bool> deleteAll(String roomId);
 }

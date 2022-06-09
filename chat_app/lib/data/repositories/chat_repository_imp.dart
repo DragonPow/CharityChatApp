@@ -28,45 +28,53 @@ class ChatRepositoryImp implements IChatRepository {
     required this.remoteDataSource,
     required this.localDataSource,
     required this.networkInfo,
-  }) {
-    print('test');
-  }
+  });
+
 
   @override
-  Future<bool> create(MessageEntity message) {
-    // TODO: implement create
-    throw UnimplementedError();
-  }
+  Future<List<MessageEntity>> findMessagesByContent(
+      String roomId, String textMatch, startIndex, number) async {
+    return await _getMediaChat(roomId, startIndex, number, 'text', textMatch).then((jsonRes) {
+      final listMessage =
+          jsonRes.map((x) => MessageEntity.fromJson(x)).toList();
+      return listMessage;
+    });
 
-  @override
-  Future<bool> delete(String messageId) {
-    // TODO: implement delete
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool> deleteAll(String roomId) {
-    // TODO: implement deleteAll
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Tuple2<List<MessageEntity>, int>> findMessagesByContent(
-      String roomId, String textMatch) {
-    // TODO: implement findMessagesByContent
-    throw UnimplementedError();
   }
 
   @override
   Future<List> getFiles(String roomId, int startIndex, int number) {
-    // TODO: implement getFiles
-    throw UnimplementedError();
+    return _getMediaChat(roomId, startIndex, number, 'file');
   }
 
   @override
   Future<List> getImages(String roomId, int startIndex, int number) {
-    // TODO: implement getImages
-    throw UnimplementedError();
+    return _getMediaChat(roomId, startIndex, number, 'media');
+  }
+
+  Future<List<dynamic>> _getMediaChat(String roomId, int startIndex, int number, String type, [String? searchValue]) async {
+    final queryParameters = {
+      'roomId': roomId,
+      'startIndex': startIndex.toString(),
+      'number': number.toString(),
+      'orderby': 'createTime',
+      'orderdirection': 'desc',
+      'searchby': type,
+      'searchvalue': searchValue
+    };
+    String token = await getToken();
+    
+    final uri = Uri.http(serverUrl, "/messages/select", queryParameters);
+    print(uri.path);
+    final response = await http.get(uri, headers: {'token': token});
+    if (response.statusCode == 200) {
+      final jsonRes = json.decode(response.body)['messages'] as List<dynamic>;
+      return jsonRes;
+    } else {
+      print("Load message error");
+      log(response.body);
+      throw response;
+    }
   }
 
   @override
@@ -116,7 +124,6 @@ class ChatRepositoryImp implements IChatRepository {
       final jsonRes = json.decode(response.body)['messages'] as List<dynamic>;
       final listMessage =
           jsonRes.map((x) => MessageEntity.fromJson(x)).toList();
-      print(jsonDecode(response.body) as Map<String, dynamic>);
       return listMessage;
     } else {
       print("Load message error");
@@ -145,10 +152,10 @@ class ChatRepositoryImp implements IChatRepository {
     } else if (file != null) {
       // Function get multipart file
       getMultipart(io.File file) {
-        return http.MultipartFile.fromBytes('files', file.readAsBytesSync());
+        return http.MultipartFile.fromPath('files', file.path);
       }
 
-      request.files.add(getMultipart(file));
+      request.files.add(await getMultipart(file));
     } else {
       throw Exception('File or content must contain');
     }

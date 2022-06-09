@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
 import 'package:chat_app/domain/entities/room_overview_entity.dart';
@@ -27,6 +29,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   late TabController _tabController;
   late HomeRoomBloc _homeRoomBloc;
   late ActiveUserBloc _activeUsersBloc;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
@@ -34,6 +37,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     _tabController = TabController(length: 2, vsync: this);
     _homeRoomBloc = BlocProvider.of<HomeRoomBloc>(context);
     _activeUsersBloc = BlocProvider.of<ActiveUserBloc>(context);
+    _scrollController = ScrollController();
+    _fetchWhenScroll();
 
     _homeRoomBloc.add(
       HomeBlocEvent(
@@ -49,13 +54,44 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    super.dispose();
     _tabController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _fetchWhenScroll() {
+    _scrollController.addListener(() async {
+      final tabState = _getTabNameFromIndex(_tabController.index);
+      final currentState = _homeRoomBloc.GetStateByTab(tabState);
+
+      if (_scrollController.offset >=
+              _scrollController.position.maxScrollExtent &&
+          !_scrollController.position.outOfRange) {
+        log("reach the bottom");
+
+        if (!currentState.isLoading && !currentState.isFull) {
+          _homeRoomBloc.add(HomeBlocEvent(
+            tab: tabState,
+            blocEvent: ChatOverviewLoad(
+              number: 10,
+              searchtype: tabState.toShortString(),
+              startIndex: currentState.listSortedRoom.length,
+            ),
+          ));
+        }
+      }
+      if (_scrollController.offset <=
+              _scrollController.position.minScrollExtent &&
+          !_scrollController.position.outOfRange) {
+        log("reach the top");
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return NestedScrollView(
+      controller: _scrollController,
       floatHeaderSlivers: true,
       headerSliverBuilder: (context, value) {
         return [
@@ -171,33 +207,52 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                     ),
                   );
                 }
-                  setState(() {});
+                setState(() {});
               },
             ),
           ),
         ];
       },
-      body: SingleChildScrollView(
-        child: BlocBuilder<ChatOverviewBloc, ChatOverviewState>(
-            bloc: _homeRoomBloc
-                .state[_getTabNameFromIndex(_tabController.index)]!,
-            builder: (context, state) {
-              if (state is ChatOverviewState) {
-                return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: state.listSortedRoom.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (BuildContext context, int index) {
-                      return ShortChat(
-                        roomOverview: state.listSortedRoom[index],
-                      );
-                    });
-              } else {
-                return const Text("Load fail");
-              }
-            }),
-        // SkeletonloaderChat()
-      ),
+      body: RefreshIndicator(
+        displacement: 1.0,
+        onRefresh: () async {
+          final tabState = _getTabNameFromIndex(_tabController.index);
+          final currentState = _homeRoomBloc.GetStateByTab(tabState);
+
+          _homeRoomBloc.add(HomeBlocEvent(
+            tab: tabState,
+            blocEvent: ChatOverviewLoad(
+              number: 10,
+              searchtype: tabState.toShortString(),
+              startIndex: currentState.listSortedRoom.length,
+            ),
+          ));
+
+          await Future.delayed(const Duration(seconds: 1, milliseconds: 500));
+        },child: BlocBuilder<ChatOverviewBloc, ChatOverviewState>(
+              bloc: _homeRoomBloc
+                  .state[_getTabNameFromIndex(_tabController.index)]!,
+              builder: (context, state) {
+                if (state is ChatOverviewState) {
+                  return ListView.builder(
+                      // shrinkWrap: true,
+                      itemCount: state.isLoading
+                          ? state.listSortedRoom.length + 1
+                          : state.listSortedRoom.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext context, int index) {
+                        return index < state.listSortedRoom.length
+                            ? ShortChat(
+                                roomOverview: state.listSortedRoom[index],
+                              )
+                            : const Text('loading');
+                      });
+                } else {
+                  return const Text("Load fail");
+                }
+              }),
+          // SkeletonloaderChat()
+       ),
     );
   }
 

@@ -1,63 +1,104 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
 import 'package:chat_app/dataexample/current_account.dart';
+import 'package:chat_app/domain/entities/room_overview_entity.dart';
+import 'package:chat_app/presentation/bloc/message_setting/message_setting_bloc.dart';
 import 'package:chat_app/presentation/components/avatarcicle.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/fileandimage.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/make_nickname.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class OptionChatRoom extends StatelessWidget {
-  const OptionChatRoom({Key? key}) : super(key: key);
+  final RoomOverviewEntity room;
+  const OptionChatRoom({Key? key, required this.room}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     void onTapImageAndFile() {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const FileAndImage()),
+        MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+                  value: BlocProvider.of<MessageSettingBloc>(context)
+                    ..add(MessageSettingLoadImages(
+                      startIndex: 0,
+                      number: 10,
+                      roomId: room.id,
+                    )),
+                  child: const FileAndImage(),
+                )),
       );
     }
-      void onTapMakeNickName() {
+
+    void onTapMakeNickName() {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const MakeNickName()),
+        MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+                  value: BlocProvider.of<MessageSettingBloc>(context),
+                  child: const MakeNickName(),
+                )),
       );
     }
+
     void onTapSearchInChat() {
       showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title:Text('Tìm kiếm trong cuộc trò chuyện', style: ktext17RegularBlack,),
+          title: Text(
+            'Tìm kiếm trong cuộc trò chuyện',
+            style: ktext17RegularBlack,
+          ),
           content: TextFormField(),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context, 'Hủy'),
-              child: Text('Hủy',style: kText15RegularMain,),
+              child: Text(
+                'Hủy',
+                style: kText15RegularMain,
+              ),
             ),
-             TextButton(
+            TextButton(
               onPressed: () => Navigator.pop(context, 'Tìm kiếm'),
-              child: Text('Tìm kiếm', style: kText15RegularMain,),
+              child: Text(
+                'Tìm kiếm',
+                style: kText15RegularMain,
+              ),
             ),
           ],
         ),
       );
     }
+
     void onTapBan() {
       showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title:Text('Chặn tin nhắn và cuộc gọi', style: ktext17RegularBlack,),
-          content: Text("Tài khoản của bạn từ bây giờ sẽ không nhận được tin nhắn hay cuộc goiij từ tài khoản này", style: kText15RegularBlack,),
+          title: Text(
+            'Chặn tin nhắn và cuộc gọi',
+            style: ktext17RegularBlack,
+          ),
+          content: Text(
+            "Tài khoản của bạn từ bây giờ sẽ không nhận được tin nhắn hay cuộc goiij từ tài khoản này",
+            style: kText15RegularBlack,
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context, 'Hủy'),
-              child: Text('Hủy',style: kText15RegularMain,),
+              child: Text(
+                'Hủy',
+                style: kText15RegularMain,
+              ),
             ),
-             TextButton(
+            TextButton(
               onPressed: () => Navigator.pop(context, 'Tìm kiếm'),
-              child: Text('Tìm kiếm', style: kText15RegularMain,),
+              child: Text(
+                'Tìm kiếm',
+                style: kText15RegularMain,
+              ),
             ),
           ],
         ),
@@ -160,11 +201,11 @@ class OptionChatRoom extends StatelessWidget {
             iconData: Icons.image_outlined,
             colorIcon: cwColorGreyNoteText,
             onTap: onTapImageAndFile),
-         Option(
+        Option(
           label: "Đặt biệt danh  ",
           iconData: Icons.edit,
           colorIcon: cwColorGreyNoteText,
-          onTap:  onTapMakeNickName,
+          onTap: onTapMakeNickName,
         ),
         Option(
           label: "Chặn người dùng  ",

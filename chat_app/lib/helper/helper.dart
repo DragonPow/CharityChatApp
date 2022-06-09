@@ -28,6 +28,10 @@ String parseToServerUri(String uri) {
   return 'http://' + serverUrl + '/' + uri;
 }
 
+int getSizeFile(File file) {
+  return file.lengthSync();
+}
+
 List<types.Message> parsedEntityMessageToMessages(
     List<MessageEntity> messages) {
   return messages.map((message) {
@@ -40,6 +44,7 @@ List<types.Message> parsedEntityMessageToMessages(
         : message.state == MessageState.error
             ? types.Status.error
             : types.Status.delivered;
+    final isLocal = message.value is File;
 
     switch (message.type) {
       case MessageChatType.text:
@@ -56,7 +61,7 @@ List<types.Message> parsedEntityMessageToMessages(
           author: author,
           id: message.id,
           type: types.MessageType.file,
-          size: message.value['size'],
+          size: isLocal ? getSizeFile(message.value) : message.value['size'] ?? 0,
           name: message.getName,
           uri: message.getUri,
           showStatus: true,
@@ -64,7 +69,6 @@ List<types.Message> parsedEntityMessageToMessages(
         );
       case MessageChatType.image:
         {
-          final isLocal = message.value is File;
           // if (!isLocal) {
           //   final partialImage = types.PartialImage(
           //     size: message.value['size'] ?? 0,
@@ -78,7 +82,9 @@ List<types.Message> parsedEntityMessageToMessages(
             author: author,
             id: message.id,
             type: types.MessageType.image,
-            size: isLocal ? (message.value as File).lengthSync() : message.value['size'] ?? 0,
+            size: isLocal
+                ? getSizeFile(message.value)
+                : message.value['size'] ?? 0,
             name: message.getName,
             uri: message.getUri,
           );
@@ -101,6 +107,6 @@ String parseDatetimeToTime(DateTime date) {
       (date.hour % 12 == 0 || date.hour == 12 ? " am" : " pm");
 }
 
-String getListIdFromListUser(List<BaseUserEntity> users){
+String getListIdFromListUser(List<BaseUserEntity> users) {
   return users.map((e) => e.id).join(',');
 }

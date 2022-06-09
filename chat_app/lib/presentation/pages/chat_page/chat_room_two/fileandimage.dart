@@ -1,6 +1,8 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
+import 'package:chat_app/presentation/bloc/message_setting/message_setting_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -20,6 +22,7 @@ class _FileAndImageState extends State<FileAndImage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    BlocProvider.of<MessageSettingBloc>(context);
   }
 
   @override
@@ -30,66 +33,75 @@ class _FileAndImageState extends State<FileAndImage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: cwColorWhite,
-      appBar: getAppBar(),
-      body: NestedScrollView(
-        floatHeaderSlivers: true,
-        headerSliverBuilder: (context, value) {
-          return [
-            SliverAppBar(
-              pinned: true,
-              stretch: true,
-              floating: true,
-              automaticallyImplyLeading: false,
-              backgroundColor: Colors.white,
-              title: TabBar(
-                indicator: const UnderlineTabIndicator(
-                    borderSide: BorderSide(
-                      width: 2,
-                      color: cwColorMain,
-                    ),
-                    insets: EdgeInsets.only(left: 0, right: 8, bottom: 4)),
-                unselectedLabelColor: cwColorGreyNoteText,
-                controller: _tabController,
-                labelColor: cwColorMain,
-                labelStyle: kText15BoldMain,
-                isScrollable: true,
-                tabs: const [
-                  Tab(text: "Hình ảnh "),
-                  Tab(text: "File"),
-                ],
-                onTap: (index) {
-                  setState(() {
-                    indextab = index;
-                  });
-                },
-              ),
-            ),
-          ];
-        },
-        body: indextab == 0 ? getImageGrid() : getFiles(),
-      ),
+    return BlocBuilder<MessageSettingBloc, MessageSettingState>(
+      builder: (context, state) {
+        if (state is! MessageSettingImageState) {
+          return const Text('fail');
+        }
+        return Scaffold(
+          backgroundColor: cwColorWhite,
+          appBar: getAppBar(),
+          body: NestedScrollView(
+            floatHeaderSlivers: true,
+            headerSliverBuilder: (context, value) {
+              return [
+                SliverAppBar(
+                  pinned: true,
+                  stretch: true,
+                  floating: true,
+                  automaticallyImplyLeading: false,
+                  backgroundColor: Colors.white,
+                  title: TabBar(
+                    indicator: const UnderlineTabIndicator(
+                        borderSide: BorderSide(
+                          width: 2,
+                          color: cwColorMain,
+                        ),
+                        insets: EdgeInsets.only(left: 0, right: 8, bottom: 4)),
+                    unselectedLabelColor: cwColorGreyNoteText,
+                    controller: _tabController,
+                    labelColor: cwColorMain,
+                    labelStyle: kText15BoldMain,
+                    isScrollable: true,
+                    tabs: const [
+                      Tab(text: "Hình ảnh "),
+                      Tab(text: "File"),
+                    ],
+                    onTap: (index) {
+                      setState(() {
+                        indextab = index;
+                      });
+                    },
+                  ),
+                ),
+              ];
+            },
+            body: indextab == 0 ? getImageGrid() : getFiles(),
+          ),
+        );
+      },
     );
   }
 
   Widget getFiles() {
     return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Icon(
-                  FontAwesomeIcons.folderOpen,
-                  color: cwColorGreyNoteText,
-                  size: 160,
-                ),
-                const SizedBox(height: 20,),
-                Text(
-                  "File trống!",
-                  style: kText15RegularGreyNotetext,
-                )
-              ],
-            );
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Icon(
+          FontAwesomeIcons.folderOpen,
+          color: cwColorGreyNoteText,
+          size: 160,
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Text(
+          "File trống!",
+          style: kText15RegularGreyNotetext,
+        )
+      ],
+    );
   }
 
   GridView getImageGrid() {
@@ -109,9 +121,7 @@ class _FileAndImageState extends State<FileAndImage>
                         "https://media.istockphoto.com/photos/beautiful-sence-of-brooklyn-bridge-and-lower-manhattan-of-new-york-picture-id1169075524?b=1&k=20&m=1169075524&s=170667a&w=0&h=vo2f3bLYMR1JfYDJwIx5QL1r1xuvEX3sz6vd-o8aIxQ="),
                     fit: BoxFit.cover)),
           ),
-          onTap: () => {
-
-          },
+          onTap: () => {},
         ),
         Container(
           decoration: BoxDecoration(

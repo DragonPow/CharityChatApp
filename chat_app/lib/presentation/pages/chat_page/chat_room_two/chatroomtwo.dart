@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:chat_app/domain/entities/user_active_entity.dart';
+import 'package:chat_app/presentation/bloc/message_setting/message_setting_bloc.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/custom_chatroom_theme.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/option.dart';
 import 'package:file_picker/file_picker.dart';
@@ -21,6 +22,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../configs/colorconfig.dart';
 import '../../../../configs/fontconfig.dart';
+import '../../../../dependencies_injection.dart';
 import '../../../../domain/entities/room_overview_entity.dart';
 import '../../../../helper/helper.dart';
 import '../../../bloc/chat_detail/chat_detail_bloc.dart';
@@ -36,20 +38,46 @@ class ChatRoom extends StatefulWidget {
 class _ChatRoomState extends State<ChatRoom> {
   final _user = const types.User(id: '2'); // id of current user
   late final ChatDetailBloc _chatDetailBloc;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     log('init state chat room two view');
+    _scrollController = ScrollController();
     _chatDetailBloc = BlocProvider.of<ChatDetailBloc>(context);
     _chatDetailBloc.add(ChatDetailLoadInit(roomId: widget.roomOverview.id));
+    
+    _scrollController.addListener(_fetchWhenScroll);
   }
 
   @override
   void dispose() {
+    // _scrollController.dispose();
     _chatDetailBloc.dispose();
     super.dispose();
   }
+
+  void _fetchWhenScroll() {
+      if (_scrollController.offset >=
+              _scrollController.position.maxScrollExtent &&
+          !_scrollController.position.outOfRange) {
+        log("reach the bottom");
+
+        if (!_chatDetailBloc.state.isLoading &&
+            !_chatDetailBloc.state.isLoadFull) {
+          _chatDetailBloc.add(ChatDetailLoad(
+            number: 10,
+            roomId: widget.roomOverview.id,
+            startIndex: _chatDetailBloc.state.listSortedMessage.length,
+          ));
+        }
+      }
+      if (_scrollController.offset <=
+              _scrollController.position.minScrollExtent &&
+          !_scrollController.position.outOfRange) {
+        log("reach the top");
+  }}
 
   void _handleAtachmentPressed() {
     showModalBottomSheet<void>(
@@ -206,6 +234,7 @@ class _ChatRoomState extends State<ChatRoom> {
             builder: (context, state) {
               if (state is ChatDetailState) {
                 return Chat(
+                  scrollController: _scrollController,
                     showUserAvatars: true,
                     showUserNames: true,
                     messages:
@@ -235,7 +264,7 @@ class _ChatRoomState extends State<ChatRoom> {
                       ],
                     ));
               } else {
-                return Text('Load fail');
+                return const Text('Load fail');
               }
             },
           ),
@@ -314,7 +343,12 @@ class _ChatRoomState extends State<ChatRoom> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const OptionChatRoom()),
+                            builder: (context) => BlocProvider(
+                                  create: (context) => MessageSettingBloc(sl()),
+                                  child: OptionChatRoom(
+                                    room: widget.roomOverview,
+                                  ),
+                                )),
                       );
                     },
                     child: const ListTile(
