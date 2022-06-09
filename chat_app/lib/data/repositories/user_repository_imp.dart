@@ -101,4 +101,23 @@ class UserRepositoryImp extends IUserRepository {
         throw "UNAUTHENTICATION";
     }
   }
+
+  @override
+  Future<int> login(String email, String pass)async {
+    final _queryParams =  {
+      "username": email,
+      "password": pass
+    };
+    final _uri = Uri.http(serverUrl, "login", _queryParams);
+    try{
+      final _response = await http.get(_uri);
+    return _response.statusCode;
+    }
+    catch(e){
+      print("Error LOGIN");
+      final _response = await http.get(_uri);
+    return 401;
+    }
+    
+  }
 }

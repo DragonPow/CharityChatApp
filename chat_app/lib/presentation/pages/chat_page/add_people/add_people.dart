@@ -21,6 +21,7 @@ class AddPeople extends StatefulWidget {
 
 class _AddPeople extends State<AddPeople> {
   var _addMemberBloc;
+  var _searchTextController;
   List<UserActiveEntity> _listMember = [];
   List<UserActiveEntity> _listFriend = [];
   @override
@@ -29,6 +30,7 @@ class _AddPeople extends State<AddPeople> {
     _addMemberBloc = BlocProvider.of<AddMemberBloc>(context);
     _addMemberBloc.add(const AddMemberLoadSuggest(number: 10, startIndex: 0));
     _listFriend = _listMember = [];
+    _searchTextController = TextEditingController();
   }
 
   @override
@@ -61,7 +63,11 @@ class _AddPeople extends State<AddPeople> {
                               child: Container(
                                 height: 40.h,
                                 child: TextField(
+                                  controller: _searchTextController,
                                     maxLines: 1,
+                                    onChanged: (str) => {
+                                      _addMemberBloc.add(AddMemberSearch(listMember: state.members, number: 10, startIndex: 0, searchValue:  str))
+                                    },
                                     decoration: InputDecoration(
                                         border: InputBorder.none,
                                         contentPadding:
@@ -138,6 +144,7 @@ class _AddPeople extends State<AddPeople> {
                             itemBuilder: (BuildContext context, int index) {
                               return NonMember(
                                 nonmember: state.friendUsers[index],
+                                isCreateGroup: true,
                                 onTap: () {
                                   _addMemberBloc.add(AddMemberAdd(
                                       listMember: state.members,

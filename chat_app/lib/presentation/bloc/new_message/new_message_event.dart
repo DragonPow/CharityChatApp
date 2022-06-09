@@ -12,3 +12,8 @@ class NewMessageLoad extends NewMessageEvent{
   final int number;
   const NewMessageLoad({Key? key, required this.number, required this.startIndex});
 }
+
+class NewMessageOpenRoom extends NewMessageEvent{
+  final BaseUserEntity otherUser;
+  const NewMessageOpenRoom({Key? key, required this.otherUser});
+}

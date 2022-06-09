@@ -17,3 +17,9 @@ MessageChatType convertToMessageChatType(String value) {
     orElse: () => MessageChatType.text,
   );
 }
+
+enum StateLogin{
+  success,
+  wrongpassoremail,
+  servererror
+}

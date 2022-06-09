@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:chat_app/domain/entities/base_user_entity.dart';
 import 'package:chat_app/domain/entities/room_entity.dart';
 import 'package:chat_app/domain/entities/room_overview_entity.dart';
 import 'package:chat_app/domain/repositories/room_repository.dart';
@@ -119,9 +120,12 @@ class RoomRepositoryImp implements IRoomRepository {
     const eventUpdateRoomName = 'roomUpdate';
     roomUpdateHandler(dynamic data) {
       final roomsJson = (data as List);
-      final room = RoomOverviewEntity.fromJson(roomsJson[0] as Map<String, dynamic>);
+      final room =
+          RoomOverviewEntity.fromJson(roomsJson[0] as Map<String, dynamic>);
       controller.sink.add([room]);
-    };
+    }
+
+    ;
 
     socket.addEventListener(eventUpdateRoomName, roomUpdateHandler);
     controller.onCancel = () =>
@@ -158,6 +162,32 @@ class RoomRepositoryImp implements IRoomRepository {
     } else {
       print("Error load list OverviewRooms: ");
       throw response;
+    }
+  }
+
+  @override
+  Future<RoomOverviewEntity> findPrivateRoomsByUserId(
+      BaseUserEntity otherUser) async {
+    final _queryParams = {"otherUserId": otherUser.id};
+    final _token = await sl<LocalStorageService>().getToken();
+    if (_token == null) throw Exception('Token required');
+
+    final _uri = Uri.http(serverUrl, "/rooms/find", _queryParams);
+
+    final _response = await http.post(_uri, headers: {"token": _token});
+    if (_response.statusCode == 200) {
+      final jsonRes = json.decode(_response.body)["room"];
+      final RoomOverviewEntity room =
+          await RoomOverviewEntity.fromJson(jsonRes);
+      return room;
+    } else {
+      final RoomOverviewEntity room = RoomOverviewEntity(
+          id: "-1",
+          name: otherUser.name,
+          avatarUrl: null,
+          lastMessage: null,
+          type: 'private');
+      return room;
     }
   }
 }

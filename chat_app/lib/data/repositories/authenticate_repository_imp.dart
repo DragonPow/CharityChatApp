@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:chat_app/dependencies_injection.dart';
 import 'package:chat_app/domain/repositories/authenticate_repository.dart';
@@ -19,6 +20,7 @@ class AuthenticateRepositoryImp extends IAuthenticateRepository {
       'password': password,
     };
     final uri = Uri.http(serverUrl, '/login', queryParams);
+    print(uri);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       print('Login success');
@@ -32,7 +34,9 @@ class AuthenticateRepositoryImp extends IAuthenticateRepository {
       // Set to singleton app
       socketService.emitLogin(token);
       Account.setInstanceByCopy(newAccount);
+      
       localService.setAccount(newAccount);
+      localService.setUsernameAndPass(userName, password);
       localService.setToken(token);
       return token;
     } else {

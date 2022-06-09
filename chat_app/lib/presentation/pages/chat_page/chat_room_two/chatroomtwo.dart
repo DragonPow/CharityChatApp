@@ -6,6 +6,7 @@ import 'package:chat_app/domain/entities/user_active_entity.dart';
 import 'package:chat_app/presentation/bloc/message_setting/message_setting_bloc.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/custom_chatroom_theme.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/option.dart';
+import 'package:chat_app/utils/account.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -37,7 +38,7 @@ class ChatRoom extends StatefulWidget {
 }
 
 class _ChatRoomState extends State<ChatRoom> {
-  final _user = const types.User(id: '2'); // id of current user
+  final _user =  types.User(id: Account.instance!.id); // id of current user
   late final ChatDetailBloc _chatDetailBloc;
   late ScrollController _scrollController;
 
@@ -292,19 +293,24 @@ class _ChatRoomState extends State<ChatRoom> {
             SizedBox(
               width: 5.w,
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.roomOverview.name,
-                  style: kText15MediumBlack,
-                ),
-                Text(
-                  "online",
-                  style: kText13RegularNote,
-                )
-              ],
+            SizedBox(
+              width: 130.w,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.roomOverview.name,
+                    style: kText15MediumBlack, 
+                    overflow: TextOverflow.clip
+                  ),
+                  Text(
+                    "online",
+                    style: kText13RegularNote,
+                  )
+                ],
+              ),
             )
           ],
         ),

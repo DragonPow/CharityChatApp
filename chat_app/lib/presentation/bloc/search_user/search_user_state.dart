@@ -1,6 +1,6 @@
 part of 'search_user_bloc.dart';
 
-abstract class SearchUserState extends Equatable {
+abstract class SearchUserState  {
   const SearchUserState();
   
   @override
@@ -18,5 +18,16 @@ class SearchUserLoadSuccess extends SearchUserState {
 class SearchUserLoadFail extends SearchUserState {}
 
 class SearchUserLoading extends SearchUserState {}
-class SearchUserSucess extends SearchUserState {}
+class SearchUserSucess extends SearchUserLoadSuccess {
+  const SearchUserSucess({required List<UserActiveEntity> listFriend}) : super(listFriend: listFriend);
+}
 class SearchUserFailed extends SearchUserState {}
+
+class SearchUserOpenRoomSuccess extends SearchUserState {
+  final RoomOverviewEntity roomEntity;
+  const SearchUserOpenRoomSuccess({Key? key, required this.roomEntity});
+}
+class SearchUserOpenRoomFail extends SearchUserState {
+}
+
+

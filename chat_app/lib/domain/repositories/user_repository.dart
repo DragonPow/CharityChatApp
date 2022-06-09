@@ -9,4 +9,5 @@ abstract class IUserRepository {
     Future<BaseUserEntity> getUserById(String userId);
     Future<List<UserMessageEntity>> getUsersInRoom(String roomId);
     Future<List<UserActiveEntity>> getUserFriends(int starIndex, int number, String? searchValue);
+    Future<int> login(String email, String pass);
 }

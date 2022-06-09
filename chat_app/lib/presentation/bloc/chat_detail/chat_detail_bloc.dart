@@ -7,14 +7,12 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:chat_app/domain/entities/message_entity.dart';
 import 'package:chat_app/helper/enum.dart';
 import 'package:chat_app/helper/helper.dart';
-import 'package:chat_app/helper/network/socket_service.dart';
 import 'package:chat_app/modelsclone/messages.dart';
 import 'package:chat_app/utils/account.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_transform/stream_transform.dart';
 
-import '../../../dependencies_injection.dart';
 import '../../../domain/repositories/chat_repository.dart';
 
 part 'chat_detail_event.dart';

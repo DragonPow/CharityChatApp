@@ -1,59 +1,86 @@
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/domain/repositories/authenticate_repository.dart';
 import 'package:chat_app/helper/network/socket_service.dart';
+import 'package:chat_app/presentation/bloc/active_user/active_user_bloc.dart';
 import 'package:chat_app/presentation/bloc/chat_detail/chat_detail_bloc.dart';
+import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
+import 'package:chat_app/presentation/bloc/login/login_bloc.dart';
+import 'package:chat_app/presentation/bloc/new_message/new_message_bloc.dart';
+import 'package:chat_app/presentation/pages/login_page/login_page.dart';
 import 'package:chat_app/presentation/rootapp.dart';
-import 'package:chat_app/utils/account.dart';
 import 'package:chat_app/utils/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dependencies_injection.dart' as di;
 import 'dependencies_injection.dart';
+import 'presentation/bloc/main_bloc/main_bloc_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // HttpOverrides.global = MyHttpOverrides();
   await di.init();
   sl<SocketService>().connect();
-  await testLogin(); // test login
-  runApp(const MyApp());
+  //await testLogin(); // test login
+  runApp(BlocProvider(
+    create: (context) => MainBlocBloc(sl()),
+    child: const MyApp(),
+  ));
 }
 
-Future<void> testLogin() async {
-  final storage = sl<LocalStorageService>();
-  final socket = sl<SocketService>();
-  try {    
-  final mockData = await storage.getMockUserData(1);
-  final token = await sl<IAuthenticateRepository>()
-      .logIn(mockData['email'], mockData['password']);
-  } catch (e) {
-    print(e);
-  }
-
-}
+// Future<void> testLogin() async {
+//   final storage = sl<LocalStorageService>();
+//   final socket = sl<SocketService>();
+//   try {
+//     final mockData = await storage.getMockUserData(1);
+//     final token = await sl<IAuthenticateRepository>()
+//         .logIn(mockData['email'], mockData['password']);
+//   } catch (e) {
+//     print(e);
+//   }
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<MainBlocBloc>(context).add(MainBlocCheck());
     return ScreenUtilInit(
         designSize: const Size(360, 780),
         minTextAdapt: true,
-        builder: () => MultiBlocProvider(
-              providers: [
-                BlocProvider<ChatDetailBloc>(
-                  create: (context) => ChatDetailBloc(chatRepository: sl()),
-                ),
-              ],
-              child: MaterialApp(
-                debugShowCheckedModeBanner: false,
-                theme: ThemeData(primaryColor: cwColorMain),
-                home: const RootApp(),
-              ),
+        builder: () => BlocBuilder<MainBlocBloc, MainBlocState>(
+              builder: (context, state) {
+                if (state is MainBlocAlreadyLogin) {
+                  return MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    theme: ThemeData(primaryColor: cwColorMain),
+                    home: MultiBlocProvider(
+                      providers: [
+                        BlocProvider(
+                          create: (context) => ChatOverviewBloc(sl()),
+                        ),
+                        BlocProvider(
+                          create: (context) => ActiveUserBloc(sl()),
+                        ),
+                        BlocProvider(
+                          create: (context) => NewMessageBloc(sl(), sl()),
+                        ),
+                      ],
+                      child: const RootApp(),
+                    ),
+                  );
+                } else {
+                  return MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    theme: ThemeData(primaryColor: cwColorMain),
+                    home: BlocProvider(
+                      create: (context) => LoginBloc(sl()),
+                      child: const LoginPage(),
+                    ),
+                  );
+                }
+              },
             ));
   }
 }

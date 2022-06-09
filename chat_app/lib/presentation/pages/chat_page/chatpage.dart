@@ -7,12 +7,14 @@ import 'package:chat_app/helper/helper.dart';
 import 'package:chat_app/presentation/bloc/active_user/active_user_bloc.dart';
 import 'package:chat_app/presentation/bloc/chat_overview/home_room_bloc.dart';
 import 'package:chat_app/presentation/components/avataruser.dart';
+import 'package:chat_app/presentation/pages/newchatpage/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../dependencies_injection.dart';
 import '../../bloc/chat_detail/chat_detail_bloc.dart';
 import '../../bloc/chat_overview/chat_overview_bloc.dart';
+import '../../bloc/search_user/search_user_bloc.dart';
 import '../../components/avatarcicle.dart';
 import 'package:skeleton_loader/skeleton_loader.dart';
 
@@ -106,25 +108,39 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 40,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Container(
-                        height: 40,
-                        child: TextField(
-                            maxLines: 1,
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.all(13),
-                                hintText: "Tìm kiếm",
-                                hintStyle: kText15RegularGreyNotetext,
-                                prefixIcon: const Icon(Icons.search))),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: cwColorWhite),
+                  InkWell(
+                    child: SizedBox(
+                      height: 40,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Container(
+                          height: 40,
+                          child: TextField(
+                              enabled: false,
+                              maxLines: 1,
+                              decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.all(13),
+                                  hintText: "Tìm kiếm",
+                                  hintStyle: kText15RegularGreyNotetext,
+                                  prefixIcon: const Icon(Icons.search))),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: cwColorWhite),
+                        ),
                       ),
                     ),
+                    onTap: () => {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BlocProvider(
+                                    create: (context) => SearchUserBloc(sl(), sl()),
+                                    child: const SearchNewGroup(
+                                      isCreateGroup: false,
+                                    ),
+                                  )))
+                    },
                   ),
                   const SizedBox(
                     height: 10,
@@ -253,7 +269,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               }),
           // SkeletonloaderChat()
        ),
-    );
+ );
   }
 
   HomeRoomState _getTabNameFromIndex(int index) {

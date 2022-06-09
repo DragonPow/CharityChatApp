@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:chat_app/domain/entities/base_user_entity.dart';
 import 'package:chat_app/domain/entities/room_overview_entity.dart';
 
 import '../entities/room_entity.dart';
 
 abstract class IRoomRepository {
   Future<List<RoomEntity>> getRooms(int startIndex, int number);
-  Future<List<RoomEntity>> findRoomsByName(String textMatch);
+    Future<List<RoomEntity>> findRoomsByName(String textMatch);
+  Future<RoomOverviewEntity> findPrivateRoomsByUserId(BaseUserEntity otherUser);
   StreamController<List<RoomOverviewEntity>> getStreamRoom();
 
   Future<bool> create(RoomEntity room, File? avatar);
