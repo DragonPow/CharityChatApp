@@ -20,3 +20,8 @@ class SearchUserSearch extends SearchUserLoad {
       {required int number, required int startIndex, required this.searchvalue})
       : super(number: number, startIndex: startIndex);
 }
+
+class SearchUserOpenRoom extends SearchUserEvent{
+  final BaseUserEntity otherUser;
+  const SearchUserOpenRoom( {Key? key, required this.otherUser});
+}

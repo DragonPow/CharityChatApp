@@ -127,8 +127,7 @@ class ChatRepositoryImp implements IChatRepository {
       return listMessage;
     } else {
       print("Load message error");
-      log(response.body);
-      throw response;
+      return [];
     }
   }
 

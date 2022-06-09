@@ -111,7 +111,7 @@ class _RootAppState extends State<RootApp> {
           )
         : currentPage == 1
             ? BlocProvider(
-                create: (context) => NewMessageBloc(sl()),
+                create: (context) => NewMessageBloc(sl(), sl()),
                 child: const NewChatPage(),
               )
             : const ProfilePage();

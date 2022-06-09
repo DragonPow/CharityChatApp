@@ -14,3 +14,13 @@ class NewMessageLoadSuccess extends NewMessageState {
   final List<UserActiveEntity> friendUsers;
   const NewMessageLoadSuccess({Key? key, required this.friendUsers});
 }
+
+class NewMessageOpenRoomSuccess extends NewMessageState {
+  final RoomOverviewEntity roomOverviewEntity;
+  const NewMessageOpenRoomSuccess({Key? key, required this.roomOverviewEntity});
+}
+
+class NewMessageOpenRoomFail extends NewMessageState{
+}
+
+

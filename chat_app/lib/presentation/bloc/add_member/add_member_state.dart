@@ -22,8 +22,10 @@ class AddMemberRemoveMemSuccess extends AddMemberLoadSuccess{
   const AddMemberRemoveMemSuccess({required List<UserActiveEntity> friendUsers, required List<UserActiveEntity> members}) : super(friendUsers: friendUsers, members: members);
 }
 
-
-
+class AddMemberSearchSuccess extends AddMemberLoadSuccess{
+  AddMemberSearchSuccess({required List<UserActiveEntity> friendUsers, required List<UserActiveEntity> members}) : super(friendUsers: friendUsers, members: members);
+}
+class AddMemberSearchFail extends AddMemberState{}
 
 
 

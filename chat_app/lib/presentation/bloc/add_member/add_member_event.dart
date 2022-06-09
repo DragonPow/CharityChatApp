@@ -23,3 +23,11 @@ class AddMemberRemove extends AddMemberEvent{
   final List<UserActiveEntity> listFriend;
   const AddMemberRemove ({Key? key, required this.listMember, required this.member, required this.listFriend});
 }
+
+class AddMemberSearch extends AddMemberEvent{
+  final List<UserActiveEntity> listMember;
+   final int startIndex;
+  final int number;
+  final String searchValue;
+  const AddMemberSearch( {Key? key, required this.listMember, required this.number, required this.startIndex, required this.searchValue});
+}
