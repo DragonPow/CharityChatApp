@@ -19,13 +19,13 @@ class LocalStorageService {
     final socket = sl<SocketService>();
   final _storage = Localstore.instance.collection('app');
 
-  Future<Map<String, dynamic>> _getDoc(String docName) async {
-    return (await _storage.doc(docName).get())!;
+  Future<Map<String, dynamic>?> _getDoc(String docName) async {
+    return (await _storage.doc(docName).get());
   }
 
   Future<T?> getItem<T>(String key) async {
     final json = await _getDoc(key);
-    return json[key] as T?;
+    return json?[key] as T?;
   }
 
   Future<void> setItem(String key, dynamic value) {
@@ -34,21 +34,21 @@ class LocalStorageService {
 
   Future<Map<String, String?>> getUsernameAndPass() async {
     final json = await _getDoc(StorageTypeEnum.username);
-    final username = json[StorageTypeEnum.username] as String?;
-    final password = json[StorageTypeEnum.password] as String?;
+    final username = json?[StorageTypeEnum.username] as String?;
+    final password = json?[StorageTypeEnum.password] as String?;
 
     return {'username': username, 'password': password};
   }
 
   Future<Account?> getAccount() async {
     final json = await _getDoc(StorageTypeEnum.account);
-    final account = json[StorageTypeEnum.account];
+    final account = json?[StorageTypeEnum.account];
     return account;
   }
 
   Future<String?> getToken() async {
     final json = await _getDoc(StorageTypeEnum.token);
-    final token = json[StorageTypeEnum.token] as String?;
+    final token = json?[StorageTypeEnum.token] as String?;
     return token;
   }
 

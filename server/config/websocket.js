@@ -4,7 +4,8 @@ import http from "http";
 import UserModel from "../models/user.js";
 import config from "../config/index.js";
 import { parseTokenToObject } from "../utils/middleware/token_service.js";
-import RoomModel from '../models/room.js';
+import RoomModel from "../models/room.js";
+import UserRoomModel from "../models/user_room.js";
 
 const port_socket = config.server.port_socket;
 
@@ -25,6 +26,7 @@ const SocketEvent = {
   messageRead: "messageRead",
   outRoom: "outRoom",
   joinRoom: "jointRoom",
+  updateReadMessage: "readMessage",
 };
 
 class WebSocket {
@@ -58,6 +60,7 @@ class WebSocket {
           const { id } = parseTokenToObject(token);
           if (id) {
             // Send message to user
+            client.join(id);
           } else {
             notifySocketSingleton.LoginRequest(client);
           }
@@ -67,22 +70,37 @@ class WebSocket {
         }
       });
 
-      // client.on('online', (token) => {
-      //   console.log('Online with token: ' + token);
-      //   try {
-      //     const { id } = parseTokenToObject(token);
-      //     if (id) {
-      //       client.join(id);
-      //       this.addUserToActive({ sessionId: client.id, userId: id });
-      //     }
-      //     else {
-      //       notifySocketSingleton.LoginRequest(client);
-      //     }
-      //   } catch (error) {
-      //     console.error('Cannot found token: ' + token);
-      //     console.error('Error: ', error);
-      //   }
-      // });
+      client.on("online", (token) => {
+        console.log("Online with token: " + token);
+        try {
+          const { id } = parseTokenToObject(token);
+          if (id) {
+            client.join(id);
+            this.addUserToActive({ sessionId: client.id, userId: id });
+
+            // Load missing message
+          } else {
+            notifySocketSingleton.LoginRequest(client);
+          }
+        } catch (error) {
+          console.error("Cannot found token: " + token);
+          console.error("Error: ", error);
+        }
+      });
+
+      client.on("readMessage", (messageId, userId) => {
+        UserRoomModel.SetReadMessage(messageId, userId)
+          .then((room) => {
+            if (room) {
+              notifySocketSingleton.UpdateReadMessage(
+                userId,
+                messageId,
+                room.id
+              );
+            }
+          })
+          .catch((error) => {});
+      });
 
       client.on("logout", (token) => {
         console.log("User is logout, session id: " + client.id);
@@ -158,17 +176,26 @@ class NotifySocket {
     client.emit("request-login");
   }
 
+  UpdateReadMessage(userId, messageId, roomId) {
+    console.log("Update read message");
+    this.websocket.emitToRoom(roomId, SocketEvent.updateReadMessage, {
+      userId: userId,
+      messageId: messageId,
+      roomId: roomId,
+    });
+  }
+
   MessageSent(roomId, messages) {
     console.log("Send message to room: " + roomId, messages);
     this.websocket.emitToRoom(roomId, SocketEvent.messageSent, messages);
   }
 
   RoomUpdate(roomIds) {
-    RoomModel.getRoomsById(roomIds).then(rooms => {
-      rooms.forEach(room => {
+    RoomModel.getRoomsById(roomIds).then((rooms) => {
+      rooms.forEach((room) => {
         this.websocket.emitToRoom(room.id, SocketEvent.roomUpdate, room);
       });
-    })
+    });
   }
 
   ReadMessage(roomId, userId, messageId) {

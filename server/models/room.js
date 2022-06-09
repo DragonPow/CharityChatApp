@@ -165,7 +165,7 @@ class Room extends Model {
     });
 
     const roomsAfterCheck = roomsBeforeCheck
-      .filter((room) => room.joiners.length === 2)
+      .filter((room) => room.joiners.length === 2 && room.typeRoom === 'private')
       .map((room) => room.id);
 
     const rooms = await Room.findAll({
@@ -268,11 +268,11 @@ class Room extends Model {
 
       if (!room) {
         // If not exists, create new room
-        room = await Room.createRoom("Room no name", null, joinersId);
+        room = await Room.createRoom("Room no name", null, joinersId, 'private');
       }
     } else {
       // Create new room for group user
-      room = await Room.createRoom("Group no name", null, joinersId);
+      room = await Room.createRoom("Group no name", null, joinersId, 'group');
     }
     return room;
   }
