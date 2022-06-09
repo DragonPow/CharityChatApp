@@ -23,10 +23,11 @@ class OptionChatRoom extends StatelessWidget {
         MaterialPageRoute(
             builder: (_) => BlocProvider.value(
                   value: BlocProvider.of<MessageSettingBloc>(context)
-                    ..add(MessageSettingLoadImages(
+                    ..add(MessageSettingLoadImageFile(
                       startIndex: 0,
                       number: 10,
                       roomId: room.id,
+                      typeLoad: 'image',
                     )),
                   child: const FileAndImage(),
                 )),

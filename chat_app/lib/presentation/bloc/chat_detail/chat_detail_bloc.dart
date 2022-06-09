@@ -7,12 +7,14 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:chat_app/domain/entities/message_entity.dart';
 import 'package:chat_app/helper/enum.dart';
 import 'package:chat_app/helper/helper.dart';
+import 'package:chat_app/helper/network/socket_service.dart';
 import 'package:chat_app/modelsclone/messages.dart';
 import 'package:chat_app/utils/account.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_transform/stream_transform.dart';
 
+import '../../../dependencies_injection.dart';
 import '../../../domain/repositories/chat_repository.dart';
 
 part 'chat_detail_event.dart';
@@ -183,20 +185,31 @@ class ChatDetailBloc extends Bloc<ChatDetailEvent, ChatDetailState> {
   FutureOr<void> _mapChatDetailLoadInitToState(
       ChatDetailLoadInit event, Emitter<ChatDetailState> emit) {
     add(ChatDetailLoad(number: 10, roomId: event.roomId, startIndex: 0));
+
+      onReadMessage(dynamic data) {
+        log('Read message with data:');
+        print(data);
+      }
+
+    // add event when is sent message
     _streamChat = chatRepository.getStreamNewMessage();
     _streamChat.stream.listen((messages) {
       // _NewMessage(messages);
       add(ChatDetailReceive(newList: messages));
+
+      sl<SocketService>().addEventListener('readMessage', onReadMessage);
     });
+    _streamChat.onCancel = () {
+      sl<SocketService>().removeEventListener('readMessage', onReadMessage);
+      _streamChat.onCancel?.call();
+    };
   }
 
   FutureOr<void> _mapChatDetailReceiveToState(
       ChatDetailReceive event, Emitter<ChatDetailState> emit) {
     print('On new message add');
     emit(ChatDetailState(
-      listMessage: _combineMessages(
-          state.listSortedMessage,
-          event.newList),
+      listMessage: _combineMessages(state.listSortedMessage, event.newList),
       isLoading: state.isLoading,
       error: state.error,
       isLoadFull: state.isLoadFull,

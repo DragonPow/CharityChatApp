@@ -16,13 +16,16 @@ import 'presentation/bloc/main_bloc/main_bloc_bloc.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // HttpOverrides.global = MyHttpOverrides();
-  await di.init();
-  sl<SocketService>().connect();
-  //await testLogin(); // test login
+  await initMain();
   runApp(BlocProvider(
     create: (context) => MainBlocBloc(sl())..add(MainBlocCheck()),
     child: const MyApp(),
   ));
+}
+
+Future<void> initMain() async {
+  await di.init();
+  sl<SocketService>().connect();
 }
 
 // Future<void> testLogin() async {

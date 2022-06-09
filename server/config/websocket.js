@@ -42,8 +42,7 @@ class WebSocket {
       client.on("login", (token) => {
         console.log("Login with token: " + token);
         try {
-          // const { id } = parseTokenToObject(token);
-          const id = "1";
+          const { id } = parseTokenToObject(token);
           if (id) {
             client.join(id);
             this.addUserToActive({ sessionId: client.id, userId: id });

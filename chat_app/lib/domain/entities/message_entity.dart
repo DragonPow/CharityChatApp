@@ -20,8 +20,13 @@ class MessageEntity implements Comparable<MessageEntity> {
   final DateTime timeCreate;
   final MessageState state;
 
-  String get getName => type == MessageChatType.text ? value as String : value is File ? getNameOfFile(value as File) : value['name'] ?? 'No name';
-  String get getUri => value is File ? (value as File).uri.path : parseToServerUri(value['uri']);
+  String get getName => type == MessageChatType.text
+      ? value as String
+      : value is File
+          ? getNameOfFile(value as File)
+          : value['name'] ?? 'No name';
+  String get getUri =>
+      value is File ? (value as File).uri.path : parseToServerUri(value['uri']);
 
   MessageEntity({
     required this.id,

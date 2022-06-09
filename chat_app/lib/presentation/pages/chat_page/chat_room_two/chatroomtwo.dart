@@ -48,7 +48,7 @@ class _ChatRoomState extends State<ChatRoom> {
     log('init state chat room two view');
     _scrollController = ScrollController();
     _chatDetailBloc = BlocProvider.of<ChatDetailBloc>(context);
-    _chatDetailBloc.add(ChatDetailLoadInit(roomId: widget.roomOverview.id));
+    // _chatDetailBloc.add(ChatDetailLoadInit(roomId: widget.roomOverview.id));
 
     _scrollController.addListener(_fetchWhenScroll);
   }
@@ -56,7 +56,7 @@ class _ChatRoomState extends State<ChatRoom> {
   @override
   void dispose() {
     // _scrollController.dispose();
-    _chatDetailBloc.dispose();
+    // _chatDetailBloc.dispose();
     super.dispose();
   }
 

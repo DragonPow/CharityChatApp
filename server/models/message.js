@@ -6,7 +6,7 @@ import {
 } from "../config/helper.js";
 import sequelize from "../config/mysql.js";
 import User from "./user.js";
-import {getFileInfo} from '../utils/file/file_service.js';
+import { getFileInfo } from "../utils/file/file_service.js";
 
 const TypeMessage = DataTypes.ENUM("text", "image", "file", "video", "system");
 
@@ -20,22 +20,29 @@ class Message extends Model {
    * @returns new message
    */
   static async createMessage(value, roomId, senderId, typeContent) {
-    console.log('Value of new message', value);
+    console.log("Value of new message", value);
 
-    const isNotText = typeContent != 'text';
+    const isNotText = typeContent != "text";
 
     const content = isNotText
       ? value.map((i) => TranferFileMulterToString(i)).join(", ") // if is list file, join with ','
-      : value; 
+      : value;
 
-    const fileArg = isNotText ? getFileInfo(TranferFileMulterToString(value[0])) : undefined;
+    const fileArg = isNotText
+      ? getFileInfo(TranferFileMulterToString(value[0]))
+      : undefined;
 
     const message = await Message.create({
       content: content,
       typeContent: typeContent,
       senderId,
       roomId,
-      args: isNotText ? JSON.stringify({nameFile: value[0].originalname, size: fileArg.size}) : null,
+      args: isNotText
+        ? JSON.stringify({
+            nameFile: value[0].originalname,
+            size: fileArg.size,
+          })
+        : null,
     });
     return message;
   }
@@ -66,6 +73,9 @@ class Message extends Model {
         break;
       case "text":
         searchTypeBy = ["text"];
+        break;
+      case "image":
+        searchTypeBy = ["image"];
         break;
       case "media":
         searchTypeBy = ["image", "video"];
@@ -107,13 +117,13 @@ class Message extends Model {
       where: {
         id: {
           [Op.in]: messageIds,
-        }
+        },
       },
       include: {
         model: User,
-        as: 'sender',
-        attributes: ['id','name','imageUri']
-      }
+        as: "sender",
+        attributes: ["id", "name", "imageUri"],
+      },
     });
 
     return GetDataFromSequelizeObject(messages);
@@ -144,6 +154,9 @@ class Message extends Model {
         break;
       case "text":
         searchTypeBy = ["text"];
+        break;
+      case "image":
+        searchTypeBy = ["image"];
         break;
       case "media":
         searchTypeBy = ["image", "video"];
@@ -187,8 +200,8 @@ class Message extends Model {
         senderId: senderId,
         id: {
           [Op.in]: messageIds,
-        }
-      }
+        },
+      },
     });
 
     return rs === messageIds.length;
@@ -207,9 +220,9 @@ class Message extends Model {
     const rs = await Message.destroy({
       where: {
         id: {
-          [Op.in]: messageIds
-        }
-      }
+          [Op.in]: messageIds,
+        },
+      },
     });
 
     return rs;
@@ -279,7 +292,7 @@ Message.init(
     args: {
       type: DataTypes.STRING(1000),
       allowNull: true,
-    }
+    },
   },
   {
     sequelize,

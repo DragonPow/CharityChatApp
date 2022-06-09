@@ -49,7 +49,7 @@ class ChatRepositoryImp implements IChatRepository {
 
   @override
   Future<List> getImages(String roomId, int startIndex, int number) {
-    return _getMediaChat(roomId, startIndex, number, 'media');
+    return _getMediaChat(roomId, startIndex, number, 'image');
   }
 
   Future<List<dynamic>> _getMediaChat(String roomId, int startIndex, int number, String type, [String? searchValue]) async {

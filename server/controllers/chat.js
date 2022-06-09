@@ -61,7 +61,7 @@ export default {
 
       return successResponse(res, { messages: messages });
     } catch (error) {
-      return failResponse(res, { error: error.message });
+      return failResponse(res, { error: error.message ?? error });
     }
   },
 
@@ -213,6 +213,7 @@ export default {
       );
 
       // Set last message for room model
+      // UserRoomModel.SetReadMessage(newMessage.id, senderId);
       RoomModel.checkAndSetLastMessage(room.id, newMessage).then(() => {
         MyNotifySocket.RoomUpdate([room.id]);
       });

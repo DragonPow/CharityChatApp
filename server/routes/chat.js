@@ -75,8 +75,8 @@ class ChatInputValidateBuilder {
     searchby: {
       in: ["query"],
       isIn: {
-        options: [["all", "text", "media", "file"]],
-        errorMessage: "Must be 'all', 'text','media' or 'file'",
+        options: [["all", "text", "image", "media", "file"]],
+        errorMessage: "Must be 'all', 'text', 'image', 'media' or 'file'",
       },
     },
     searchvalue: {
@@ -138,8 +138,8 @@ class ChatInputValidateBuilder {
     searchby: {
       in: ["query"],
       isIn: {
-        options: [["all", "text", "media", "file"]],
-        errorMessage: "Must be 'all', 'text','media' or 'file'",
+        options: [["all", "text", "image", "media", "file"]],
+        errorMessage: "Must be 'all', 'text', 'image', 'media' or 'file'",
       },
     },
     searchvalue: {
