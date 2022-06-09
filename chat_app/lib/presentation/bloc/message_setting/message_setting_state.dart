@@ -7,21 +7,53 @@ class MessageSettingState extends Equatable {
   List<Object?> get props => [];
 }
 
-class MessageSettingImageState extends MessageSettingState {
+class MessageSettingImageFileState extends MessageSettingState {
   final List imagesUri;
+  final List files;
   final bool isLoading;
-  final bool isFull;
+  final bool isImageFull;
+  final bool isFileFull;
   final Object? error;
 
-  const MessageSettingImageState({
+  const MessageSettingImageFileState({
     required this.imagesUri,
-    required this.isFull,
+    required this.files,
+    required this.isImageFull,
+    required this.isFileFull,
     required this.isLoading,
     required this.error,
   });
 
+  const MessageSettingImageFileState.initial({
+    this.imagesUri = const [],
+    this.files = const [],
+    this.isImageFull = false,
+    this.isFileFull = false,
+    this.isLoading = false,
+    this.error,
+  });
+
+  MessageSettingImageFileState copyWith({
+    List? imagesUri,
+    List? files,
+    bool? isLoading,
+    bool? isImageFull,
+    bool? isFileFull,
+    Object? error,
+  }) {
+    return MessageSettingImageFileState(
+      imagesUri: imagesUri ?? this.imagesUri,
+      files: files ?? this.files,
+      isImageFull: isImageFull ?? this.isImageFull,
+      isFileFull: isFileFull ?? this.isFileFull,
+      isLoading: isLoading ?? this.isLoading,
+      error: error ?? this.error,
+    );
+  }
+
   @override
-  List<Object?> get props => [imagesUri, isLoading, isFull, error];
+  List<Object?> get props =>
+      [imagesUri, files, isLoading, isImageFull, isFileFull, error];
 }
 
 class MessageSettingFindMessageState extends MessageSettingState {

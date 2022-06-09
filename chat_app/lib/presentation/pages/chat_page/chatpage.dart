@@ -108,6 +108,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                           image: AssetImage("assets/images/style.png"),
                           fit: BoxFit.fill)),
                   child: Column(
+
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -421,88 +422,95 @@ class ShortChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-          child: Row(
-            children: <Widget>[
-              AvatarCicle(imgUrl: roomOverview.avatarUrl ?? "", radius: 45),
-              SizedBox(
-                width: 5.w,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
+    return BlocProvider(
+      create: (_) => ChatDetailBloc(chatRepository: sl())..add(ChatDetailLoadInit(roomId: roomOverview.id)),
+      child: Builder(
+        builder: (context) {
+          return InkWell(
+            child: Column(children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                child: Row(
                   children: <Widget>[
+                    AvatarCicle(imgUrl: roomOverview.avatarUrl ?? "", radius: 45),
                     SizedBox(
-                      height: 3.h,
+                      width: 5.w,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(roomOverview.name, style: kText13BoldBlack),
-                        Text(
-                          roomOverview.lastMessage != null
-                              ? parseDatetimeToTime(
-                                  roomOverview.lastMessage!.timeCreate)
-                              : "",
-                          style: kText11RegularHintText,
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          roomOverview.lastMessage == null
-                              ? ""
-                              : roomOverview.lastMessage!.getName,
-                          style: kText11RegularHintText,
-                        ),
-                        Container(
-                          width: 20.w,
-                          height: 20.w,
-                          decoration: const BoxDecoration(
-                              shape: BoxShape.circle, color: cwColorMain),
-                          child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                "10", //TODO: Remove it
-                                style: kText11RegularWhite,
-                              )),
-                        )
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 3.h,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(roomOverview.name, style: kText13BoldBlack),
+                              Text(
+                                roomOverview.lastMessage != null
+                                    ? parseDatetimeToTime(
+                                        roomOverview.lastMessage!.timeCreate)
+                                    : "",
+                                style: kText11RegularHintText,
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 5.h,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                roomOverview.lastMessage == null
+                                    ? ""
+                                    : roomOverview.lastMessage!.getName,
+                                style: kText11RegularHintText,
+                              ),
+                              Container(
+                                width: 20.w,
+                                height: 20.w,
+                                decoration: const BoxDecoration(
+                                    shape: BoxShape.circle, color: cwColorMain),
+                                child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "10", //TODO: Remove it
+                                      style: kText11RegularWhite,
+                                    )),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
                     )
                   ],
                 ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: Divider(
+                  color: cwColorBackground,
+                  height: 2,
+                ),
               )
-            ],
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30),
-          child: Divider(
-            color: cwColorBackground,
-            height: 2,
-          ),
-        )
-      ]),
-      onTap: () => {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-              builder: (context) => BlocProvider(
-                    create: (context) => ChatDetailBloc(chatRepository: sl()),
-                    child: ChatRoom(
-                      roomOverview: roomOverview,
-                    ),
-                  )),
-        )
-      },
+            ]),
+            onTap: () => {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                          value: BlocProvider.of<ChatDetailBloc>(context),
+                          child: ChatRoom(
+                            roomOverview: roomOverview,
+                          ),
+                        )),
+              )
+            },
+          );
+        }
+      ),
     );
   }
 }

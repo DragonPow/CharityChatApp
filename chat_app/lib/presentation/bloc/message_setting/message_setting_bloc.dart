@@ -14,8 +14,9 @@ part 'message_setting_state.dart';
 class MessageSettingBloc
     extends Bloc<MessageSettingEvent, MessageSettingState> {
   final IChatRepository _chatRepository;
-  MessageSettingBloc(this._chatRepository) : super(const MessageSettingState()) {
-    on<MessageSettingLoadImages>(_mapMessageSettingLoadImagesToState);
+  MessageSettingBloc(this._chatRepository)
+      : super(const MessageSettingState()) {
+    on<MessageSettingLoadImageFile>(_mapMessageSettingLoadImageFileToState);
     on<MessageSettingFindMessage>(_mapMessageSettingFindMessageToState);
     on<MessageSettingFindNameAlias>(_mapMessageSettingFindNameAliasToState);
     on<MessageSettingChangeNameAlias>(_mapMessageSettingChangeNameAliasToState);
@@ -25,51 +26,73 @@ class MessageSettingBloc
   _combineImage(List source, List desc) {
     final newSource = [...source]
       ..retainWhere((element) => !desc.any((i) => i['id'] == element['id']));
-    return [...newSource, desc];
+    return [...newSource, ...desc];
   }
 
-  FutureOr<void> _mapMessageSettingLoadImagesToState(
-      MessageSettingLoadImages event,
+  FutureOr<void> _mapMessageSettingLoadImageFileToState(
+      MessageSettingLoadImageFile event,
       Emitter<MessageSettingState?> emit) async {
-    final currentImages = state is MessageSettingImageState
-        ? (state as MessageSettingImageState).imagesUri
+    // Find current image and file
+    final currentImages = state is MessageSettingImageFileState
+        ? (state as MessageSettingImageFileState).imagesUri
+        : [];
+    final currentFiles = state is MessageSettingImageFileState
+        ? (state as MessageSettingImageFileState).files
         : [];
 
-    if (state is MessageSettingImageState) {
-      final imageState = state as MessageSettingImageState;
-      emit(MessageSettingImageState(
+    if (state is MessageSettingImageFileState) {
+      final current = state as MessageSettingImageFileState;
+      emit(MessageSettingImageFileState(
         imagesUri: currentImages,
-        isFull: imageState.isFull,
+        files: currentFiles,
+        isImageFull: current.isImageFull,
+        isFileFull: current.isFileFull,
         isLoading: true,
         error: null,
       ));
     } else {
-      emit(MessageSettingImageState(
-        imagesUri: currentImages,
-        isFull: false,
-        isLoading: true,
-        error: null,
-      ));
-    }
-    
-    try {
-      final rs = await _chatRepository.getImages(
-        event.roomId,
-        event.startIndex,
-        event.number,
+      emit(
+        const MessageSettingImageFileState.initial().copyWith(isLoading: true),
       );
-      emit(MessageSettingImageState(
-        imagesUri: _combineImage(currentImages, rs),
-        isFull: rs.length < event.number,
+    }
+
+    isLoadImage() => event.typeLoad == 'image';
+
+    try {
+      final rs = isLoadImage()
+          ? await _chatRepository.getImages(
+              event.roomId,
+              event.startIndex,
+              event.number,
+            )
+          : await _chatRepository.getFiles(
+              event.roomId,
+              event.startIndex,
+              event.number,
+            );
+
+      emit(MessageSettingImageFileState(
+        imagesUri:
+            isLoadImage() ? _combineImage(currentImages, rs) : currentImages,
+        isImageFull:
+            (isLoadImage() ? rs.length : currentImages.length) < event.number,
+        files: !isLoadImage() ? _combineImage(currentFiles, rs) : currentFiles,
+        isFileFull:
+            (!isLoadImage() ? rs.length : currentFiles.length) < event.number,
         isLoading: false,
         error: null,
       ));
     } catch (error) {
       log('Load image fail');
-      emit(MessageSettingImageState(
+      print(error);
+      emit(MessageSettingImageFileState(
         imagesUri: currentImages,
-        isFull: state is MessageSettingImageState
-            ? (state as MessageSettingImageState).isFull
+        files: currentFiles,
+        isImageFull: state is MessageSettingImageFileState
+            ? (state as MessageSettingImageFileState).isImageFull
+            : false,
+        isFileFull: state is MessageSettingImageFileState
+            ? (state as MessageSettingImageFileState).isFileFull
             : false,
         isLoading: false,
         error: error,
@@ -87,6 +110,6 @@ class MessageSettingBloc
       MessageSettingChangeNameAlias event,
       Emitter<MessageSettingState?> emit) {}
 
-  FutureOr<void> _mapMessageSettingUpdateJoinersToState(MessageSettingUpdateJoiners event, Emitter<MessageSettingState> emit) {
-  }
+  FutureOr<void> _mapMessageSettingUpdateJoinersToState(
+      MessageSettingUpdateJoiners event, Emitter<MessageSettingState> emit) {}
 }

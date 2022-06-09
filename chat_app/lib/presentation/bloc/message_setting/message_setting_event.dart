@@ -7,16 +7,17 @@ abstract class MessageSettingEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class MessageSettingLoadImages extends MessageSettingEvent {
+class MessageSettingLoadImageFile extends MessageSettingEvent {
   final int startIndex;
   final int number;
   final String roomId;
+  final String typeLoad;
 
-  const MessageSettingLoadImages(
-      {required this.startIndex, required this.number, required this.roomId});
+  const MessageSettingLoadImageFile(
+      {required this.startIndex, required this.number, required this.roomId, required this.typeLoad});
 
   @override
-  List<Object?> get props => [startIndex, number, roomId];
+  List<Object?> get props => [startIndex, number, roomId, typeLoad];
 }
 
 class MessageSettingFindMessage extends MessageSettingEvent {

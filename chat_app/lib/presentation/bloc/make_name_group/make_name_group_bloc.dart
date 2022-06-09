@@ -35,10 +35,8 @@ class MakeNameGroupBloc extends Bloc<MakeNameGroupEvent, MakeNameGroupState> {
       RoomOverviewEntity? roomCreate = await _iRoomRepository.create(event.room, event.avatar);
       if (roomCreate != null) {
         emit(MakeNameGroupCreateSuccess(roomEntity: roomCreate));
-        emit(MakeNameGroupInitial());
       } else {
         emit(MakeNameGroupCreateFail());
-        emit(MakeNameGroupInitial());
       }
     } catch (e) {
       print("ERROR CREATE ROOM" + e.toString());

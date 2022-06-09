@@ -1,5 +1,6 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
+import 'package:chat_app/helper/helper.dart';
 import 'package:chat_app/presentation/components/avatarcicle.dart';
 
 import 'package:chat_app/presentation/pages/profile_page/ban_list.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../dataexample/current_account.dart';
+import '../../../utils/account.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -29,13 +31,15 @@ class _ProfilePage extends State<ProfilePage> {
             height: 30.h,
           ),
           AvatarCicle(
-              imgUrl:currentAccount[0]['img'],
+              imgUrl: Account.instance!.imageUri != null
+                  ? parseToServerUri(Account.instance!.imageUri!)
+                  : "",
               radius: 115.w),
           SizedBox(
             height: 10.h,
           ),
           Text(
-            currentAccount[0]['name'],
+            Account.instance!.name,
             style: kText24MeniumBlack,
           ),
           SizedBox(
@@ -48,16 +52,16 @@ class _ProfilePage extends State<ProfilePage> {
             backgoundColor: cwColorBlack,
           ),
           Option(
-              title: "Tin nhắn chờ ",
-              icon: FontAwesomeIcons.commentDots,
-              backgoundColor: cwColorMain,
-              onClick: () => {
-                Navigator.push(
+            title: "Tin nhắn chờ ",
+            icon: FontAwesomeIcons.commentDots,
+            backgoundColor: cwColorMain,
+            onClick: () => {
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const WaitingChat()),
               )
-              },
-              ),
+            },
+          ),
           Padding(
             padding: EdgeInsets.fromLTRB(20.w, 10.h, 0, 5.h),
             child: Row(
@@ -129,7 +133,7 @@ class Option extends StatelessWidget {
   final IconData icon;
   final Color backgoundColor;
   bool isToggle;
-  Function()?  onClick;
+  Function()? onClick;
   Option(
       {Key? key,
       required this.title,

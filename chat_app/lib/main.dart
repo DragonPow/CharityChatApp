@@ -1,14 +1,11 @@
 import 'package:chat_app/configs/colorconfig.dart';
-import 'package:chat_app/domain/repositories/authenticate_repository.dart';
 import 'package:chat_app/helper/network/socket_service.dart';
 import 'package:chat_app/presentation/bloc/active_user/active_user_bloc.dart';
-import 'package:chat_app/presentation/bloc/chat_detail/chat_detail_bloc.dart';
 import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
 import 'package:chat_app/presentation/bloc/login/login_bloc.dart';
 import 'package:chat_app/presentation/bloc/new_message/new_message_bloc.dart';
 import 'package:chat_app/presentation/pages/login_page/login_page.dart';
 import 'package:chat_app/presentation/rootapp.dart';
-import 'package:chat_app/utils/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,13 +16,16 @@ import 'presentation/bloc/main_bloc/main_bloc_bloc.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // HttpOverrides.global = MyHttpOverrides();
-  await di.init();
-  sl<SocketService>().connect();
-  //await testLogin(); // test login
+  await initMain();
   runApp(BlocProvider(
     create: (context) => MainBlocBloc(sl())..add(MainBlocCheck()),
     child: const MyApp(),
   ));
+}
+
+Future<void> initMain() async {
+  await di.init();
+  sl<SocketService>().connect();
 }
 
 // Future<void> testLogin() async {
@@ -41,10 +41,15 @@ void main() async {
 // }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final bool isChangeAccount;
+  const MyApp({Key? key, this.isChangeAccount = false}) : super(key: key);
+
+  
 
   @override
   Widget build(BuildContext context) {
+     if (!isChangeAccount) BlocProvider.of<MainBlocBloc>(context).add(MainBlocCheck());
+
     return ScreenUtilInit(
         designSize: const Size(360, 780),
         minTextAdapt: true,

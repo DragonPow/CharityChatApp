@@ -77,12 +77,14 @@ class SocketService {
   }
 
   void addEventListener(String nameEvent, dynamic Function(dynamic) callback) {
+    print('Socket event listener ' + nameEvent + ' is added');
     _socket.on(nameEvent, callback);
   }
 
   void addEventReconnect(dynamic Function(dynamic) callback) =>
       _socket.onReconnect(callback);
   void removeEventListener(String nameEvent, [dynamic Function(dynamic)? handler]) {
+    print('Socket event listener ' + nameEvent + ' is remove');
     _socket.off(nameEvent, handler);
   }
 }
