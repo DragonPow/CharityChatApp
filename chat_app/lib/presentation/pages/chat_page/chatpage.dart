@@ -320,7 +320,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                           ? ShortChat(
                               roomOverview: state.listSortedRoom[index],
                             )
-                          : const Text('loading');
+                          : const SkeletonloaderChat();
                     });
               } else {
                 return const Text("Load fail");
@@ -352,7 +352,7 @@ class SkeletonloaderChat extends StatelessWidget {
             children: <Widget>[
               CircleAvatar(
                 backgroundColor: Colors.white,
-                radius: 30.h,
+                radius: 25.h,
               ),
               SizedBox(
                 width: 5.w,
@@ -390,7 +390,7 @@ class SkeletonloaderChat extends StatelessWidget {
                         ),
                         CircleAvatar(
                           backgroundColor: Colors.white,
-                          radius: 15.h,
+                          radius: 10.h,
                         ),
                       ],
                     )

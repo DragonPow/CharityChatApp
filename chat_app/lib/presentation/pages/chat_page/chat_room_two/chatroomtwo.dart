@@ -379,13 +379,9 @@ class SkeletonloaderChatRoom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SkeletonLoader(
-      builder: Container(
-        child: Text(
-          "Đang tải....",
-          style: kText15RegularGreyNotetext,
-        ),
-        color: cwColor25BackgroundButton,
-      ),
+      builder: Column(children: [
+        
+      ],),
       items: 1,
       period: const Duration(seconds: 2),
       highlightColor: const Color(0x505AA469),
