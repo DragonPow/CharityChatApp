@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:chat_app/domain/entities/message_entity.dart';
 import 'package:chat_app/domain/entities/user_message_entity.dart';
 import 'package:chat_app/domain/repositories/chat_repository.dart';
@@ -16,7 +17,10 @@ class MessageSettingBloc
   final IChatRepository _chatRepository;
   MessageSettingBloc(this._chatRepository)
       : super(const MessageSettingState()) {
-    on<MessageSettingLoadImageFile>(_mapMessageSettingLoadImageFileToState);
+    on<MessageSettingLoadImageFile>(
+      _mapMessageSettingLoadImageFileToState,
+      transformer: sequential(),
+    );
     on<MessageSettingFindMessage>(_mapMessageSettingFindMessageToState);
     on<MessageSettingFindNameAlias>(_mapMessageSettingFindNameAliasToState);
     on<MessageSettingChangeNameAlias>(_mapMessageSettingChangeNameAliasToState);
@@ -74,11 +78,17 @@ class MessageSettingBloc
       emit(MessageSettingImageFileState(
         imagesUri:
             isLoadImage() ? _combineImage(currentImages, rs) : currentImages,
-        isImageFull:
-            (isLoadImage() ? rs.length : currentImages.length) < event.number,
+        isImageFull: isLoadImage()
+            ? (rs.length < event.number)
+            : state is MessageSettingImageFileState
+                ? (state as MessageSettingImageFileState).isImageFull
+                : false,
         files: !isLoadImage() ? _combineImage(currentFiles, rs) : currentFiles,
-        isFileFull:
-            (!isLoadImage() ? rs.length : currentFiles.length) < event.number,
+        isFileFull: !isLoadImage()
+            ? (rs.length < event.number)
+            : state is MessageSettingImageFileState
+                ? (state as MessageSettingImageFileState).isFileFull
+                : false,
         isLoading: false,
         error: null,
       ));

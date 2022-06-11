@@ -28,8 +28,14 @@ class OptionChatRoom extends StatelessWidget {
                       number: 10,
                       roomId: room.id,
                       typeLoad: 'image',
+                    ))
+                    ..add(MessageSettingLoadImageFile(
+                      startIndex: 0,
+                      number: 10,
+                      roomId: room.id,
+                      typeLoad: 'file',
                     )),
-                  child: const FileAndImage(),
+                  child: FileAndImage(roomId: room.id),
                 )),
       );
     }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
 import 'package:chat_app/helper/helper.dart';
@@ -8,7 +10,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class FileAndImage extends StatefulWidget {
-  const FileAndImage({Key? key}) : super(key: key);
+  final String roomId;
+  const FileAndImage({Key? key, required this.roomId}) : super(key: key);
 
   @override
   State<FileAndImage> createState() => _FileAndImageState();
@@ -17,15 +20,65 @@ class FileAndImage extends StatefulWidget {
 class _FileAndImageState extends State<FileAndImage>
     with TickerProviderStateMixin {
   late TabController _tabController;
+  late ScrollController _scrollImage;
+  late ScrollController _scrollFile;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _scrollImage = ScrollController();
+    _scrollFile = ScrollController();
+
+    _fetchMoreImages();
+  }
+
+  void _fetchMoreImages() {
+    final _bloc = BlocProvider.of<MessageSettingBloc>(context);
+    if (_bloc.state is! MessageSettingImageFileState) {
+      return;
+    }
+    final state = _bloc.state as MessageSettingImageFileState;
+    if (_scrollImage.offset >= _scrollImage.position.maxScrollExtent &&
+        !_scrollImage.position.outOfRange) {
+      log("reach the bottom");
+
+      if (!state.isLoading && !state.isImageFull) {
+        _bloc.add(MessageSettingLoadImageFile(
+          roomId: widget.roomId,
+          number: 10,
+          startIndex: state.imagesUri.length,
+          typeLoad: 'image',
+        ));
+      }
+    }
+  }
+
+  void _fetchMoreFiels() {
+        final _bloc = BlocProvider.of<MessageSettingBloc>(context);
+    if (_bloc.state is! MessageSettingImageFileState) {
+      return;
+    }
+    final state = _bloc.state as MessageSettingImageFileState;
+    if (_scrollImage.offset >= _scrollImage.position.maxScrollExtent &&
+        !_scrollImage.position.outOfRange) {
+      log("reach the bottom");
+
+      if (!state.isLoading && !state.isFileFull) {
+        _bloc.add(MessageSettingLoadImageFile(
+          roomId: widget.roomId,
+          number: 10,
+          startIndex: state.files.length,
+          typeLoad: 'file',
+        ));
+      }
+    }
   }
 
   @override
   void dispose() {
+    _scrollImage.dispose();
+    _scrollFile.dispose();
     _tabController.dispose();
     super.dispose();
   }
@@ -105,6 +158,7 @@ class _FileAndImageState extends State<FileAndImage>
 
   GridView getImageGrid(List imagesUri) {
     return GridView.builder(
+      controller: _scrollImage,
       primary: false,
       padding: const EdgeInsets.all(20),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -119,7 +173,9 @@ class _FileAndImageState extends State<FileAndImage>
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
-                    image: NetworkImage(parseToServerUri(imagesUri[index]['content'])), fit: BoxFit.cover)),
+                    image: NetworkImage(
+                        parseToServerUri(imagesUri[index]['content'])),
+                    fit: BoxFit.cover)),
           ),
           onTap: () => {},
         );
