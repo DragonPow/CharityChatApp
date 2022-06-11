@@ -32,7 +32,7 @@ class RoomOverviewEntity implements Comparable<RoomOverviewEntity> {
               ? parseToServerUri(json["avatarId"])
               : json["avatarId"],
           type: json['typeRoom'],
-          joiners: (json['joiners'] as List).map((joiner) {
+          joiners:  (json['joiners'] as List).map((joiner) {
             return UserRoomEntity.fromJson(joiner as Map<String, dynamic>);
           }).toList());
 

@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../dependencies_injection.dart';
 import '../../../../domain/entities/room_entity.dart';
 import '../../../bloc/chat_detail/chat_detail_bloc.dart';
+import '../../../bloc/chat_overview/chat_overview_bloc.dart';
 import '../add_people/component/member.dart';
 import '../chat_room_two/chatroomtwo.dart';
 
@@ -64,142 +65,158 @@ class _GroupName extends State<GroupName> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: getAppBar(),
-      body: SingleChildScrollView(
-        child: Column(children: [
-          SizedBox(
-            height: 20.h,
-          ),
-          Stack(
-            children: [
-              BlocConsumer<MakeNameGroupBloc, MakeNameGroupState>(
-                listenWhen: (context, state) {
-                  return state is MakeNameGroupChoiceAvatarSuccess ||
-                      state is MakeNameGroupInitial;
-                },
-                listener: (context, state) {
-                  
-                },
-                builder: (context, state) {
-                  if (state is MakeNameGroupChoiceAvatarSuccess) {
-                    avatar = state.avatar;
-                    return CircleAvatar(
-                      backgroundImage: FileImage(File(state.avatar.path)),
-                      radius: 100,
-                    );
-                  } else {
-                    return const CircleAvatar(
-                      backgroundImage: AssetImage("assets/images/avatar.png"),
-                      radius: 100,
-                    );
-                  }
-                },
-              ),
-              Positioned(
-                  bottom: 10,
-                  right: 20,
-                  child: Container(
-                    width: 25.w,
-                    height: 25.w,
-                    alignment: Alignment.center,
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle, color: cwColorWhite),
-                    child: IconButton(
-                      padding: const EdgeInsets.all(0),
-                      icon: const FaIcon(
-                        FontAwesomeIcons.camera,
-                        color: cwColorMain,
-                        size: 16,
-                      ),
-                      onPressed: () => {_handleImageSelection()},
-                    ),
-                  )),
-            ],
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30.w),
-            child: TextFormField(
-              style: ktext17RegularBlack,
-              textAlign: TextAlign.center,
-              controller: _nameTextController,
-              decoration: InputDecoration(
-                  border: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey),
-                  ),
-                  enabledBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey),
-                  ),
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey),
-                  ),
-                  hintText: "Tên nhóm",
-                  hintStyle: ktext17RegularGreyText),
+      body: BlocProvider(
+        create: (context) => ChatOverviewBloc(sl()),
+        child: SingleChildScrollView(
+          child: Column(children: [
+            SizedBox(
+              height: 20.h,
             ),
-          ),
-          SizedBox(
-            height: 20.h,
-          ),
-          BlocConsumer<MakeNameGroupBloc, MakeNameGroupState>(
-            listenWhen: (context, state) {
-              return state is MakeNameGroupRemoveMemSuccess ||
-                  state is MakeNameGroupInitial||
-                  state is MakeNameGroupCreateSuccess;
-            },
-            listener: (context, state) {
-              if (state is MakeNameGroupCreateSuccess) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (_) => BlocProvider(
-                            create: (context) =>
-                                ChatDetailBloc(chatRepository: sl()),
-                            child: ChatRoom(
-                              roomOverview: state.roomEntity,
-                            ),
-                          )),
-                );
-              }
-            },
-            builder: (context, state) {
-              if (state is MakeNameGroupRemoveMemSuccess) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4.w),
-                  child: Wrap(
-                    children: List.generate(
-                      state.listMember.length,
-                      (index) => Member(
-                        member: members[index],
-                        onTap: () => {
-                          _makeNameGroupBloc.add(MakeNameGroupRemoveMem(
-                              listMember: state.listMember,
-                              removedMember: state.listMember[index]))
-                        },
+            Stack(
+              children: [
+                BlocConsumer<MakeNameGroupBloc, MakeNameGroupState>(
+                  listenWhen: (context, state) {
+                    return state is MakeNameGroupChoiceAvatarSuccess ||
+                        state is MakeNameGroupInitial;
+                  },
+                  listener: (context, state) {},
+                  builder: (context, state) {
+                    if (state is MakeNameGroupChoiceAvatarSuccess) {
+                      avatar = state.avatar;
+                      return CircleAvatar(
+                        backgroundImage: FileImage(File(state.avatar.path)),
+                        radius: 100,
+                      );
+                    } else {
+                      return const CircleAvatar(
+                        backgroundImage: AssetImage("assets/images/avatar.png"),
+                        radius: 100,
+                      );
+                    }
+                  },
+                ),
+                Positioned(
+                    bottom: 10,
+                    right: 20,
+                    child: Container(
+                      width: 25.w,
+                      height: 25.w,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                          shape: BoxShape.circle, color: cwColorWhite),
+                      child: IconButton(
+                        padding: const EdgeInsets.all(0),
+                        icon: const FaIcon(
+                          FontAwesomeIcons.camera,
+                          color: cwColorMain,
+                          size: 16,
+                        ),
+                        onPressed: () => {_handleImageSelection()},
+                      ),
+                    )),
+              ],
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30.w),
+              child: TextFormField(
+                style: ktext17RegularBlack,
+                textAlign: TextAlign.center,
+                controller: _nameTextController,
+                decoration: InputDecoration(
+                    border: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    enabledBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    hintText: "Tên nhóm",
+                    hintStyle: ktext17RegularGreyText),
+              ),
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
+            BlocConsumer<MakeNameGroupBloc, MakeNameGroupState>(
+              listenWhen: (context, state) {
+                return state is MakeNameGroupRemoveMemSuccess ||
+                    state is MakeNameGroupInitial ||
+                    state is MakeNameGroupCreateSuccess;
+              },
+              listener: (context, state) {
+                if (state is MakeNameGroupCreateSuccess) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (_) => BlocProvider.value(
+                              value: BlocProvider.of<ChatOverviewBloc>(context),
+                              child: BlocProvider(
+                                create: (context) =>
+                                    ChatDetailBloc(chatRepository: sl())
+                                      ..add(ChatDetailLoadInit(
+                                          roomId: state.roomEntity.id)),
+                                child: ChatRoom(
+                                  roomOverview: state.roomEntity,
+                                ),
+                              ),
+                            )),
+                  );
+                  // Navigator.of(context).push(
+                  //   MaterialPageRoute(
+                  //       builder: (_) => BlocProvider(
+                  //             create: (context) =>
+                  //                 ChatDetailBloc(chatRepository: sl()),
+                  //             child: ChatRoom(
+                  //               roomOverview: state.roomEntity,
+                  //             ),
+                  //           )),
+                  // );
+                }
+              },
+              builder: (context, state) {
+                if (state is MakeNameGroupRemoveMemSuccess) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4.w),
+                    child: Wrap(
+                      children: List.generate(
+                        state.listMember.length,
+                        (index) => Member(
+                          member: members[index],
+                          onTap: () => {
+                            _makeNameGroupBloc.add(MakeNameGroupRemoveMem(
+                                listMember: state.listMember,
+                                removedMember: state.listMember[index]))
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                );
-              } else {
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4.w),
-                  child: Wrap(
-                    children: List.generate(
-                      members.length,
-                      (index) => Member(
-                        member: members[index],
-                        onTap: () => {
-                          _makeNameGroupBloc.add(MakeNameGroupRemoveMem(
-                              listMember: members,
-                              removedMember: members[index]))
-                        },
+                  );
+                } else {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4.w),
+                    child: Wrap(
+                      children: List.generate(
+                        members.length,
+                        (index) => Member(
+                          member: members[index],
+                          onTap: () => {
+                            _makeNameGroupBloc.add(MakeNameGroupRemoveMem(
+                                listMember: members,
+                                removedMember: members[index]))
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                );
-              }
-            },
-          )
-        ]),
+                  );
+                }
+              },
+            )
+          ]),
+        ),
       ),
     );
   }
@@ -214,7 +231,7 @@ class _GroupName extends State<GroupName> {
       elevation: 0,
       actions: [
         TextButton(
-            onPressed:() =>  onCreateButtonPress(),
+            onPressed: () => onCreateButtonPress(),
             child: Text(
               "Tạo",
               style: kText17SemiboldMain,

@@ -75,7 +75,7 @@ class RoomRepositoryImp implements IRoomRepository {
         if (_response.statusCode == 200) {
           final _room = await http.Response.fromStream(_response);
           RoomOverviewEntity roomOverview =
-              RoomOverviewEntity.fromJson(json.decode(_room.body)["room"]);
+              RoomOverviewEntity.fromJson(json.decode(_room.body)["room"][0]);
           return roomOverview;
         } else {
           _response.stream.transform(utf8.decoder).listen((event) {
