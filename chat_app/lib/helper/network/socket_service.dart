@@ -28,7 +28,6 @@ class SocketService {
     'transports': ['websocket'],
     'autoConnect': true,
     'connect_timeout': 120,
-
   });
   // final _streamSocket = StreamSocket();
   // StreamSocket get stream => _streamSocket;
@@ -43,6 +42,9 @@ class SocketService {
     _socket.onConnect((data) {
       print('Socket connected');
     });
+    _socket.onReconnect((data) {
+      print('Socket is reconnect');
+    });
     _socket.onDisconnect((data) {
       print('Socket disconnected');
     });
@@ -51,10 +53,13 @@ class SocketService {
       print(data);
     });
     _socket.onError((data) {
-      print('Is error');
+      print('Socket is error');
       print(data);
     });
-    _socket.on('messageSent', (data) => log('message sent'));
+    _socket.on('messageSent', (data) {
+      log('Receive message');
+      print(data.toString());
+    });
   }
 
   void connect() {
@@ -84,7 +89,8 @@ class SocketService {
 
   void addEventReconnect(dynamic Function(dynamic) callback) =>
       _socket.onReconnect(callback);
-  void removeEventListener(String nameEvent, [dynamic Function(dynamic)? handler]) {
+  void removeEventListener(String nameEvent,
+      [dynamic Function(dynamic)? handler]) {
     print('Socket event listener ' + nameEvent + ' is remove');
     _socket.off(nameEvent, handler);
   }

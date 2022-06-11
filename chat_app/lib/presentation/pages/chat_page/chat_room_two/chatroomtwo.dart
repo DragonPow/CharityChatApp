@@ -348,21 +348,21 @@ class _ChatRoomState extends State<ChatRoom> {
               ),
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                 PopupMenuItem(
-                  child: const ListTile(
+                  child: ListTile(
                     title: Text('Tùy chọn'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => BlocProvider(
+                                  create: (context) => MessageSettingBloc(sl()),
+                                  child: OptionChatRoom(
+                                    room: widget.roomOverview,
+                                  ),
+                                )),
+                      );
+                    },
                   ),
-                  onTap: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => BlocProvider(
-                                create: (context) => MessageSettingBloc(sl()),
-                                child: OptionChatRoom(
-                                  room: widget.roomOverview,
-                                ),
-                              )),
-                    )
-                  },
                 ),
               ],
             ),
@@ -379,9 +379,9 @@ class SkeletonloaderChatRoom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SkeletonLoader(
-      builder: Column(children: [
-        
-      ],),
+      builder: Column(
+        children: [],
+      ),
       items: 1,
       period: const Duration(seconds: 2),
       highlightColor: const Color(0x505AA469),
