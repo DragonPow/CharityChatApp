@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:chat_app/domain/entities/base_user_entity.dart';
 import 'package:chat_app/domain/entities/room_entity.dart';
 import 'package:chat_app/domain/entities/room_overview_entity.dart';
+import 'package:chat_app/domain/entities/user_room_entity.dart';
 import 'package:chat_app/domain/repositories/room_repository.dart';
 import 'package:chat_app/helper/constant.dart';
 import 'package:chat_app/helper/helper.dart';
@@ -66,14 +67,15 @@ class RoomRepositoryImp implements IRoomRepository {
         _request.fields["joinersId"] = getListIdFromListUser(room.users);
         _request.fields["typeRoom"] = room.typeRoom;
         if (avatar != null) {
-          _request.files.add(
-             await http.MultipartFile.fromPath('image', avatar.path));
+          _request.files
+              .add(await http.MultipartFile.fromPath('image', avatar.path));
         }
         final _response = await _request.send();
 
         if (_response.statusCode == 200) {
           final _room = await http.Response.fromStream(_response);
-          RoomOverviewEntity roomOverview = RoomOverviewEntity.fromJson(json.decode(_room.body)["room"]);
+          RoomOverviewEntity roomOverview =
+              RoomOverviewEntity.fromJson(json.decode(_room.body)["room"]);
           return roomOverview;
         } else {
           _response.stream.transform(utf8.decoder).listen((event) {
@@ -188,8 +190,61 @@ class RoomRepositoryImp implements IRoomRepository {
           name: otherUser.name,
           avatarUrl: null,
           lastMessage: null,
-          type: 'private');
+          type: 'private',
+          joiners: []);
       return room;
+    }
+  }
+
+  @override
+  Future<bool> changeNameAlias(
+      Map<String, String?> nameAlias, String roomId) async {
+    try {
+      _updateRoom(roomId, null, null, null, nameAlias);
+      return true;
+    } catch (e) {
+      print('Update name alias room fail');
+      print(e);
+      return false;
+    }
+  }
+
+  Future<Map<String,dynamic>> _updateRoom(String roomId, String? roomName,
+      File? image, String? typeRoom, Map<String, String?>? nameAlias) async {
+    final _token = await sl<LocalStorageService>().getToken();
+    if (_token == null) {
+      throw Exception('Must be login');
+    }
+
+    final _uri = Uri.http(
+      serverUrl,
+      '/rooms/u/$roomId/info',
+    );
+    final _request = http.MultipartRequest("PUT", _uri);
+
+    _request.headers.addAll({'token': _token});
+
+    if (roomName != null) _request.fields["roomName"] = roomName;
+    if (typeRoom != null) _request.fields["typeRoom"] = typeRoom;
+    if (image != null) {
+      _request.files
+          .add(await http.MultipartFile.fromPath('image', image.path));
+    }
+    if (nameAlias != null) {
+      _request.fields["aliasJoiners"] = jsonEncode(nameAlias.entries.map((e) {
+        return {'id': e.key, 'nameAlias': e.value};
+      }).toList());
+    }
+    final _responseStream = await _request.send();
+    final _response = await http.Response.fromStream(_responseStream);
+
+    if (_responseStream.statusCode == 200) {
+      return json.decode(_response.body)["room"];
+    } else {
+      // _responseStream.stream.transform(utf8.decoder).listen((event) {
+      //   print('Create Chat Room error: ' + event);
+      // });
+      return throw _response;
     }
   }
 }

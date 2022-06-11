@@ -19,7 +19,7 @@ void main() async {
   // HttpOverrides.global = MyHttpOverrides();
   await initMain();
   runApp(BlocProvider(
-    create: (context) => MainBlocBloc(sl())..add(MainBlocCheck()),
+    create: (context) => MainBlocBloc(sl()),
     child: const MyApp(),
   ));
 }
@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!isChangeAccount)
-      BlocProvider.of<MainBlocBloc>(context).add(MainBlocCheck());
+     { BlocProvider.of<MainBlocBloc>(context).add(MainBlocCheck());}
     sl<SocketService>().addEventListener('request-login', (_) {
       BlocProvider.of<MainBlocBloc>(context).add(MainBlocLogout());
     });

@@ -127,10 +127,17 @@ class Room extends Model {
         },
         {
           model: User,
-          attributes: ["id"],
+          attributes: [
+            "id",
+            "name",
+            "email",
+            "phone",
+            "imageUri",
+            "timeCreate",
+          ],
           as: "joiners",
           through: {
-            attributes: [],
+            attributes: ["nameAlias"],
           },
         },
       ],
@@ -165,7 +172,9 @@ class Room extends Model {
     });
 
     const roomsAfterCheck = roomsBeforeCheck
-      .filter((room) => room.joiners.length === 2 && room.typeRoom === 'private')
+      .filter(
+        (room) => room.joiners.length === 2 && room.typeRoom === "private"
+      )
       .map((room) => room.id);
 
     const rooms = await Room.findAll({
@@ -268,11 +277,16 @@ class Room extends Model {
 
       if (!room) {
         // If not exists, create new room
-        room = await Room.createRoom("Room no name", null, joinersId, 'private');
+        room = await Room.createRoom(
+          "Room no name",
+          null,
+          joinersId,
+          "private"
+        );
       }
     } else {
       // Create new room for group user
-      room = await Room.createRoom("Group no name", null, joinersId, 'group');
+      room = await Room.createRoom("Group no name", null, joinersId, "group");
     }
     return room;
   }
@@ -302,7 +316,14 @@ class Room extends Model {
    * @param {'private'|'group'} typeRoom
    * @returns
    */
-  static async updateRoom(roomId, roomName, imageUrl, typeRoom = undefined) {
+  static async updateRoom(
+    roomId,
+    roomName,
+    imageUrl,
+    typeRoom = undefined,
+    aliasJoiners
+  ) {
+    const transaction = await sequelize.transaction();
     const room = await Room.findByPk(roomId, {
       // attributes: ["id", "name", "avatarId"],
     });
@@ -312,13 +333,23 @@ class Room extends Model {
     imageUrl && room.set("avatarId", imageUrl);
     typeRoom && room.set("typeRoom", typeRoom);
 
-    return room.save().then((rs) => {
-      deleteFiles([previousImageUrl]).catch((error) =>
-        console.log(
-          `Delete image of room ${room.id} fail, name: ${previousImageUrl}`,
-          error
-        )
+    aliasJoiners.forEach((joiner) => {
+      console.log('Change name alias', joiner);
+      UserRoom.update(
+        { nameAlias: joiner.nameAlias },
+        { where: { roomId: roomId, userId: joiner.id } }
       );
+    });
+
+    return room.save().then((rs) => {
+      if (imageUrl) {
+        deleteFiles([previousImageUrl]).catch((error) =>
+          console.log(
+            `Delete image of room ${room.id} fail, name: ${previousImageUrl}`,
+            error
+          )
+        );
+      }
       return rs;
     });
   }

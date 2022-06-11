@@ -189,14 +189,22 @@ class User extends Model {
    */
   static async getJoinersInRoom(roomsId) {
     const list = await User.findAll({
-      attributes: User._getBasicAttributes,
+      attributes: [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "imageUri",
+        "timeCreate",
+      ],
       include: [
         {
           model: Room,
           as: "container",
           attributes: ["id"],
           through: {
-            attributes: [],
+            model: UserRoom,
+            attributes: ['nameAlias'],
             where: {
               roomId: { [Op.in]: roomsId },
             },

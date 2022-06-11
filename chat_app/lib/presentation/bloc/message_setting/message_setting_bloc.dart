@@ -15,7 +15,8 @@ part 'message_setting_state.dart';
 class MessageSettingBloc
     extends Bloc<MessageSettingEvent, MessageSettingState> {
   final IChatRepository _chatRepository;
-  MessageSettingBloc(this._chatRepository)
+  final IRoomRepository _roomRepository;
+  MessageSettingBloc(this._chatRepository, this._roomRepository)
       : super(const MessageSettingState()) {
     on<MessageSettingLoadImageFile>(
       _mapMessageSettingLoadImageFileToState,
@@ -114,11 +115,22 @@ class MessageSettingBloc
       MessageSettingFindMessage event, Emitter<MessageSettingState?> emit) {}
 
   FutureOr<void> _mapMessageSettingFindNameAliasToState(
-      MessageSettingFindNameAlias event, Emitter<MessageSettingState?> emit) {}
+      MessageSettingFindNameAlias event, Emitter<MessageSettingState?> emit) {
+    // _roomRepository.changeNameAlias(event.nameAlias, event.roomId);
+  }
 
   FutureOr<void> _mapMessageSettingChangeNameAliasToState(
       MessageSettingChangeNameAlias event,
-      Emitter<MessageSettingState?> emit) {}
+      Emitter<MessageSettingState?> emit) async {
+    try {
+      final rs = await _roomRepository.changeNameAlias(
+          event.newNameAlias, event.roomId);
+      if (rs == true) {}
+    } catch (e) {
+      print('Cannot change name alias');
+      print(e);
+    }
+  }
 
   FutureOr<void> _mapMessageSettingUpdateJoinersToState(
       MessageSettingUpdateJoiners event, Emitter<MessageSettingState> emit) {}

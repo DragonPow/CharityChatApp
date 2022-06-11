@@ -192,7 +192,14 @@ class NotifySocket {
   RoomUpdate(roomIds) {
     RoomModel.getRoomsById(roomIds).then((rooms) => {
       rooms.forEach((room) => {
-        this.websocket.emitToRoom(room.id, SocketEvent.roomUpdate, room);
+        console.log('Room before update send: ', room);
+        const joiners = room.joiners;
+        const newJoiners = joiners.map((i) => {
+          return { ...i, nameAlias: i.UserRoom.nameAlias };
+        });
+        const customRoom = { ...room, joiners: newJoiners };
+        
+        this.websocket.emitToRoom(room.id, SocketEvent.roomUpdate, customRoom);
       });
     });
   }

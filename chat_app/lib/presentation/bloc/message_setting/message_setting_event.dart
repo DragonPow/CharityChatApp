@@ -50,7 +50,7 @@ class MessageSettingFindNameAlias extends MessageSettingEvent {
 
 class MessageSettingChangeNameAlias extends MessageSettingEvent {
   final String roomId;
-  final Map<String, String> newNameAlias;
+  final Map<String, String?> newNameAlias;
 
   const MessageSettingChangeNameAlias({
     required this.newNameAlias,
