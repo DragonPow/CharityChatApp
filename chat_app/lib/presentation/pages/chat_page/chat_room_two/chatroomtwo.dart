@@ -38,7 +38,7 @@ class ChatRoom extends StatefulWidget {
 }
 
 class _ChatRoomState extends State<ChatRoom> {
-  final _user =  types.User(id: Account.instance!.id); // id of current user
+  final _user = types.User(id: Account.instance!.id); // id of current user
   late final ChatDetailBloc _chatDetailBloc;
   late ScrollController _scrollController;
 
@@ -300,11 +300,8 @@ class _ChatRoomState extends State<ChatRoom> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    widget.roomOverview.name,
-                    style: kText15MediumBlack, 
-                    overflow: TextOverflow.clip
-                  ),
+                  Text(widget.roomOverview.name,
+                      style: kText15MediumBlack, overflow: TextOverflow.clip),
                   Text(
                     "online",
                     style: kText13RegularNote,
@@ -337,8 +334,7 @@ class _ChatRoomState extends State<ChatRoom> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              CallSample()));
+                          builder: (BuildContext context) => CallSample()));
                 }),
           ),
           Padding(
@@ -352,23 +348,21 @@ class _ChatRoomState extends State<ChatRoom> {
               ),
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                 PopupMenuItem(
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => BlocProvider(
-                                  create: (context) => MessageSettingBloc(sl()),
-                                  child: OptionChatRoom(
-                                    room: widget.roomOverview,
-                                  ),
-                                )),
-                      );
-                    },
-                    child: const ListTile(
-                      title: Text('Tùy chọn'),
-                    ),
+                  child: const ListTile(
+                    title: Text('Tùy chọn'),
                   ),
+                  onTap: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => BlocProvider(
+                                create: (context) => MessageSettingBloc(sl()),
+                                child: OptionChatRoom(
+                                  room: widget.roomOverview,
+                                ),
+                              )),
+                    )
+                  },
                 ),
               ],
             ),
@@ -385,13 +379,9 @@ class SkeletonloaderChatRoom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SkeletonLoader(
-      builder: Container(
-        child: Text(
-          "Đang tải....",
-          style: kText15RegularGreyNotetext,
-        ),
-        color: cwColor25BackgroundButton,
-      ),
+      builder: Column(children: [
+        
+      ],),
       items: 1,
       period: const Duration(seconds: 2),
       highlightColor: const Color(0x505AA469),
