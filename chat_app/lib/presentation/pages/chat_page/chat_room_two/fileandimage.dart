@@ -13,8 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-
-import 'package:android_path_provider/android_path_provider.dart';
+ 
 import 'package:path_provider/path_provider.dart';
 
 class FileAndImage extends StatefulWidget {

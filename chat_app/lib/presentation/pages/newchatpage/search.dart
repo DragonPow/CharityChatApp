@@ -107,13 +107,15 @@ class _SearchNewGroupState extends State<SearchNewGroup> {
                    {
                      Navigator.of(context).push(
                                       MaterialPageRoute(
-                                          builder: (context) => BlocProvider(
+                                          builder: (context) =>
+                                           BlocProvider(
                                                 create: (context) => ChatDetailBloc(
                                                     chatRepository: sl()),
                                                 child: ChatRoom(
                                                   roomId:state.roomEntity.id,
                                                 ),
-                                              )),
+                                              )
+                                              ),
                                     );
                    }
                   },

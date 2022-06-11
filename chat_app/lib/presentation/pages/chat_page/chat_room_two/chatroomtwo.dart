@@ -1,9 +1,6 @@
-import 'dart:convert';
+
 import 'dart:developer';
 import 'dart:io';
-
-import 'package:chat_app/domain/entities/user_active_entity.dart';
-import 'package:chat_app/helper/constant.dart';
 import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
 import 'package:chat_app/presentation/bloc/message_setting/message_setting_bloc.dart';
 import 'package:chat_app/presentation/pages/chat_page/call_video/video_call_agora_2.dart';
@@ -12,7 +9,6 @@ import 'package:chat_app/presentation/pages/chat_page/chat_room_two/option.dart'
 import 'package:chat_app/utils/account.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -52,14 +48,11 @@ class _ChatRoomState extends State<ChatRoom> {
     log('init state chat room two view');
     _scrollController = ScrollController();
     _chatDetailBloc = BlocProvider.of<ChatDetailBloc>(context);
-    // _chatDetailBloc.add(ChatDetailLoadInit(roomId: roomOverview.id));
     _scrollController.addListener(_fetchWhenScroll);
   }
 
   @override
   void dispose() {
-    // _scrollController.dispose();
-    // _chatDetailBloc.dispose();
     super.dispose();
   }
 

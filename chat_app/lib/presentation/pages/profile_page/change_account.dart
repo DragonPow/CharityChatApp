@@ -1,16 +1,15 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
 import 'package:chat_app/helper/helper.dart';
-import 'package:chat_app/main.dart';
 import 'package:chat_app/presentation/components/avatarcicle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
 
 import '../../../dependencies_injection.dart';
 import '../../../utils/account.dart';
 import '../../bloc/login/login_bloc.dart';
-import '../../bloc/main_bloc/main_bloc_bloc.dart';
 import '../login_page/login_page.dart';
 
 class ChangeAccount extends StatelessWidget {
@@ -85,7 +84,12 @@ class ChangeAccount extends StatelessWidget {
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.all(15.0),
           child: ElevatedButton(
-            onPressed: () => {},
+            onPressed: () async => {
+               await LaunchApp.openApp(
+                    androidPackageName: 'com.example.charityapp',
+                    openStore: false
+                  )
+            },
             child: Text(
               "Tạo tài khoản mới",
               style: kText18RegularWhite,

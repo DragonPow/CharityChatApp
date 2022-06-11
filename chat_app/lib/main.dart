@@ -1,6 +1,4 @@
-import 'package:agora_uikit/agora_uikit.dart';
 import 'package:chat_app/configs/colorconfig.dart';
-import 'package:chat_app/helper/constant.dart';
 import 'package:chat_app/helper/network/socket_service.dart';
 import 'package:chat_app/presentation/bloc/active_user/active_user_bloc.dart';
 import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
@@ -17,6 +15,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dependencies_injection.dart' as di;
 import 'dependencies_injection.dart';
 import 'presentation/bloc/main_bloc/main_bloc_bloc.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,6 +44,7 @@ void main() async {
 
 Future<void> initMain() async {
   await di.init();
+  getPackage();
   final socket = sl<SocketService>();
   socket.connect();
   socket.addEventReconnect((data) async {
@@ -52,6 +52,15 @@ Future<void> initMain() async {
     socket.emit('online', token);
   });
 }
+
+ void getPackage() async {
+    PackageInfo? packageInfo = await PackageInfo.fromPlatform();
+    String appName = packageInfo!.appName;
+    String packageName = packageInfo!.packageName;
+    String version = packageInfo!.version;
+    String buildNumber = packageInfo!.buildNumber;
+    print("App Name : ${appName}, App Package Name: ${packageName },App Version: ${version}, App build Number: ${buildNumber}");
+  }
 
 // Future<void> testLogin() async {
 //   final storage = sl<LocalStorageService>();
