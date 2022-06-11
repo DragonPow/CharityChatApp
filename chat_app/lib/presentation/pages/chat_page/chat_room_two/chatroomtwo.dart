@@ -101,7 +101,7 @@ class _ChatRoomState extends State<ChatRoom> {
                     alignment: AlignmentDirectional.centerStart,
                     child: Text(
                       'Photo',
-                      style: kText15RegularMain,
+                      style: kText15RegularBlack,
                     ),
                   ),
                 ),
@@ -112,14 +112,14 @@ class _ChatRoomState extends State<ChatRoom> {
                   },
                   child: Align(
                     alignment: AlignmentDirectional.centerStart,
-                    child: Text('File', style: kText15RegularMain),
+                    child: Text('File', style: kText15RegularBlack),
                   ),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Align(
                     alignment: AlignmentDirectional.centerStart,
-                    child: Text('Hủy', style: kText15RegularMain),
+                    child: Text('Hủy', style: kText15RegularBlack),
                   ),
                 ),
               ],
@@ -282,6 +282,14 @@ class _ChatRoomState extends State<ChatRoom> {
         centerTitle: false,
         toolbarHeight: 100.h,
         titleSpacing: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: cwColorBlack,
+          ),
+          onPressed: () =>
+              {Navigator.of(context).popUntil((route) => route.isFirst)},
+        ),
         title: Row(
           children: [
             CircleAvatar(

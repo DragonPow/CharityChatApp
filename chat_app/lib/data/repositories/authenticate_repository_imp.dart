@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:chat_app/dependencies_injection.dart';
 import 'package:chat_app/domain/repositories/authenticate_repository.dart';
 import 'package:chat_app/helper/constant.dart';

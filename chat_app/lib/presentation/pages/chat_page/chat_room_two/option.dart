@@ -114,113 +114,115 @@ class OptionChatRoom extends StatelessWidget {
 
     return Scaffold(
       appBar: getAppBar(),
-      body: Column(children: [
-        SizedBox(
-          height: 30.h,
-        ),
-        AvatarCicle(imgUrl: currentAccount[0]['img'], radius: 120),
-        SizedBox(
-          height: 10.h,
-        ),
-        Text(
-          currentAccount[0]['name'],
-          style: kText24BoldBlack,
-        ),
-        SizedBox(
-          height: 20.h,
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 90.w),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Center(
-                child: Ink(
-                  decoration: const ShapeDecoration(
-                    color: cwColor25GreyNoteText,
-                    shape: CircleBorder(),
-                  ),
-                  child: IconButton(
-                    icon: Padding(
-                      padding: EdgeInsets.only(bottom: 3.h),
-                      child: const Icon(
-                        Icons.people,
-                        size: 30,
-                      ),
-                    ),
-                    color: cwColorBlack,
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-              Center(
-                child: Ink(
-                  decoration: const ShapeDecoration(
-                    color: cwColor25GreyNoteText,
-                    shape: CircleBorder(),
-                  ),
-                  child: IconButton(
-                    icon: Padding(
-                      padding: EdgeInsets.only(bottom: 3.h),
-                      child: const Icon(
-                        FontAwesomeIcons.video,
-                        size: 25,
-                      ),
-                    ),
-                    color: cwColorBlack,
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-              Center(
-                child: Ink(
-                  decoration: const ShapeDecoration(
-                    color: cwColor25GreyNoteText,
-                    shape: CircleBorder(),
-                  ),
-                  child: IconButton(
-                    icon: Padding(
-                      padding: EdgeInsets.only(bottom: 3.h),
-                      child: const Icon(
-                        FontAwesomeIcons.phone,
-                        size: 25,
-                      ),
-                    ),
-                    color: cwColorBlack,
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-            ],
+      body: SingleChildScrollView(
+        child: Column(children: [
+          SizedBox(
+            height: 30.h,
           ),
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        Option(
-          label: "Tìm kiếm trong cuộc trò chuyện ",
-          iconData: Icons.search,
-          colorIcon: cwColorGreyNoteText,
-          onTap: onTapSearchInChat,
-        ),
-        Option(
-            label: "File và hình ảnh  ",
-            iconData: Icons.image_outlined,
+          AvatarCicle(imgUrl: room.avatarUrl ?? "", radius: 120),
+          SizedBox(
+            height: 10.h,
+          ),
+          Text(
+            room.name,
+            style: kText24BoldBlack,
+          ),
+          SizedBox(
+            height: 20.h,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 90.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Center(
+                  child: Ink(
+                    decoration: const ShapeDecoration(
+                      color: cwColor25GreyNoteText,
+                      shape: CircleBorder(),
+                    ),
+                    child: IconButton(
+                      icon: Padding(
+                        padding: EdgeInsets.only(bottom: 3.h),
+                        child: const Icon(
+                          Icons.people,
+                          size: 30,
+                        ),
+                      ),
+                      color: cwColorBlack,
+                      onPressed: () {},
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Ink(
+                    decoration: const ShapeDecoration(
+                      color: cwColor25GreyNoteText,
+                      shape: CircleBorder(),
+                    ),
+                    child: IconButton(
+                      icon: Padding(
+                        padding: EdgeInsets.only(bottom: 3.h),
+                        child: const Icon(
+                          FontAwesomeIcons.video,
+                          size: 25,
+                        ),
+                      ),
+                      color: cwColorBlack,
+                      onPressed: () {},
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Ink(
+                    decoration: const ShapeDecoration(
+                      color: cwColor25GreyNoteText,
+                      shape: CircleBorder(),
+                    ),
+                    child: IconButton(
+                      icon: Padding(
+                        padding: EdgeInsets.only(bottom: 3.h),
+                        child: const Icon(
+                          FontAwesomeIcons.phone,
+                          size: 25,
+                        ),
+                      ),
+                      color: cwColorBlack,
+                      onPressed: () {},
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Option(
+            label: "Tìm kiếm trong cuộc trò chuyện ",
+            iconData: Icons.search,
             colorIcon: cwColorGreyNoteText,
-            onTap: onTapImageAndFile),
-        Option(
-          label: "Đặt biệt danh  ",
-          iconData: Icons.edit,
-          colorIcon: cwColorGreyNoteText,
-          onTap: onTapMakeNickName,
-        ),
-        Option(
-          label: "Chặn người dùng  ",
-          iconData: FontAwesomeIcons.ban,
-          colorIcon: cwColorRed,
-          onTap: onTapBan,
-        ),
-      ]),
+            onTap: onTapSearchInChat,
+          ),
+          Option(
+              label: "File và hình ảnh  ",
+              iconData: Icons.image_outlined,
+              colorIcon: cwColorGreyNoteText,
+              onTap: onTapImageAndFile),
+          Option(
+            label: "Đặt biệt danh  ",
+            iconData: Icons.edit,
+            colorIcon: cwColorGreyNoteText,
+            onTap: onTapMakeNickName,
+          ),
+          Option(
+            label: "Chặn người dùng  ",
+            iconData: FontAwesomeIcons.ban,
+            colorIcon: cwColorRed,
+            onTap: onTapBan,
+          ),
+        ]),
+      ),
     );
   }
 
@@ -228,12 +230,11 @@ class OptionChatRoom extends StatelessWidget {
     return AppBar(
       iconTheme: const IconThemeData(color: cwColorBlackIcon),
       backgroundColor: cwColorBackground,
-      toolbarHeight: 70.h,
       centerTitle: true,
       elevation: 0,
       title: Text(
         "Tùy chỉnh ",
-        style: kText20MediumBlack,
+        style: kText17BoldBlack,
       ),
     );
   }

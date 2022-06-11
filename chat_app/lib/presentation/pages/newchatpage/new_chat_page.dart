@@ -186,7 +186,7 @@ class _NewChatPage extends State<NewChatPage> {
                         if (state is NewMessageLoadFail) {
                           return const Text("Load fail");
                         } else {
-                          return const Text("Loading ");
+                          return const SkeletonloaderAddMem();
                         }
                       }
                     },

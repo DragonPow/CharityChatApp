@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../configs/fontconfig.dart';
 import '../../../dependencies_injection.dart';
 import '../../bloc/chat_detail/chat_detail_bloc.dart';
+import '../chat_page/add_people/add_people.dart';
 import '../chat_page/chat_room_two/chatroomtwo.dart';
 
 class SearchNewGroup extends StatefulWidget {
@@ -138,7 +139,7 @@ class _SearchNewGroupState extends State<SearchNewGroup> {
                                 );
                               });
                         } else {
-                          return const Text("Load fail");
+                          return const SkeletonloaderAddMem();
                         }
                       },
                     );

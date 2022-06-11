@@ -6,10 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../bloc/login/login_bloc.dart';
+import '../../bloc/root_app/root_app_bloc.dart';
 import '../../components/password_input.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  final bool isChangeAccount;
+  const LoginPage({Key? key, this.isChangeAccount = false}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -38,6 +40,12 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: cwColorWhite,
+        elevation: 0,
+        iconTheme:const IconThemeData(color: cwColorBlack),
+        leading: widget.isChangeAccount? IconButton(icon:  const Icon(Icons.arrow_back), onPressed: () =>Navigator.of(context).pop(),) : null
+      ),
       backgroundColor: cwColorWhite,
       body: Center(
         child: SingleChildScrollView(
@@ -46,9 +54,9 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Image(
-                    image: AssetImage("assets/images/defauldavatar.png")),
+                    image: AssetImage("assets/images/logo.png")),
                 SizedBox(
-                  height: 10.h,
+                  height: 15.h,
                 ),
                 Text(
                   "Đăng nhập vào tài khoản của bạn",
@@ -105,7 +113,10 @@ class _LoginPageState extends State<LoginPage> {
                 BlocConsumer<LoginBloc, LoginState>(
                   listener: (context, state) {
                     if (state is LoginSuccess) {
+                      BlocProvider.of<RootAppBloc>(context).add(const RootAppChangeTap(tap: 0));
                       BlocProvider.of<MainBlocBloc>(context).add(MainBlocLogin());
+                      if(widget.isChangeAccount) Navigator.of(context).popUntil((route) => route.isFirst);
+                     // Navigator.pushAndRemoveUntil(context, newRoute, (route) => false)
                     } else {
                       if (state is LoginWrongPassOrEmail) {
                         showDialog<String>(
