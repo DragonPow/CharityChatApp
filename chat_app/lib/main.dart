@@ -36,6 +36,7 @@ void main() async {
         create: (context) => RootAppBloc(),
       ),
     ],
+
     child: const MyApp(),
   ));
 }
@@ -68,9 +69,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!isChangeAccount) {
-      BlocProvider.of<MainBlocBloc>(context).add(MainBlocCheck());
-    }
+    if (!isChangeAccount)
+     { BlocProvider.of<MainBlocBloc>(context).add(MainBlocCheck());}
+
     sl<SocketService>().addEventListener('request-login', (_) {
       BlocProvider.of<MainBlocBloc>(context).add(MainBlocLogout());
     });

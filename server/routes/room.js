@@ -143,13 +143,15 @@ class RoomInputValidateBuilder {
     },
     typeRoom: {
       in: ["body"],
-      isIn: {
-        options: [["private", "group"]],
-        errorMessage: "Must be 'private' or 'group'",
-      },
+      isArray: true,
       optional: true,
     },
+    aliasJoiners: {
+      in: ["body"],
+      optional: true,
+    }
   });
+  
 
   static onChangeJoiners = checkSchema({
     addedJoiners: {

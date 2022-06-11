@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:chat_app/domain/entities/user_active_entity.dart';
+import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
 import 'package:chat_app/presentation/bloc/message_setting/message_setting_bloc.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/custom_chatroom_theme.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/option.dart';
@@ -30,8 +31,8 @@ import '../../../bloc/chat_detail/chat_detail_bloc.dart';
 import '../../calling_page/call_sample.dart';
 
 class ChatRoom extends StatefulWidget {
-  final RoomOverviewEntity roomOverview;
-  const ChatRoom({Key? key, required this.roomOverview}) : super(key: key);
+  final String roomId;
+  const ChatRoom({Key? key, required this.roomId}) : super(key: key);
 
   @override
   _ChatRoomState createState() => _ChatRoomState();
@@ -41,6 +42,7 @@ class _ChatRoomState extends State<ChatRoom> {
   final _user = types.User(id: Account.instance!.id); // id of current user
   late final ChatDetailBloc _chatDetailBloc;
   late ScrollController _scrollController;
+  late RoomOverviewEntity roomOverview;
 
   @override
   void initState() {
@@ -48,8 +50,7 @@ class _ChatRoomState extends State<ChatRoom> {
     log('init state chat room two view');
     _scrollController = ScrollController();
     _chatDetailBloc = BlocProvider.of<ChatDetailBloc>(context);
-    // _chatDetailBloc.add(ChatDetailLoadInit(roomId: widget.roomOverview.id));
-
+    // _chatDetailBloc.add(ChatDetailLoadInit(roomId: roomOverview.id));
     _scrollController.addListener(_fetchWhenScroll);
   }
 
@@ -70,7 +71,7 @@ class _ChatRoomState extends State<ChatRoom> {
           !_chatDetailBloc.state.isLoadFull) {
         _chatDetailBloc.add(ChatDetailLoad(
           number: 10,
-          roomId: widget.roomOverview.id,
+          roomId: roomOverview.id,
           startIndex: _chatDetailBloc.state.listSortedMessage.length,
         ));
       }
@@ -148,7 +149,7 @@ class _ChatRoomState extends State<ChatRoom> {
 
       _chatDetailBloc.add(ChatDetailSend(
         content: null,
-        roomId: widget.roomOverview.id,
+        roomId: roomOverview.id,
         file: File(result.files.single.path!),
       ));
     }
@@ -178,7 +179,7 @@ class _ChatRoomState extends State<ChatRoom> {
 
       _chatDetailBloc.add(ChatDetailSend(
         content: null,
-        roomId: widget.roomOverview.id,
+        roomId: roomOverview.id,
         file: File(result.path),
       ));
     }
@@ -213,7 +214,7 @@ class _ChatRoomState extends State<ChatRoom> {
     );
 
     _chatDetailBloc.add(ChatDetailSend(
-        content: message.text, roomId: widget.roomOverview.id, file: null));
+        content: message.text, roomId: roomOverview.id, file: null));
   }
 
   // void _loadMessages() async {
@@ -229,6 +230,9 @@ class _ChatRoomState extends State<ChatRoom> {
 
   @override
   Widget build(BuildContext context) {
+    final allRoom =
+        context.select((ChatOverviewBloc bloc) => bloc.state.listSortedRoom);
+    roomOverview = allRoom.firstWhere((element) => element.id == widget.roomId);
     return Scaffold(
         appBar: getAppBar(),
         body: SafeArea(
@@ -240,8 +244,8 @@ class _ChatRoomState extends State<ChatRoom> {
                     scrollController: _scrollController,
                     showUserAvatars: true,
                     showUserNames: true,
-                    messages:
-                        parsedEntityMessageToMessages(state.listSortedMessage),
+                    messages: parsedEntityMessageToMessages(
+                        state.listSortedMessage, roomOverview.joiners),
                     onAttachmentPressed: _handleAtachmentPressed,
                     onMessageTap: _handleMessageTap,
                     //onPreviewDataFetched: _handlePreviewDataFetched,
@@ -294,10 +298,10 @@ class _ChatRoomState extends State<ChatRoom> {
           children: [
             CircleAvatar(
                 radius: 22.w,
-                backgroundImage: widget.roomOverview.avatarUrl == null
+                backgroundImage: roomOverview.avatarUrl == null
                     ? const AssetImage("assets/images/defauldavatar.png")
                         as ImageProvider
-                    : NetworkImage(widget.roomOverview.avatarUrl!)),
+                    : NetworkImage(roomOverview.avatarUrl!)),
             SizedBox(
               width: 5.w,
             ),
@@ -308,7 +312,7 @@ class _ChatRoomState extends State<ChatRoom> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(widget.roomOverview.name,
+                  Text(roomOverview.name,
                       style: kText15MediumBlack, overflow: TextOverflow.clip),
                   Text(
                     "online",
@@ -363,9 +367,10 @@ class _ChatRoomState extends State<ChatRoom> {
                         context,
                         MaterialPageRoute(
                             builder: (_) => BlocProvider(
-                                  create: (context) => MessageSettingBloc(sl()),
+                                  create: (context) =>
+                                      MessageSettingBloc(sl(), sl()),
                                   child: OptionChatRoom(
-                                    room: widget.roomOverview,
+                                    room: roomOverview,
                                   ),
                                 )),
                       );

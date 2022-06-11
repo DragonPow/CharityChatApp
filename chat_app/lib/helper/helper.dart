@@ -6,6 +6,7 @@ import 'package:chat_app/helper/enum.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import '../domain/entities/base_user_entity.dart';
+import '../domain/entities/user_room_entity.dart';
 
 Map<String, dynamic> parsedJsonToMap(String response) {
   final parsed = json.decode(response).cast<Map<String, dynamic>>();
@@ -33,12 +34,18 @@ int getSizeFile(File file) {
 }
 
 List<types.Message> parsedEntityMessageToMessages(
-    List<MessageEntity> messages) {
+    List<MessageEntity> messages, List<UserRoomEntity> joiners) {
   return messages.map((message) {
+    UserRoomEntity? findUser;
+    try {
+    findUser = joiners.firstWhere((user) => user.id == message.creator.id);
+    } catch (e) {
+      findUser = null;
+    };
     final author = types.User(
         id: message.creator.id,
         imageUrl: message.creator.avatarUri,
-        firstName: message.creator.name);
+        firstName: findUser?.nameAlias ?? message.creator.name);
     final status = message.state == MessageState.sending
         ? types.Status.sending
         : message.state == MessageState.error

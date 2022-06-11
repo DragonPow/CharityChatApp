@@ -1,33 +1,45 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
+import 'package:chat_app/domain/entities/user_room_entity.dart';
+import 'package:chat_app/presentation/bloc/message_setting/message_setting_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MakeNickName extends StatelessWidget {
-  const MakeNickName({Key? key}) : super(key: key);
+  final List<UserRoomEntity> listJoiner;
+  final String roomId;
+  const MakeNickName({Key? key, required this.listJoiner, required this.roomId})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: getAppBar(),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: const [
-          NickName(
-            imgUrl:
-                'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
-            name: "Huynh Thi Minh Nhuc",
-            nickName: "Be iu",
-          ),
-           NickName(
-            imgUrl:
-                'https://images.unsplash.com/photo-1566492031773-4f4e44671857?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjB8fGF2YXRhcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60',
-            name: "Tan Thanh",
-            nickName: "Ba iu",
-          )
-        ]),
-      ),
+          padding: const EdgeInsets.all(20.0),
+          child: ListView.builder(
+            // physics: const NeverScrollableScrollPhysics(),
+            // shrinkWrap: true,
+            itemCount: listJoiner.length,
+            itemBuilder: (BuildContext context, int index) {
+              return NickName(
+                  id: listJoiner[index].id,
+                  imgUrl: listJoiner[index].avatarUri,
+                  name: listJoiner[index].name,
+                  nickName: listJoiner[index].nameAlias,
+                  onClickChangeAlias: (String? alias) {
+                    BlocProvider.of<MessageSettingBloc>(context)
+                        .add(MessageSettingChangeNameAlias(
+                      newNameAlias: {
+                        listJoiner[index].id: alias,
+                      },
+                      roomId: roomId,
+                    ));
+                    // listJoiner[index] = listJoiner[index].copyWith(nameAlias: alias);
+                  });
+            },
+          )),
     );
   }
 
@@ -45,38 +57,81 @@ class MakeNickName extends StatelessWidget {
   }
 }
 
-class NickName extends StatelessWidget {
-  final String imgUrl;
+class NickName extends StatefulWidget {
+  final String id;
+  final String? imgUrl;
   final String? nickName;
   final String name;
-  const NickName(
-      {Key? key, required this.imgUrl, this.nickName, required this.name})
-      : super(key: key);
+  final Function(String? alias)? onClickChangeAlias;
+  const NickName({
+    Key? key,
+    required this.id,
+    required this.imgUrl,
+    this.nickName,
+    required this.name,
+    this.onClickChangeAlias,
+  }) : super(key: key);
+
+  @override
+  State<NickName> createState() => _NickNameState();
+}
+
+class _NickNameState extends State<NickName> {
+  late TextEditingController nickNameController;
+  @override
+  void initState() {
+    super.initState();
+
+    nickNameController = TextEditingController(text: widget.nickName);
+  }
+
+  @override
+  void dispose() {
+    nickNameController.dispose();
+    super.dispose();
+  }
+
+  void onTap(String nickname) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(
+          'Chỉnh sửa biệt danh',
+          style: ktext17RegularBlack,
+        ),
+        content: TextFormField(
+          controller: nickNameController,
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Hủy'),
+            child: Text(
+              'Hủy',
+              style: kText15RegularMain,
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, 'Lưu');
+              // if (nickNameController.text.isNotEmpty) {
+              widget.onClickChangeAlias?.call(nickNameController.text.isEmpty
+                  ? null
+                  : nickNameController.text);
+              // }
+              setState(() {});
+            },
+            child: Text(
+              'Lưu',
+              style: kText15RegularMain,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-
-    void onTap(String nickname) {
-      TextEditingController nickNameController = TextEditingController(text: nickName);
-       showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title:Text('Chỉnh sửa biệt danh', style: ktext17RegularBlack,),
-          content: TextFormField(controller: nickNameController,),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'Hủy'),
-              child: Text('Hủy',style: kText15RegularMain,),
-            ),
-             TextButton(
-              onPressed: () => Navigator.pop(context, 'Lưu'),
-              child: Text('Lưu', style: kText15RegularMain,),
-            ),
-          ],
-        ),
-      );
-    }
-
     return InkWell(
       child: Column(
         children: [
@@ -84,7 +139,10 @@ class NickName extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 25.h,
-                backgroundImage: NetworkImage(imgUrl),
+                backgroundImage: widget.imgUrl != null
+                    ? NetworkImage(widget.imgUrl!)
+                    : const AssetImage("assets/images/defauldavatar.png")
+                        as ImageProvider,
               ),
               SizedBox(
                 width: 10.w,
@@ -93,24 +151,28 @@ class NickName extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    nickName == null ? name : nickName!,
+                    nickNameController.text.isEmpty ? widget.name : nickNameController.text,
                     style: kText15BoldBlack,
                   ),
                   SizedBox(
                     height: 3.h,
                   ),
                   Text(
-                    name,
+                    widget.name,
                     style: kText13RegularNote,
                   )
                 ],
               )
             ],
           ),
-          SizedBox(height: 15.h,)
+          SizedBox(
+            height: 15.h,
+          )
         ],
       ),
-      onTap: () =>  onTap(nickName == null? name : nickName!),
+      onTap: () {
+        onTap(widget.nickName == null ? widget.name : widget.nickName!);
+      },
     );
   }
 }

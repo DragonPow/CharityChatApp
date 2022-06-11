@@ -111,7 +111,7 @@ class _SearchNewGroupState extends State<SearchNewGroup> {
                                                 create: (context) => ChatDetailBloc(
                                                     chatRepository: sl()),
                                                 child: ChatRoom(
-                                                  roomOverview:state.roomEntity,
+                                                  roomId:state.roomEntity.id,
                                                 ),
                                               )),
                                     );

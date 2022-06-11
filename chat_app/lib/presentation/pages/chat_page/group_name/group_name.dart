@@ -151,11 +151,11 @@ class _GroupName extends State<GroupName> {
               if (state is MakeNameGroupCreateSuccess) {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (context) => BlocProvider(
+                      builder: (_) => BlocProvider(
                             create: (context) =>
                                 ChatDetailBloc(chatRepository: sl()),
                             child: ChatRoom(
-                              roomOverview: state.roomEntity,
+                              roomId: state.roomEntity.id,
                             ),
                           )),
                 );

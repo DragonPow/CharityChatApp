@@ -138,7 +138,7 @@ class _NewChatPage extends State<NewChatPage> {
                                   create: (context) =>
                                       ChatDetailBloc(chatRepository: sl()),
                                   child: ChatRoom(
-                                    roomOverview: state.roomOverviewEntity,
+                                    roomId: state.roomOverviewEntity.id,
                                   ),
                                 )));
                   }

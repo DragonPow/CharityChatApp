@@ -27,7 +27,7 @@ class SocketService {
   final _socket = IO.io(socketUrl, <String, dynamic>{
     'transports': ['websocket'],
     'autoConnect': true,
-    'connect_timeout': 120,
+    'connect_timeout': 210,
   });
   // final _streamSocket = StreamSocket();
   // StreamSocket get stream => _streamSocket;

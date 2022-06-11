@@ -21,6 +21,8 @@ abstract class IRoomRepository {
   Future<bool> addUser(String roomId, String userId);
   Future<bool> removeUser(String roomId, String userId);
 
+  Future<bool> changeNameAlias(Map<String,String?> nameAlias, String roomId);
+
   Future<List<RoomOverviewEntity>> getRoomOverviews(String userId , int startIndex, int number,String searchtype);
 
 }

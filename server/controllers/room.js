@@ -47,7 +47,12 @@ export default {
           .filter((item) =>
             Array.from(item.container).some((room) => room.id == i.id)
           )
-          .map(({ container, ...item }) => item);
+          .map(({ container, ...item }) => {
+            const a= [1,2,3];
+            a.find(i=>i==1);
+            const alias = container.find(small=>small.id === i.id);
+            return {...item, nameAlias: alias?.UserRoom.nameAlias ?? null};
+          });
         i.joiners = list;
       });
 
@@ -193,8 +198,10 @@ export default {
   },
   onChangeInfo: async (req, res, next) => {
     const { roomId } = req.params;
-    const { roomName, typeRoom } = req.body;
+    const { roomName, typeRoom, aliasJoiners } = req.body;
     const image = req.file;
+
+    console.log('AliasJoiners', JSON.parse(aliasJoiners));
 
     try {
       // Check file is image
@@ -213,7 +220,8 @@ export default {
         roomId,
         roomName,
         imageUrl,
-        typeRoom
+        typeRoom,
+        JSON.parse(aliasJoiners),
       );
 
       MyNotifySocket.RoomUpdate([roomId]);

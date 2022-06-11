@@ -46,7 +46,10 @@ class OptionChatRoom extends StatelessWidget {
         MaterialPageRoute(
             builder: (_) => BlocProvider.value(
                   value: BlocProvider.of<MessageSettingBloc>(context),
-                  child: const MakeNickName(),
+                  child: MakeNickName(
+                    listJoiner: room.joiners,
+                    roomId: room.id,
+                  ),
                 )),
       );
     }

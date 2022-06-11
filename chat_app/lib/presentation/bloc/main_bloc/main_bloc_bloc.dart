@@ -42,6 +42,7 @@ class MainBlocBloc extends Bloc<MainBlocEvent, MainBlocState> {
         }
       } catch (e) {
         print("ERROR CHECK USER ADREADY LOGIN?");
+        print(e);
       }
     }
   }
