@@ -59,10 +59,6 @@ class _VideoCallAgoraState extends State<VideoCallAgora> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Agora'),
-          centerTitle: true,
-        ),
         body: Stack(children: [
           AgoraVideoViewer(
             client: agoraClient,

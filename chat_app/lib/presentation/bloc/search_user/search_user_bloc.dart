@@ -17,11 +17,13 @@ part 'search_user_state.dart';
 class SearchUserBloc extends Bloc<SearchUserEvent, SearchUserState> {
   final IUserRepository _iUserRepository;
   final IRoomRepository _iRoomRepository;
-  SearchUserBloc(this._iUserRepository, this._iRoomRepository) : super(SearchUserInitial()) {
+  SearchUserBloc(this._iUserRepository, this._iRoomRepository)
+      : super(SearchUserInitial()) {
     on<SearchUserLoad>(_mapSearchUserLoadToState);
     on<SearchUserSearch>(
       _mapSearchUserSearchToState,
-      transformer: (events, mapper) => events.debounce(const Duration(seconds: 1)).asyncExpand(mapper),
+      transformer: (events, mapper) =>
+          events.debounce(const Duration(seconds: 1)).asyncExpand(mapper),
     );
     on<SearchUserOpenRoom>(_mapSearchUserOpenRoomToState);
   }
@@ -52,13 +54,23 @@ class SearchUserBloc extends Bloc<SearchUserEvent, SearchUserState> {
     }
   }
 
-  FutureOr<void> _mapSearchUserOpenRoomToState(SearchUserOpenRoom event, Emitter<SearchUserState> emit) async{
-   try{
-     final RoomOverviewEntity roomEntity = await _iRoomRepository.findPrivateRoomsByUserId(event.otherUser);
-     emit(SearchUserOpenRoomSuccess(roomEntity: roomEntity));
-   }
-   catch(e){
-     emit(SearchUserOpenRoomFail());
-   }
+  FutureOr<void> _mapSearchUserOpenRoomToState(
+      SearchUserOpenRoom event, Emitter<SearchUserState> emit) async {
+        emit(SearchUserLoading());
+    try {
+      final RoomOverviewEntity roomEntity =
+          await _iRoomRepository.findPrivateRoomsByUserId(event.otherUser);
+      emit(SearchUserOpenRoomComplete(roomEntity: roomEntity));
+    } catch (e) {
+      emit(SearchUserOpenRoomComplete(
+          roomEntity: RoomOverviewEntity(
+        id: "-1",
+        joiners: [],
+        name: 'Phòng mới',
+        lastMessage: null,
+        type: 'private',
+        avatarUrl: null,
+      )));
+    }
   }
 }

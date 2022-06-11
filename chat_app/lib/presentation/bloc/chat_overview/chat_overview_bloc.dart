@@ -4,10 +4,12 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:chat_app/domain/entities/room_overview_entity.dart';
+import 'package:chat_app/domain/entities/user_room_entity.dart';
 import 'package:chat_app/domain/repositories/room_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:chat_app/utils/account.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 part 'chat_overview_event.dart';
@@ -41,7 +43,8 @@ class ChatOverviewBloc extends Bloc<ChatOverviewEvent, ChatOverviewState> {
 
   _combineListRoom(
       List<RoomOverviewEntity> source, List<RoomOverviewEntity> dest) {
-    final newSource = [...source]..retainWhere((s) => !dest.any((d) => s.id == d.id));
+    final newSource = [...source]
+      ..retainWhere((s) => !dest.any((d) => s.id == d.id));
     return [...newSource, ...dest];
   }
 
@@ -94,7 +97,8 @@ class ChatOverviewBloc extends Bloc<ChatOverviewEvent, ChatOverviewState> {
     ));
     _streamRoom = _roomRepository.getStreamRoom();
     _streamRoom.stream.listen((rooms) {
-      add(ChatOverviewUpdate(rooms: rooms..retainWhere((room) => room.type == event.searchtype)));
+      add(ChatOverviewUpdate(
+          rooms: rooms..retainWhere((room) => room.type == event.searchtype)));
     });
   }
 

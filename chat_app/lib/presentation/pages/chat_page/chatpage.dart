@@ -449,6 +449,7 @@ class ShortChat extends StatelessWidget {
                                       roomOverview.lastMessage!.timeCreate)
                                   : "",
                               style: kText11RegularHintText,
+                              overflow: TextOverflow.visible,
                             )
                           ],
                         ),
@@ -463,19 +464,20 @@ class ShortChat extends StatelessWidget {
                                   ? ""
                                   : roomOverview.lastMessage!.getName,
                               style: kText11RegularHintText,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            Container(
-                              width: 20.w,
-                              height: 20.w,
-                              decoration: const BoxDecoration(
-                                  shape: BoxShape.circle, color: cwColorMain),
-                              child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    "10", //TODO: Remove it
-                                    style: kText11RegularWhite,
-                                  )),
-                            )
+                            // Container(
+                            //   width: 20.w,
+                            //   height: 20.w,
+                            //   decoration: const BoxDecoration(
+                            //       shape: BoxShape.circle, color: cwColorMain),
+                            //   child: Align(
+                            //       alignment: Alignment.center,
+                            //       child: Text(
+                            //         "10", //TODO: Remove it
+                            //         style: kText11RegularWhite,
+                            //       )),
+                            // )
                           ],
                         )
                       ],

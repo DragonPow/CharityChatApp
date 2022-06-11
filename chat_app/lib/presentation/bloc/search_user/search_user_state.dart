@@ -23,9 +23,9 @@ class SearchUserSucess extends SearchUserLoadSuccess {
 }
 class SearchUserFailed extends SearchUserState {}
 
-class SearchUserOpenRoomSuccess extends SearchUserState {
+class SearchUserOpenRoomComplete extends SearchUserState {
   final RoomOverviewEntity roomEntity;
-  const SearchUserOpenRoomSuccess({Key? key, required this.roomEntity});
+  const SearchUserOpenRoomComplete({Key? key, required this.roomEntity});
 }
 class SearchUserOpenRoomFail extends SearchUserState {
 }

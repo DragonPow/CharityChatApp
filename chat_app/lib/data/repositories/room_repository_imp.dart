@@ -177,22 +177,16 @@ class RoomRepositoryImp implements IRoomRepository {
     if (_token == null) throw Exception('Token required');
 
     final _uri = Uri.http(serverUrl, "/rooms/find", _queryParams);
+    print(_uri.toString());
 
-    final _response = await http.post(_uri, headers: {"token": _token});
+    final _response = await http.get(_uri, headers: {"token": _token});
     if (_response.statusCode == 200) {
       final jsonRes = json.decode(_response.body)["room"];
       final RoomOverviewEntity room =
           await RoomOverviewEntity.fromJson(jsonRes);
       return room;
     } else {
-      final RoomOverviewEntity room = RoomOverviewEntity(
-          id: "-1",
-          name: otherUser.name,
-          avatarUrl: null,
-          lastMessage: null,
-          type: 'private',
-          joiners: []);
-      return room;
+      throw Exception('Not found room');
     }
   }
 

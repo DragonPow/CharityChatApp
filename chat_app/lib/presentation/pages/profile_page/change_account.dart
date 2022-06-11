@@ -87,7 +87,7 @@ class ChangeAccount extends StatelessWidget {
             onPressed: () async => {
                await LaunchApp.openApp(
                     androidPackageName: 'com.example.charityapp',
-                    openStore: false
+                    openStore: false,
                   )
             },
             child: Text(

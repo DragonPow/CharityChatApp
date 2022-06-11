@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
 import 'package:chat_app/presentation/bloc/chat_overview/home_room_bloc.dart';
 import 'package:chat_app/presentation/bloc/message_setting/message_setting_bloc.dart';
-import 'package:chat_app/presentation/pages/chat_page/call_video/video_call_agora_2.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/custom_chatroom_theme.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/option.dart';
 import 'package:chat_app/utils/account.dart';
@@ -26,7 +25,6 @@ import '../../../../dependencies_injection.dart';
 import '../../../../domain/entities/room_overview_entity.dart';
 import '../../../../helper/helper.dart';
 import '../../../bloc/chat_detail/chat_detail_bloc.dart';
-import '../../calling_page/call_sample.dart';
 import '../call_video/video_call_agora.dart';
 
 class ChatRoom extends StatefulWidget {
@@ -307,7 +305,7 @@ class _ChatRoomState extends State<ChatRoom> {
               width: 5.w,
             ),
             SizedBox(
-              width: 130.w,
+              width: 100.w,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,

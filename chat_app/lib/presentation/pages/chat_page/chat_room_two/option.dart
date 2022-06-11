@@ -1,6 +1,5 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
-import 'package:chat_app/dataexample/current_account.dart';
 import 'package:chat_app/domain/entities/room_overview_entity.dart';
 import 'package:chat_app/presentation/bloc/message_setting/message_setting_bloc.dart';
 import 'package:chat_app/presentation/components/avatarcicle.dart';
@@ -60,7 +59,7 @@ class OptionChatRoom extends StatelessWidget {
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: Text(
-            'Tìm kiếm trong cuộc trò chuyện',
+            'Đặt tên cho cuộc trò chuyện',
             style: ktext17RegularBlack,
           ),
           content: TextFormField(),
@@ -69,13 +68,13 @@ class OptionChatRoom extends StatelessWidget {
               onPressed: () => Navigator.pop(context, 'Hủy'),
               child: Text(
                 'Hủy',
-                style: kText15RegularMain,
+                style: kText15RegularRed,
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, 'Tìm kiếm'),
+              onPressed: () => Navigator.pop(context, 'Lưu'),
               child: Text(
-                'Tìm kiếm',
+                'Lưu',
                 style: kText15RegularMain,
               ),
             ),
@@ -139,7 +138,7 @@ class OptionChatRoom extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Center(
+                 room.type == "group" ? Center(
                   child: Ink(
                     decoration: const ShapeDecoration(
                       color: cwColor25GreyNoteText,
@@ -157,7 +156,7 @@ class OptionChatRoom extends StatelessWidget {
                       onPressed: () {},
                     ),
                   ),
-                ),
+                ) : const SizedBox(width: 0,),
                 Center(
                   child: Ink(
                     decoration: const ShapeDecoration(
@@ -208,12 +207,6 @@ class OptionChatRoom extends StatelessWidget {
             height: 15,
           ),
           Option(
-            label: "Tìm kiếm trong cuộc trò chuyện ",
-            iconData: Icons.search,
-            colorIcon: cwColorGreyNoteText,
-            onTap: onTapSearchInChat,
-          ),
-          Option(
               label: "File và hình ảnh  ",
               iconData: Icons.image_outlined,
               colorIcon: cwColorGreyNoteText,
@@ -224,11 +217,12 @@ class OptionChatRoom extends StatelessWidget {
             colorIcon: cwColorGreyNoteText,
             onTap: onTapMakeNickName,
           ),
+          
           Option(
-            label: "Chặn người dùng  ",
-            iconData: FontAwesomeIcons.ban,
-            colorIcon: cwColorRed,
-            onTap: onTapBan,
+            label: "Đổi tên cuộc trò chuyện",
+            iconData: Icons.label,
+            colorIcon: cwColorGreyNoteText,
+            onTap: onTapSearchInChat,
           ),
         ]),
       ),
