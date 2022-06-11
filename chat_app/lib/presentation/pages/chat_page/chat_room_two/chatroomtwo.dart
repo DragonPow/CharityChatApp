@@ -1,7 +1,7 @@
-
 import 'dart:developer';
 import 'dart:io';
 import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
+import 'package:chat_app/presentation/bloc/chat_overview/home_room_bloc.dart';
 import 'package:chat_app/presentation/bloc/message_setting/message_setting_bloc.dart';
 import 'package:chat_app/presentation/pages/chat_page/call_video/video_call_agora_2.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/custom_chatroom_theme.dart';
@@ -30,8 +30,8 @@ import '../../calling_page/call_sample.dart';
 import '../call_video/video_call_agora.dart';
 
 class ChatRoom extends StatefulWidget {
-  final String roomId;
-  const ChatRoom({Key? key, required this.roomId}) : super(key: key);
+  final RoomOverviewEntity roomOverview;
+  const ChatRoom({Key? key, required this.roomOverview}) : super(key: key);
 
   @override
   _ChatRoomState createState() => _ChatRoomState();
@@ -41,7 +41,7 @@ class _ChatRoomState extends State<ChatRoom> {
   final _user = types.User(id: Account.instance!.id); // id of current user
   late final ChatDetailBloc _chatDetailBloc;
   late ScrollController _scrollController;
-  late RoomOverviewEntity roomOverview;
+  late RoomOverviewEntity _room;
 
   @override
   void initState() {
@@ -67,7 +67,7 @@ class _ChatRoomState extends State<ChatRoom> {
           !_chatDetailBloc.state.isLoadFull) {
         _chatDetailBloc.add(ChatDetailLoad(
           number: 10,
-          roomId: roomOverview.id,
+          roomId: widget.roomOverview.id,
           startIndex: _chatDetailBloc.state.listSortedMessage.length,
         ));
       }
@@ -145,7 +145,7 @@ class _ChatRoomState extends State<ChatRoom> {
 
       _chatDetailBloc.add(ChatDetailSend(
         content: null,
-        roomId: roomOverview.id,
+        roomId: widget.roomOverview.id,
         file: File(result.files.single.path!),
       ));
     }
@@ -175,7 +175,7 @@ class _ChatRoomState extends State<ChatRoom> {
 
       _chatDetailBloc.add(ChatDetailSend(
         content: null,
-        roomId: roomOverview.id,
+        roomId: widget.roomOverview.id,
         file: File(result.path),
       ));
     }
@@ -210,7 +210,7 @@ class _ChatRoomState extends State<ChatRoom> {
     );
 
     _chatDetailBloc.add(ChatDetailSend(
-        content: message.text, roomId: roomOverview.id, file: null));
+        content: message.text, roomId: widget.roomOverview.id, file: null));
   }
 
   // void _loadMessages() async {
@@ -226,9 +226,14 @@ class _ChatRoomState extends State<ChatRoom> {
 
   @override
   Widget build(BuildContext context) {
-    final allRoom =
-        context.select((ChatOverviewBloc bloc) => bloc.state.listSortedRoom);
-    roomOverview = allRoom.firstWhere((element) => element.id == widget.roomId);
+    _room = context
+        .select((ChatOverviewBloc bloc) => bloc.state)
+        .listSortedRoom
+        .firstWhere(
+          (i) => i.id == widget.roomOverview.id,
+          orElse: () => widget.roomOverview,
+        );
+
     return Scaffold(
         appBar: getAppBar(),
         body: SafeArea(
@@ -241,7 +246,7 @@ class _ChatRoomState extends State<ChatRoom> {
                     showUserAvatars: true,
                     showUserNames: true,
                     messages: parsedEntityMessageToMessages(
-                        state.listSortedMessage, roomOverview.joiners),
+                        state.listSortedMessage, _room.joiners),
                     onAttachmentPressed: _handleAtachmentPressed,
                     onMessageTap: _handleMessageTap,
                     //onPreviewDataFetched: _handlePreviewDataFetched,
@@ -294,10 +299,10 @@ class _ChatRoomState extends State<ChatRoom> {
           children: [
             CircleAvatar(
                 radius: 22.w,
-                backgroundImage: roomOverview.avatarUrl == null
+                backgroundImage: _room.avatarUrl == null
                     ? const AssetImage("assets/images/defauldavatar.png")
                         as ImageProvider
-                    : NetworkImage(roomOverview.avatarUrl!)),
+                    : NetworkImage(_room.avatarUrl!)),
             SizedBox(
               width: 5.w,
             ),
@@ -308,7 +313,7 @@ class _ChatRoomState extends State<ChatRoom> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(roomOverview.name,
+                  Text(_room.name,
                       style: kText15MediumBlack, overflow: TextOverflow.clip),
                   Text(
                     "online",
@@ -342,7 +347,8 @@ class _ChatRoomState extends State<ChatRoom> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (BuildContext context) => VideoCallAgora(roomId: roomOverview.id)));
+                          builder: (BuildContext context) =>
+                              VideoCallAgora(roomId: _room.id)));
                 }),
           ),
           Padding(
@@ -362,11 +368,12 @@ class _ChatRoomState extends State<ChatRoom> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
+                            settings: RouteSettings(name: _room.id),
                             builder: (_) => BlocProvider(
                                   create: (context) =>
                                       MessageSettingBloc(sl(), sl()),
                                   child: OptionChatRoom(
-                                    room: roomOverview,
+                                    room: _room,
                                   ),
                                 )),
                       );

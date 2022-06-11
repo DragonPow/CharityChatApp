@@ -52,6 +52,7 @@ class _VideoCallAgoraState extends State<VideoCallAgora> {
     })
   );
     await agoraClient.initialize();
+    // await agoraClient.engine.disableVideo();
   }
 
 

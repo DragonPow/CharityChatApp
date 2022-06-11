@@ -155,7 +155,7 @@ class _GroupName extends State<GroupName> {
                             create: (context) =>
                                 ChatDetailBloc(chatRepository: sl()),
                             child: ChatRoom(
-                              roomId: state.roomEntity.id,
+                              roomOverview: state.roomEntity,
                             ),
                           )),
                 );
