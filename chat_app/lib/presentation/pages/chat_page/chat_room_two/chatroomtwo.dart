@@ -27,6 +27,7 @@ import '../../../../domain/entities/room_overview_entity.dart';
 import '../../../../helper/helper.dart';
 import '../../../bloc/chat_detail/chat_detail_bloc.dart';
 import '../../calling_page/call_sample.dart';
+import '../call_video/video_call_agora.dart';
 
 class ChatRoom extends StatefulWidget {
   final String roomId;
@@ -341,7 +342,7 @@ class _ChatRoomState extends State<ChatRoom> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (BuildContext context) => VideoCallAgora2(channelName: roomOverview.id,username: Account.instance!.name,)));
+                          builder: (BuildContext context) => VideoCallAgora(roomId: roomOverview.id)));
                 }),
           ),
           Padding(

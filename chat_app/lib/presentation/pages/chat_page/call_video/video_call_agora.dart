@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../../../helper/constant.dart';
 
@@ -27,7 +28,7 @@ class _VideoCallAgoraState extends State<VideoCallAgora> {
 
   @override
   void dispose() {
-    agoraClient.sessionController.dispose();
+    agoraClient.engine.leaveChannel();
     super.dispose();
   }
 
@@ -42,10 +43,11 @@ class _VideoCallAgoraState extends State<VideoCallAgora> {
     agoraClient = AgoraClient(
     agoraConnectionData: AgoraConnectionData(
         appId: appId,
-        channelName: widget.roomId,
+        tempToken: token,
+        channelName: channelName,
         username: Account.instance!.name),
     enabledPermission: [Permission.camera, Permission.microphone],
-    agoraEventHandlers: AgoraRtcEventHandlers(userOffline: (i,r) {
+    agoraEventHandlers: AgoraRtcEventHandlers(leaveChannel: (r) {
       Navigator.of(context).pop();
     })
   );
