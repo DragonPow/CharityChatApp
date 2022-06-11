@@ -37,6 +37,8 @@ dependencies:
   flutter_webrtc: ^0.8.9
   flutter_downloader: ^1.7.4
   android_path_provider: ^0.3.0
+  agora_uikit: ^1.0.1
+  agora_rtm: ^1.1.1
 
 dev_dependencies:
   build_runner: ^2.1.8

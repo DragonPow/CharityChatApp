@@ -3,8 +3,10 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:chat_app/domain/entities/user_active_entity.dart';
+import 'package:chat_app/helper/constant.dart';
 import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
 import 'package:chat_app/presentation/bloc/message_setting/message_setting_bloc.dart';
+import 'package:chat_app/presentation/pages/chat_page/call_video/video_call_agora_2.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/custom_chatroom_theme.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/option.dart';
 import 'package:chat_app/utils/account.dart';
@@ -346,7 +348,7 @@ class _ChatRoomState extends State<ChatRoom> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (BuildContext context) => CallSample()));
+                          builder: (BuildContext context) => VideoCallAgora2(channelName: roomOverview.id,username: Account.instance!.name,)));
                 }),
           ),
           Padding(

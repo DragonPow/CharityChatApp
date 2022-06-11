@@ -1,4 +1,6 @@
+import 'package:agora_uikit/agora_uikit.dart';
 import 'package:chat_app/configs/colorconfig.dart';
+import 'package:chat_app/helper/constant.dart';
 import 'package:chat_app/helper/network/socket_service.dart';
 import 'package:chat_app/presentation/bloc/active_user/active_user_bloc.dart';
 import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
@@ -69,9 +71,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!isChangeAccount)
-     { BlocProvider.of<MainBlocBloc>(context).add(MainBlocCheck());}
-
+    if (!isChangeAccount) {
+      BlocProvider.of<MainBlocBloc>(context).add(MainBlocCheck());
+    }
     sl<SocketService>().addEventListener('request-login', (_) {
       BlocProvider.of<MainBlocBloc>(context).add(MainBlocLogout());
     });

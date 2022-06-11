@@ -6,6 +6,7 @@ import 'package:chat_app/presentation/bloc/message_setting/message_setting_bloc.
 import 'package:chat_app/presentation/components/avatarcicle.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/fileandimage.dart';
 import 'package:chat_app/presentation/pages/chat_page/chat_room_two/make_nickname.dart';
+import 'package:chat_app/presentation/pages/chat_page/call_video/video_call_agora.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -172,7 +173,12 @@ class OptionChatRoom extends StatelessWidget {
                         ),
                       ),
                       color: cwColorBlack,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => VideoCallAgora(
+                                  roomId: room.id,
+                                )));
+                      },
                     ),
                   ),
                 ),
