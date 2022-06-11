@@ -46,48 +46,48 @@ class _ProfilePage extends State<ProfilePage> {
           SizedBox(
             height: 20.h,
           ),
-          Option(
-            icon: FontAwesomeIcons.moon,
-            title: 'Chế độ ban đêm ',
-            isToggle: true,
-            backgoundColor: cwColorBlack,
-          ),
-          Option(
-            title: "Tin nhắn chờ ",
-            icon: FontAwesomeIcons.commentDots,
-            backgoundColor: cwColorMain,
-            onClick: () => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const WaitingChat()),
-              )
-            },
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(20.w, 10.h, 0, 5.h),
-            child: Row(
-              children: [
-                Text(
-                  "Tùy chọn ",
-                  style: kText15RegularGreyNotetext,
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-          Option(
-            icon: FontAwesomeIcons.ban,
-            title: 'Danh sách chặn ',
-            backgoundColor: cwColorRed,
-            onClick: () => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const BanList()),
-              )
-            },
-          ),
+          // Option(
+          //   icon: FontAwesomeIcons.moon,
+          //   title: 'Chế độ ban đêm ',
+          //   isToggle: true,
+          //   backgoundColor: cwColorBlack,
+          // ),
+          // Option(
+          //   title: "Tin nhắn chờ ",
+          //   icon: FontAwesomeIcons.commentDots,
+          //   backgoundColor: cwColorMain,
+          //   onClick: () => {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => const WaitingChat()),
+          //     )
+          //   },
+          // ),
+          // Padding(
+          //   padding: EdgeInsets.fromLTRB(20.w, 10.h, 0, 5.h),
+          //   child: Row(
+          //     children: [
+          //       Text(
+          //         "Tùy chọn ",
+          //         style: kText15RegularGreyNotetext,
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          // SizedBox(
+          //   height: 10.h,
+          // ),
+          // Option(
+          //   icon: FontAwesomeIcons.ban,
+          //   title: 'Danh sách chặn ',
+          //   backgoundColor: cwColorRed,
+          //   onClick: () => {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => const BanList()),
+          //     )
+          //   },
+          // ),
           Padding(
             padding: EdgeInsets.fromLTRB(20.w, 10.h, 0, 5.h),
             child: Row(
