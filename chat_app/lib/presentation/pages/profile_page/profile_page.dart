@@ -1,11 +1,14 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
+import 'package:chat_app/dataexample/helpQA.dart';
 import 'package:chat_app/helper/helper.dart';
 import 'package:chat_app/presentation/components/avatarcicle.dart';
+import 'package:chat_app/presentation/pages/profile_page/Regular.dart';
 
 import 'package:chat_app/presentation/pages/profile_page/ban_list.dart';
 
 import 'package:chat_app/presentation/pages/profile_page/change_account.dart';
+import 'package:chat_app/presentation/pages/profile_page/help.dart';
 import 'package:chat_app/presentation/pages/profile_page/waiting_chat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -114,13 +117,19 @@ class _ProfilePage extends State<ProfilePage> {
           ),
           Option(
             icon: FontAwesomeIcons.questionCircle,
-            title: 'Trợ giúp  ',
+            title: 'Trung tâm trợ giúp  ',
             backgoundColor: cwColorRed,
+            onClick: () => {
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> const Help()))
+            },
           ),
           Option(
             icon: FontAwesomeIcons.shieldAlt,
             title: 'Pháp lý & chính sách ',
             backgoundColor: cwColorGreyNoteText,
+             onClick: () => {
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> const Regular()))
+            },
           ),
         ],
       ),
