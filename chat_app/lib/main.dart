@@ -6,6 +6,7 @@ import 'package:chat_app/presentation/bloc/login/login_bloc.dart';
 import 'package:chat_app/presentation/bloc/new_message/new_message_bloc.dart';
 import 'package:chat_app/presentation/pages/login_page/login_page.dart';
 import 'package:chat_app/presentation/rootapp.dart';
+import 'package:chat_app/utils/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,7 +26,12 @@ void main() async {
 
 Future<void> initMain() async {
   await di.init();
-  sl<SocketService>().connect();
+  final socket = sl<SocketService>();
+  socket.connect();
+  socket.addEventReconnect((data) async {
+    final token = await sl<LocalStorageService>().getToken();
+    socket.emit('online', token);
+  });
 }
 
 // Future<void> testLogin() async {
@@ -44,11 +50,13 @@ class MyApp extends StatelessWidget {
   final bool isChangeAccount;
   const MyApp({Key? key, this.isChangeAccount = false}) : super(key: key);
 
-  
-
   @override
   Widget build(BuildContext context) {
-     if (!isChangeAccount) BlocProvider.of<MainBlocBloc>(context).add(MainBlocCheck());
+    if (!isChangeAccount)
+      BlocProvider.of<MainBlocBloc>(context).add(MainBlocCheck());
+    sl<SocketService>().addEventListener('request-login', (_) {
+      BlocProvider.of<MainBlocBloc>(context).add(MainBlocLogout());
+    });
 
     return ScreenUtilInit(
         designSize: const Size(360, 780),

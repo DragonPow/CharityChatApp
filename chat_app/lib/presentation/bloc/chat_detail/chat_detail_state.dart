@@ -7,7 +7,11 @@ class ChatDetailState extends Equatable {
     required this.isLoading,
     required this.isLoadFull,
     required this.error,
-  }) : _listMessage = {for (var i in listMessage) i.id: i};
+  }) {
+    _listMessage = {for (var i in listMessage) i.id: i};
+    listSortedMessage = [...listMessage.toList()]
+      ..sort((a, b) => a.timeCreate.compareTo(b.timeCreate) * -1);
+  }
 
   ChatDetailState.initial()
       : this(
@@ -17,13 +21,12 @@ class ChatDetailState extends Equatable {
           error: null,
         );
 
-  final Map<String, MessageEntity> _listMessage;
+  late Map<String, MessageEntity> _listMessage;
   final bool isLoading;
   final bool isLoadFull;
   final Object? error;
 
-  late final List<MessageEntity> listSortedMessage = [..._listMessage.values.toList()]
-    ..sort((a, b) => a.timeCreate.compareTo(b.timeCreate) * -1);
+  late List<MessageEntity> listSortedMessage;
 
   @override
   List<Object?> get props => [_listMessage, isLoading, isLoadFull, error];

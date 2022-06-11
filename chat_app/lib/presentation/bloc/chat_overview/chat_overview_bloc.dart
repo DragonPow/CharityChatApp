@@ -26,7 +26,7 @@ class ChatOverviewBloc extends Bloc<ChatOverviewEvent, ChatOverviewState> {
 
   ChatOverviewBloc(this._roomRepository) : super(ChatOverviewState.initial()) {
     on<ChatOverviewLoad>(
-      _mapChatOverViewEventToState,
+      _mapChatOverViewLoadEventToState,
       transformer: throttleDroppable(throttleDuration),
     );
     on<ChatOverviewUpdate>(
@@ -41,11 +41,11 @@ class ChatOverviewBloc extends Bloc<ChatOverviewEvent, ChatOverviewState> {
 
   _combineListRoom(
       List<RoomOverviewEntity> source, List<RoomOverviewEntity> dest) {
-    source.retainWhere((s) => !dest.any((d) => s.id == d.id));
-    return [...source, ...dest];
+    final newSource = [...source]..retainWhere((s) => !dest.any((d) => s.id == d.id));
+    return [...newSource, ...dest];
   }
 
-  FutureOr<void> _mapChatOverViewEventToState(
+  FutureOr<void> _mapChatOverViewLoadEventToState(
       ChatOverviewLoad event, Emitter<ChatOverviewState> emit) async {
     emit(ChatOverviewState(
       listRoom: state.listSortedRoom,

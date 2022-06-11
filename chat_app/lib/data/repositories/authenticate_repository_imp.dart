@@ -51,16 +51,19 @@ class AuthenticateRepositoryImp extends IAuthenticateRepository {
   @override
   Future<void> logOut() async {
     final token = await localService.getToken();
-    localService.setToken(null); // Clear token
+    if (token == null) return;
 
     final queryParams = {
       'token': token,
     };
     final uri = Uri.http(
       serverUrl,
-      '/login',
+      '/logout',
     );
     final response = await http.get(uri);
+
+    localService.setToken(null); // Clear token
+    localService.setAccount(null);
 
     if (response.statusCode == 200) {
       print('Logout success');

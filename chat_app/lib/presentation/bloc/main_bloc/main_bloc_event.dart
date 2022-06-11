@@ -11,3 +11,5 @@ class MainBlocCheck extends MainBlocEvent{
 }
 class MainBlocLogin extends MainBlocEvent{
 }
+
+class MainBlocLogout extends MainBlocEvent{}

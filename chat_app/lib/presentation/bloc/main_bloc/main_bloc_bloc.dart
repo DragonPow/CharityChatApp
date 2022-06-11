@@ -14,15 +14,18 @@ part 'main_bloc_state.dart';
 
 class MainBlocBloc extends Bloc<MainBlocEvent, MainBlocState> {
   final IAuthenticateRepository _iAuthenticateRepository;
+    final _localStorage = sl<LocalStorageService>();
+
   MainBlocBloc(this._iAuthenticateRepository) : super(MainBlocInitial()) {
     on<MainBlocCheck>(_mapMainBlocCheckToState);
     on<MainBlocLogin>(_mapMainBlocLoginToState);
+    on<MainBlocLogout>(_mapMainBlocLogoutToState);
+
   }
 
   FutureOr<void> _mapMainBlocCheckToState(
       MainBlocCheck event, Emitter<MainBlocState> emit) async {
-    final local = sl<LocalStorageService>();
-    final json = await local.getUsernameAndPass();
+    final json = await _localStorage.getUsernameAndPass();
     if (json["username"] == null || json["password"] == null) {
       emit(MainBlocNotYetLogin());
     } else {
@@ -46,5 +49,9 @@ class MainBlocBloc extends Bloc<MainBlocEvent, MainBlocState> {
   FutureOr<void> _mapMainBlocLoginToState(
       MainBlocLogin event, Emitter<MainBlocState> emit) async {
     emit(MainBlocAlreadyLogin());
+  }
+
+  FutureOr<void> _mapMainBlocLogoutToState(MainBlocLogout event, Emitter<MainBlocState> emit) {
+    _iAuthenticateRepository.logOut();
   }
 }

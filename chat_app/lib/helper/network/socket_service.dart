@@ -28,6 +28,7 @@ class SocketService {
     'transports': ['websocket'],
     'autoConnect': true,
     'connect_timeout': 120,
+
   });
   // final _streamSocket = StreamSocket();
   // StreamSocket get stream => _streamSocket;
@@ -56,15 +57,15 @@ class SocketService {
     _socket.on('messageSent', (data) => log('message sent'));
   }
 
-  connect() {
+  void connect() {
     _socket.connect();
   }
 
-  disconnect() {
+  void disconnect() {
     _socket.disconnect();
   }
 
-  close() {
+  void close() {
     _socket.close();
   }
 
