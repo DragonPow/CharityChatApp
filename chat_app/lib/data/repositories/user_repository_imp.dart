@@ -82,7 +82,7 @@ class UserRepositoryImp extends IUserRepository {
       "orderby": "timeCreate",
       "orderdirection": "desc",
       "searchby": "name",
-      "searchvalue": searchValue
+      "searchvalue": searchValue== ""? null: searchValue
     };
     final _uri = Uri.http(serverUrl, "users/friend", _queryPrameters);
     final _token = await sl<LocalStorageService>().getToken();

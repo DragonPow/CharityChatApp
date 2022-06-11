@@ -1,6 +1,5 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
-import 'package:chat_app/dataexample/helpQA.dart';
 import 'package:chat_app/helper/helper.dart';
 import 'package:chat_app/presentation/components/avatarcicle.dart';
 import 'package:chat_app/presentation/pages/profile_page/Regular.dart';
@@ -14,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../dataexample/current_account.dart';
 import '../../../utils/account.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -36,7 +34,7 @@ class _ProfilePage extends State<ProfilePage> {
           AvatarCicle(
               imgUrl: Account.instance!.imageUri != null
                   ? parseToServerUri(Account.instance!.imageUri!)
-                  : "",
+                  : "",                                   
               radius: 115.w),
           SizedBox(
             height: 10.h,

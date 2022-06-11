@@ -1,6 +1,7 @@
 import 'package:chat_app/configs/colorconfig.dart';
 import 'package:chat_app/configs/fontconfig.dart';
 import 'package:chat_app/presentation/bloc/chat_overview/home_room_bloc.dart';
+import 'package:chat_app/presentation/bloc/root_app/root_app_bloc.dart';
 import 'package:chat_app/presentation/pages/chat_page/chatpage.dart';
 import 'package:chat_app/presentation/pages/profile_page/profile_page.dart';
 import 'package:chat_app/presentation/pages/newchatpage/new_chat_page.dart';
@@ -23,11 +24,13 @@ class RootApp extends StatefulWidget {
 }
 
 class _RootAppState extends State<RootApp> {
-  int currentPage = 0;
+  var _rootAppBloc;
 
   @override
   void initState() {
     super.initState();
+    _rootAppBloc = BlocProvider.of<RootAppBloc>(context);
+    _rootAppBloc.add(const RootAppChangeTap(tap: 0));
   }
 
   @override
@@ -37,14 +40,26 @@ class _RootAppState extends State<RootApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: cwColorWhite,
-        appBar: getAppbar(),
-        body: getBody(currentPage),
-        bottomNavigationBar: getBottomTabBar());
+    return BlocBuilder<RootAppBloc, RootAppState>(
+      builder: (context, state) {
+        if(state is RootAppChangeTapSuccess){
+          return Scaffold(
+            backgroundColor: cwColorWhite,
+            appBar: getAppbar(state.tap),
+            body: getBody(state.tap),
+            bottomNavigationBar: getBottomTabBar(state.tap));
+        } else {
+          return Scaffold(
+            backgroundColor: cwColorWhite,
+            appBar: getAppbar(0),
+            body: getBody(0),
+            bottomNavigationBar: getBottomTabBar(0));
+        }
+      },
+    );
   }
 
-  AppBar getAppbar() {
+  AppBar getAppbar(int currentPage) {
     return currentPage == 0
         ? chatAndFriendsAppbar()
         : currentPage == 1
@@ -117,17 +132,16 @@ class _RootAppState extends State<RootApp> {
             : const ProfilePage();
   }
 
-  FancyBottomNavigation getBottomTabBar() {
+  FancyBottomNavigation getBottomTabBar(int currentPage) {
     return FancyBottomNavigation(
+      initialSelection: currentPage,
       tabs: [
         TabData(iconData: FontAwesomeIcons.commentDots, title: "Chat"),
         TabData(iconData: FontAwesomeIcons.plus, title: "Mới"),
         TabData(iconData: Icons.people, title: "Hồ sơ")
       ],
       onTabChangedListener: (int position) {
-        setState(() {
-          currentPage = position;
-        });
+       _rootAppBloc.add( RootAppChangeTap(tap: position));
       },
     );
   }

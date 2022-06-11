@@ -5,6 +5,7 @@ import 'package:chat_app/presentation/pages/chat_page/group_name/group_name.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:skeleton_loader/skeleton_loader.dart';
 
 import '../../../../configs/fontconfig.dart';
 import '../../../../dependencies_injection.dart';
@@ -30,7 +31,7 @@ class _AddPeople extends State<AddPeople> {
     _addMemberBloc = BlocProvider.of<AddMemberBloc>(context);
     _addMemberBloc.add(const AddMemberLoadSuggest(number: 10, startIndex: 0));
     _listFriend = _listMember = [];
-    _searchTextController = TextEditingController();
+    _searchTextController = TextEditingController(text: "");
   }
 
   @override
@@ -63,11 +64,15 @@ class _AddPeople extends State<AddPeople> {
                               child: Container(
                                 height: 40.h,
                                 child: TextField(
-                                  controller: _searchTextController,
+                                    controller: _searchTextController,
                                     maxLines: 1,
                                     onChanged: (str) => {
-                                      _addMemberBloc.add(AddMemberSearch(listMember: state.members, number: 10, startIndex: 0, searchValue:  str))
-                                    },
+                                          _addMemberBloc.add(AddMemberSearch(
+                                              listMember: state.members,
+                                              number: 10,
+                                              startIndex: 0,
+                                              searchValue: str))
+                                        },
                                     decoration: InputDecoration(
                                         border: InputBorder.none,
                                         contentPadding:
@@ -101,7 +106,7 @@ class _AddPeople extends State<AddPeople> {
                                             onTap: () => {
                                               _addMemberBloc.add(
                                                   AddMemberRemove(
-                                                      listMember:  state.members,
+                                                      listMember: state.members,
                                                       member:
                                                           state.members[index],
                                                       listFriend:
@@ -159,8 +164,8 @@ class _AddPeople extends State<AddPeople> {
                 ));
           } else {
             return state is AddMemberLoadFail
-                ? const Text("Load fail")
-                : const Text("Loading");
+                ? const  SkeletonloaderAddMem()
+                : const SkeletonloaderAddMem();
           }
         }));
   }
@@ -193,6 +198,59 @@ class _AddPeople extends State<AddPeople> {
           },
         )
       ],
+    );
+  }
+}
+
+class SkeletonloaderAddMem extends StatelessWidget {
+  const SkeletonloaderAddMem({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SkeletonLoader(
+      builder: SingleChildScrollView(
+        child: Column(children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+            child: Row(
+              children: <Widget>[
+                CircleAvatar(
+                  backgroundColor: Colors.white,
+                  radius: 25.h,
+                ),
+                SizedBox(
+                  width: 5.w,
+                ),
+                Expanded(
+                  child: Container(
+                    width: 100.w,
+                    height: 10.h,
+                    color: cwColorWhite,
+                  ),
+                ),
+                Container(
+                  width: 20.w,
+                  height: 10.h,
+                  color: cwColorWhite,
+                ),
+              ],
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30),
+            child: Divider(
+              color: cwColorBackground,
+              height: 2,
+            ),
+          )
+        ]),
+      ),
+      items: 5,
+      period: const Duration(seconds: 2),
+      highlightColor: const Color(0x505AA469),
+      direction: SkeletonDirection.ltr,
     );
   }
 }

@@ -18,7 +18,7 @@ class AddMemberBloc extends Bloc<AddMemberEvent, AddMemberState> {
     on<AddMemberAdd>(_mapAddMemberAddToState);
     on<AddMemberRemove>(_mapAddMemberRemoveToState);
     on<AddMemberSearch>(_mapAddMemberSearchToState,
-    transformer: (events, mapper) => events.debounce(const Duration(seconds: 1)).asyncExpand(mapper),);
+       transformer: (events, mapper) => events.debounce(const Duration(seconds: 1)).asyncExpand(mapper),);
   }
   FutureOr<void> _mapAddMemberLoadToState(
       AddMemberLoadSuggest event, Emitter<AddMemberState> emit) async {

@@ -11,6 +11,7 @@ import '../../../dependencies_injection.dart';
 import '../../../utils/account.dart';
 import '../../bloc/login/login_bloc.dart';
 import '../../bloc/main_bloc/main_bloc_bloc.dart';
+import '../login_page/login_page.dart';
 
 class ChangeAccount extends StatelessWidget {
   const ChangeAccount({Key? key}) : super(key: key);
@@ -39,13 +40,6 @@ class ChangeAccount extends StatelessWidget {
               style: kText13RegularNote,
             ),
           ),
-          //  ListTile(
-          // leading:  const AvatarCicle(imgUrl: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=700&q=60", radius: 50, ),
-
-          // title: Text('Nguyễn Phạm Luân Lý ', style: kText16BoldBlack,),
-
-          // subtitle: Text("Đã  đăng nhập hơn 3 ngày trước  ", style: kText13RegularNote,),
-          // ),
           InkWell(
             child: Padding(
               padding: EdgeInsets.only(bottom: 12.h),
@@ -81,10 +75,10 @@ class ChangeAccount extends StatelessWidget {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                            create: (context) => MainBlocBloc(sl()),
-                            child: const MyApp(isChangeAccount: true),
-                          )))
+                      builder: (context) =>BlocProvider(
+                      create: (context) => LoginBloc(sl()),
+                      child: const LoginPage(isChangeAccount: true),
+                    ),))
             },
           ),
         ]),

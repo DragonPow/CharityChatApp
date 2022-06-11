@@ -4,11 +4,13 @@ import 'package:chat_app/presentation/bloc/active_user/active_user_bloc.dart';
 import 'package:chat_app/presentation/bloc/chat_overview/chat_overview_bloc.dart';
 import 'package:chat_app/presentation/bloc/login/login_bloc.dart';
 import 'package:chat_app/presentation/bloc/new_message/new_message_bloc.dart';
+import 'package:chat_app/presentation/bloc/root_app/root_app_bloc.dart';
 import 'package:chat_app/presentation/pages/login_page/login_page.dart';
 import 'package:chat_app/presentation/rootapp.dart';
 import 'package:chat_app/utils/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dependencies_injection.dart' as di;
 import 'dependencies_injection.dart';
@@ -16,10 +18,25 @@ import 'presentation/bloc/main_bloc/main_bloc_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize(
+      debug:
+          true, // optional: set to false to disable printing logs to console (default: true)
+      ignoreSsl:
+          true // option: set to false to disable working with http links (default: false)
+      );
+
   // HttpOverrides.global = MyHttpOverrides();
   await initMain();
-  runApp(BlocProvider(
-    create: (context) => MainBlocBloc(sl()),
+  runApp(MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (context) => MainBlocBloc(sl())..add(MainBlocCheck()),
+      ),
+      BlocProvider(
+        create: (context) => RootAppBloc(),
+      ),
+    ],
+
     child: const MyApp(),
   ));
 }
@@ -54,6 +71,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!isChangeAccount)
      { BlocProvider.of<MainBlocBloc>(context).add(MainBlocCheck());}
+
     sl<SocketService>().addEventListener('request-login', (_) {
       BlocProvider.of<MainBlocBloc>(context).add(MainBlocLogout());
     });

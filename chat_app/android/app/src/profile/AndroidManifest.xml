@@ -4,4 +4,29 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <provider
+     android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
+    android:authorities="${applicationId}.flutter_downloader.provider"
+    android:exported="false"
+    android:grantUriPermissions="true"
+    android:name="androidx.startup.InitializationProvider"
+    android:authorities="${applicationId}.androidx-startup"
+    android:exported="false"
+    tools:node="merge"
+    android:name="vn.hunghd.flutterdownloader.FlutterDownloaderInitializer"
+    android:authorities="${applicationId}.flutter-downloader-init"
+    android:exported="false"
+    >
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/provider_paths"
+        android:name="androidx.work.WorkManagerInitializer"
+        android:value="androidx.startup"
+        tools:node="remove" 
+        android:name="vn.hunghd.flutterdownloader.MAX_CONCURRENT_TASKS"
+        android:value="5"  />
+</provider>
+
 </manifest>
+
