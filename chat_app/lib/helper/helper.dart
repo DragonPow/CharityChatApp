@@ -44,7 +44,7 @@ List<types.Message> parsedEntityMessageToMessages(
     };
     final author = types.User(
         id: message.creator.id,
-        imageUrl: message.creator.avatarUri,
+        imageUrl: message.creator.avatarUri != null ? parseToServerUri( message.creator.avatarUri!) : null,
         firstName: findUser?.nameAlias ?? message.creator.name);
     final status = message.state == MessageState.sending
         ? types.Status.sending
