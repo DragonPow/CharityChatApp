@@ -187,6 +187,11 @@ class Room extends Model {
         {
           model: Message,
           as: "lastMessage",
+          include: {
+            model: User,
+            as: "sender",
+            attributes: ["id", "name", "email", "imageUri", "gender"],
+          },
         },
         {
           model: User,
