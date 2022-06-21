@@ -12,3 +12,58 @@ The project have 2 member:
 - [Huỳnh Thị Minh Nhực](https://github.com/HuynhThiMinhNhuc) - MSSV: 19521973
 
 Some UI:
+
+**Login**
+
+<img src="UI/Login.png" alt='drawing' width="200"/>
+
+**Home**
+
+<img src="UI/Home.png" alt='drawing' width='200'/>
+
+**Chat**
+
+<table>
+    <td>
+        <img src="UI/Chat_Empty.png" alt='drawing'/>
+    </td>
+    <td>
+        <img src="UI/Chat_1.png" alt='drawing'/>
+    </td>
+    <td>
+        <img src="UI/Chat_2.png" alt='drawing'/>
+    </td>
+</table>
+
+**Call video**
+
+<img src="UI/Call.png" alt='drawing' width="200"/>
+
+**Setting Chat**
+
+<table>
+    <td>
+        <img src="UI/Setting_Chat.png" alt='drawing'/>
+    </td>
+    <td>
+        <img src="UI/Image.png" alt='drawing'/>
+    </td>
+    <td>
+        <img src="UI/File.png" alt='drawing'/>
+    </td>
+</table>
+
+**Add New Group Chat**
+
+<table>
+    <td>
+        <img src="UI/Add_Group.png" alt='drawing' height="400"/>
+    </td>
+    <td>
+        <img src="UI/Add_Joiner.png" alt='drawing' height="400"/>
+    </td>
+</table>
+
+**Setting**
+
+<img src="UI/Setting.png" alt='drawing' width="200"/>

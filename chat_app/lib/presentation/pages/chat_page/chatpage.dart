@@ -499,9 +499,7 @@ class ShortChat extends StatelessWidget {
               MaterialPageRoute(
                   builder: (_) => BlocProvider.value(
                         value: BlocProvider.of<HomeRoomBloc>(context)
-                            .state
-                            .values
-                            .elementAt(roomOverview.type == 'private' ? 0 : 1),
+                            .state[roomOverview.type == 'private' ? HomeRoomState.private : HomeRoomState.group]!,
                         child: BlocProvider.value(
                           value: BlocProvider.of<ChatDetailBloc>(context),
                           child: ChatRoom(

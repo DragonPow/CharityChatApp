@@ -113,12 +113,13 @@ export default {
       );
 
       MyNotifySocket.RoomUpdate([newRoom.id]);
-
+      
       if (!newRoom) {
         return successResponse(res, { success: false });
       }
-
-      return successResponse(res, { success: true, room: newRoom });
+      
+      const resRoom = await RoomModel.getRoomsById([newRoom.id]);
+      return successResponse(res, { success: true, room: resRoom });
     } catch (error) {
       console.log(error);
 
