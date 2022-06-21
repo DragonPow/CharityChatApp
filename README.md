@@ -15,11 +15,11 @@ Some UI:
 
 **Login**
 
-<img src="UI/Login.png" alt='drawing' width="200"/>
+<img src="UI/Login.png" alt='drawing' width="300"/>
 
 **Home**
 
-<img src="UI/Home.png" alt='drawing' width='200'/>
+<img src="UI/Home.png" alt='drawing' width='300'/>
 
 **Chat**
 
@@ -37,7 +37,7 @@ Some UI:
 
 **Call video**
 
-<img src="UI/Call.png" alt='drawing' width="200"/>
+<img src="UI/Call.png" alt='drawing' width="300"/>
 
 **Setting Chat**
 
@@ -57,13 +57,13 @@ Some UI:
 
 <table>
     <td>
-        <img src="UI/Add_Group.png" alt='drawing' height="400"/>
+        <img src="UI/Add_Group.png" alt='drawing' height="500"/>
     </td>
     <td>
-        <img src="UI/Add_Joiner.png" alt='drawing' height="400"/>
+        <img src="UI/Add_Joiner.png" alt='drawing' height="500"/>
     </td>
 </table>
 
 **Setting**
 
-<img src="UI/Setting.png" alt='drawing' width="200"/>
+<img src="UI/Setting.png" alt='drawing' width="300"/>
